@@ -17,7 +17,41 @@ if (@$_REQUEST['print']) {
 
     // Print Voucher Data
     $printVoucherProduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `print_voucher` WHERE print_production_id =  $upd_id"));
+    $printProductNameId = @$printVoucherProduction['print_quality'];
+    $printCustNameId = @$printVoucherProduction['print_party_name'];
+    $printProduct = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM product WHERE product_id = '$printProductNameId'"));
+    $printCustName = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `customers` WHERE customer_id = '$printCustNameId'"));
+
+    // Dyeing Voucher Data
+    $dyeingVoucherProduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `deyeing` WHERE dey_production_id =  $upd_id"));
+    $dyeingCustNameId = @$dyeingVoucherProduction['dey_party_name'];
+    $dyeingCustName = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `customers` WHERE customer_id = '$dyeingCustNameId'"));
+
+    // Single Print Voucher Data
+    $singlePrintVoucherProduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `single_print` WHERE single_production_id =  $upd_id"));
+    $singlePrintCustNameId = @$singlePrintVoucherProduction['single_party_name'];
+    $singlePrintCustName = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `customers` WHERE customer_id = '$singlePrintCustNameId'"));
+
+    // embroidery_voucher  Voucher Data
+    $embroideryVoucherProduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `embroidery_voucher` WHERE emb_production_id =  $upd_id"));
+
+    // Collect Embroidery  Voucher Data
+    $collectEmbProduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM  `collect_embroid_voucher` WHERE coll_production_id =  $upd_id"));
+
+    // Stiching & Packing Voucher Data
+    $sti_pakVoucherProduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `stiching_voucher` WHERE stiching_production_id =  $upd_id"));
+    $sti_pakProductNameId = @$sti_pakVoucherProduction['stiching_qlty'];
+    $sti_pakCustNameId = @$sti_pakVoucherProduction['stiching_party_no'];
+    $sti_pakProduct = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM product WHERE product_id = '$sti_pakProductNameId'"));
+    $sti_pakCustName = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `customers` WHERE customer_id = '$sti_pakCustNameId'"));
+
+    // Calender Salender Voucher Data
+
+    $cal_calVoucherProduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `calander_satander` WHERE cal_sat_production_id =  $upd_id"));
+    $cal_calId = @$cal_calVoucherProduction['cal_sat_qlty'];
+    $cal_calProduct = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM product WHERE product_id = '$cal_calId'"));
 }
+
 ?>
 <style>
     * {
@@ -89,39 +123,7 @@ if (@$_REQUEST['print']) {
             <h2 class="m-0">Production # <?= @$printProduction['production_id'] ?></h2>
         </header>
 
-
         <!-- Production Details -->
-
-        <!-- <div class="mt-5"> -->
-        <!-- <h2>Production Details</h2> -->
-        <!-- <table class="table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th class="py-3">Date</th>
-                        <th>Lat No</th>
-                        <th>Production Name</th>
-                        <th>Cost</th>
-                        <th>Customer Name</th>
-                        <th>Customer Address</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="py-2"><?= @$printProduction['production_date'] ?></td>
-                        <td><?= @$printProduction['production_lat_no'] ?></td>
-                        <td><?= @$printProduction['production_name'] ?></td>
-                        <td><?= @$printProduction['production_cost'] ?></td>
-                        <td><?= @$printProduction['customer'] ?></td>
-                        <td class="print-detail"><?= @$printProduction['customer_address'] ?></td>
-                    </tr>
-                </tbody>
-            </table> -->
-        <!-- </div> -->
-
-        <!-- Cutting Voucher Details -->
-
-
-
 
 
         <div class="mt-3">
@@ -192,7 +194,10 @@ if (@$_REQUEST['print']) {
 
                     </div>
                     <div class="col-3  bg-white text-black border">
-                        <p class="m-0"><?= @$cuttProduct['product_name'] ?></p>
+
+
+                        <p class="m-0"><?= @$printProduct['product_name'] ?></p>
+
                     </div>
                 </div>
                 <div class="row m-0 p-0">
@@ -294,6 +299,8 @@ if (@$_REQUEST['print']) {
             ?>
         </div>
 
+        <!-- Print Voucher Details -->
+
         <div class="mt-3">
             <h2>Print Voucher Details</h2>
 
@@ -318,14 +325,14 @@ if (@$_REQUEST['print']) {
                         <h3 class="m-0 fw-bold">Party Name</h3>
                     </div>
                     <div class="col-3  bg-white text-black border">
-                        <p class="m-0"><?= ucwords(@$printVoucherProduction['print_party_name']) ?></p>
+                        <p class="m-0"><?= ucwords(@$printCustName['customer_name']) ?></p>
                     </div>
                     <div class="col-3 bg-gray text-black border">
                         <h3 class="m-0">Quality</h3>
 
                     </div>
                     <div class="col-3  bg-white text-black border">
-                        <p class="m-0"><?= ucwords(@$printVoucherProduction['print_quality']) ?></p>
+                        <p class="m-0"><?= @$printProduct['product_name'] ?></p>
                     </div>
                 </div>
                 <div class="row m-0 p-0">
@@ -387,10 +394,772 @@ if (@$_REQUEST['print']) {
 
             <h1 class="pt-4 pb-2 pl-3">List:-</h1>
 
+            <?php
+            if (@$printVoucherProduction != 0) {
+                $lowerdata2 = json_decode(@$printVoucherProduction['print_list']);
+                for ($x = 0; $x < count(@$lowerdata2->print_quantity); $x++) {
+
+            ?>
+
+                    <div class="container-fluid mt-3">
+                        <div class="row m-0 p-0">
+                            <div class="col-3 bg-gray text-black border">
+                                <h3 class="m-0 fw-bold">Quantity</h3>
+                            </div>
+                            <div class="col-3  bg-white text-black border">
+                                <p class="m-0"><?= @$lowerdata2->print_quantity[$x] ?></p>
+                            </div>
+                            <div class="col-3 bg-gray text-black border">
+                                <h3 class="m-0">Name</h3>
+
+                            </div>
+                            <div class="col-3  bg-white text-black border">
+                                <p class="m-0"><?= @$lowerdata2->print_quantity_name[$x] ?></p>
+                            </div>
+                        </div>
+                        <div class="row m-0 p-0">
+                            <div class="col-3 bg-gray text-black border">
+                                <h3 class="m-0 fw-bold">Status</h3>
+                            </div>
+                            <div class="col-9  bg-white text-black border">
+                                <p class="m-0"><?= @$lowerdata2->print_status[$x] ?></p>
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+            <?php
+                }
+            }
+            ?>
+
+        </div>
+
+        <!-- Dyeing Voucher Details -->
+
+
+        <div class="mt-3">
+            <h2>Dyeing Details</h2>
+
+            <div class="container-fluid ">
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Date</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$dyeingVoucherProduction['dey_date'] ?></p>
+                    </div>
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0">Gate Pass No.</h3>
+
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$dyeingVoucherProduction['dey_gate_no'] ?></p>
+                    </div>
+                </div>
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Lat no.</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$dyeingVoucherProduction['dey_lat_no'] ?></p>
+                    </div>
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0">Party Name</h3>
+
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= ucwords(@$dyeingCustName['customer_name']) ?></p>
+                    </div>
+                </div>
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Party Voucher No.</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$dyeingVoucherProduction['dey_voucher_no'] ?></p>
+                    </div>
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0">Qty</h3>
+
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$dyeingVoucherProduction['dey_qty'] ?></p>
+                    </div>
+                </div>
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Ready Qty.</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$dyeingVoucherProduction['dey_ready_qty'] ?></p>
+                    </div>
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0">C-P</h3>
+
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$dyeingVoucherProduction['dey_c_p'] ?></p>
+                    </div>
+                </div>
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Color Name</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= ucwords(@$dyeingVoucherProduction['dey_color_name']) ?></p>
+                    </div>
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0">Color</h3>
+
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= ucwords(@$dyeingVoucherProduction['dey_color']) ?></p>
+                    </div>
+                </div>
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Thaan</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= ucwords(@$dyeingVoucherProduction['dey_thaan']) ?></p>
+                    </div>
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0">Location</h3>
+
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= ucwords(@$dyeingVoucherProduction['dey_location']) ?></p>
+                    </div>
+                </div>
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Remarks</h3>
+                    </div>
+                    <div class="col-9  bg-white text-black border">
+                        <p class="m-0"><?= ucwords(@$dyeingVoucherProduction['dey_remarks']) ?></p>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Single Print Voucher Details -->
+
+        <div class="mt-3">
+            <h2>Print Details</h2>
+
+            <div class="container-fluid ">
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Date</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$singlePrintVoucherProduction['single_date'] ?></p>
+                    </div>
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0">Party Name</h3>
+
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$singlePrintCustName['customer_name'] ?></p>
+                    </div>
+                </div>
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Lat No.</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$singlePrintVoucherProduction['single_lat_no'] ?></p>
+                    </div>
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0">Quantity</h3>
+
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$singlePrintVoucherProduction['single_quantity'] ?></p>
+                    </div>
+                </div>
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Gate Pass No.</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$singlePrintVoucherProduction['single_gate_no'] ?></p>
+                    </div>
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0">Design No</h3>
+
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$singlePrintVoucherProduction['single_design_no'] ?></p>
+                    </div>
+                </div>
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Design Qty</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$singlePrintVoucherProduction['single_design_qty'] ?></p>
+                    </div>
+
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Remarks</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= ucwords(@$singlePrintVoucherProduction['single_remarks']) ?></p>
+                    </div>
+                </div>
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0">Location</h3>
+
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= ucwords(@$singlePrintVoucherProduction['single_location']) ?></p>
+                    </div>
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Cut Pieces</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$singlePrintVoucherProduction['single_cut_pieces'] ?></p>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <h1 class="pt-4 pb-2 pl-3">List:-</h1>
+
+            <?php
+            if (@$singlePrintVoucherProduction != 0) {
+                $lowerdata3 = json_decode(@$singlePrintVoucherProduction['single_list']);
+                for ($x = 0; $x < count(@$lowerdata3->singleprint_dp_no); $x++) {
+
+            ?>
+
+                    <div class="container-fluid mt-3">
+                        <div class="row m-0 p-0">
+                            <div class="col-3 bg-gray text-black border">
+                                <h3 class="m-0 fw-bold">DP No</h3>
+                            </div>
+                            <div class="col-3  bg-white text-black border">
+                                <p class="m-0"><?= @$lowerdata3->singleprint_dp_no[$x] ?></p>
+                            </div>
+                            <div class="col-3 bg-gray text-black border">
+                                <h3 class="m-0">Type</h3>
+
+                            </div>
+                            <div class="col-3  bg-white text-black border">
+                                <p class="m-0"><?= @$lowerdata3->singleprint_type[$x] ?></p>
+                            </div>
+                        </div>
+                        <div class="row m-0 p-0">
+                            <div class="col-3 bg-gray text-black border">
+                                <h3 class="m-0 fw-bold">Type Name</h3>
+                            </div>
+                            <div class="col-3  bg-white text-black border">
+                                <p class="m-0"><?= @$lowerdata3->singleprint_type_name[$x] ?></p>
+                            </div>
+                            <div class="col-3 bg-gray text-black border">
+                                <h3 class="m-0 fw-bold">Status</h3>
+                            </div>
+                            <div class="col-3  bg-white text-black border">
+                                <p class="m-0"><?= @$lowerdata3->print2_status[$x] ?></p>
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+            <?php
+                }
+            }
+            ?>
+
+        </div>
+        <!-- embroidery_voucher Voucher Details -->
+
+        <div class="mt-3">
+            <h2>Insuance Embroidery Details</h2>
+
+            <div class="container-fluid ">
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Out Date</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$embroideryVoucherProduction['emb_out_date'] ?></p>
+                    </div>
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0">Gate Pass No.</h3>
+
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$singlePrintCustName['emb_gate_no'] ?></p>
+                    </div>
+                </div>
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Volume No</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$embroideryVoucherProduction['emb_volume_no'] ?></p>
+                    </div>
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0">Design No</h3>
+
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$embroideryVoucherProduction['emb_design_no'] ?></p>
+                    </div>
+                </div>
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Embroider Name</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= ucwords(@$embroideryVoucherProduction['emb_embroider_name']) ?></p>
+                    </div>
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0">Total Dress</h3>
+
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= ucwords(@$embroideryVoucherProduction['emb_total_dress']) ?></p>
+                    </div>
+                </div>
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Details Name</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= ucwords(@$embroideryVoucherProduction['emb_details_name']) ?></p>
+                    </div>
+
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Remarks</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= ucwords(@$embroideryVoucherProduction['emb_remarks']) ?></p>
+                    </div>
+                </div>
+
+            </div>
+
+            <h1 class="pt-4 pb-2 pl-3">List:-</h1>
+
+            <?php
+            if (@$embroideryVoucherProduction != 0) {
+                $lowerdata4 = json_decode(@$embroideryVoucherProduction['emb_list']);
+                for ($x = 0; $x < count(@$lowerdata4->embroid_type); $x++) {
+
+            ?>
+
+                    <div class="container-fluid mt-3">
+                        <div class="row m-0 p-0">
+                            <div class="col-3 bg-gray text-black border">
+                                <h3 class="m-0 fw-bold">Quantity</h3>
+                            </div>
+                            <div class="col-3  bg-white text-black border">
+                                <p class="m-0"><?= @$lowerdata4->embroid_type[$x] ?></p>
+                            </div>
+                            <div class="col-3 bg-gray text-black border">
+                                <h3 class="m-0">Name</h3>
+
+                            </div>
+                            <div class="col-3  bg-white text-black border">
+                                <p class="m-0"><?= @$lowerdata4->embroid_type_name[$x] ?></p>
+                            </div>
+                        </div>
+                        <div class="row m-0 p-0">
+                            <div class="col-3 bg-gray text-black border">
+                                <h3 class="m-0 fw-bold">Print</h3>
+                            </div>
+                            <div class="col-3  bg-white text-black border">
+                                <p class="m-0"><?= @$lowerdata4->embroid_gzanah[$x] ?></p>
+                            </div>
+                            <div class="col-3 bg-gray text-black border">
+                                <h3 class="m-0 fw-bold">Type</h3>
+                            </div>
+                            <div class="col-3  bg-white text-black border">
+                                <p class="m-0"><?= @$lowerdata4->embroid_gzanah_type[$x] ?></p>
+                            </div>
+
+                        </div>
+                        <div class="row m-0 p-0">
+                            <div class="col-3 bg-gray text-black border">
+                                <h3 class="m-0 fw-bold">Status</h3>
+                            </div>
+                            <div class="col-9  bg-white text-black border">
+                                <p class="m-0"><?= @$lowerdata4->emb_status[$x] ?></p>
+                            </div>
+
+
+                        </div>
+
+
+
+                    </div>
+            <?php
+                }
+            }
+            ?>
 
         </div>
 
 
+
+        <!-- embroidery_voucher Voucher Details -->
+
+        <div class="mt-3">
+            <h2>Recieving Embroidery Details</h2>
+
+            <div class="container-fluid ">
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Date</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$collectEmbProduction['coll_date'] ?></p>
+                    </div>
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0">Gate Pass No.</h3>
+
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$collectEmbProduction['coll_gate_no'] ?></p>
+                    </div>
+                </div>
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Party Pass No.</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$collectEmbProduction['coll_party_no'] ?></p>
+                    </div>
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0">Design No</h3>
+
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$collectEmbProduction['coll_design_no'] ?></p>
+                    </div>
+                </div>
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Embroider Name</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= ucwords(@$collectEmbProduction['coll_emb_name']) ?></p>
+                    </div>
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0">Design Qty</h3>
+
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$collectEmbProduction['coll_design_qty'] ?></p>
+                    </div>
+                </div>
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Volume No</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$collectEmbProduction['coll_volume_no'] ?></p>
+                    </div>
+
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Details Yards</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= ucwords(@$collectEmbProduction['coll_details_yards']) ?></p>
+                    </div>
+                </div>
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Location</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= ucwords(@$collectEmbProduction['coll_location']) ?></p>
+                    </div>
+
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Remarks</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= ucwords(@$collectEmbProduction['coll_remarks']) ?></p>
+                    </div>
+                </div>
+
+            </div>
+
+            <h1 class="pt-4 pb-2 pl-3">List:-</h1>
+
+            <?php
+            if (@$collectEmbProduction != 0) {
+                $lowerdata5 = json_decode(@$collectEmbProduction['coll_list']);
+                for ($x = 0; $x < count(@$lowerdata5->collect_embroid_type); $x++) {
+
+            ?>
+
+                    <div class="container-fluid mt-3">
+                        <div class="row m-0 p-0">
+                            <div class="col-3 bg-gray text-black border">
+                                <h3 class="m-0 fw-bold">Quantity</h3>
+                            </div>
+                            <div class="col-3  bg-white text-black border">
+                                <p class="m-0"><?= @$lowerdata5->collect_embroid_type[$x] ?></p>
+                            </div>
+                            <div class="col-3 bg-gray text-black border">
+                                <h3 class="m-0">Name</h3>
+
+                            </div>
+                            <div class="col-3  bg-white text-black border">
+                                <p class="m-0"><?= @$lowerdata5->collect_embroid_type_name[$x] ?></p>
+                            </div>
+                        </div>
+                        <div class="row m-0 p-0">
+                            <div class="col-3 bg-gray text-black border">
+                                <h3 class="m-0 fw-bold">Print</h3>
+                            </div>
+                            <div class="col-3  bg-white text-black border">
+                                <p class="m-0"><?= @$lowerdata5->collect_embroid_gzanah[$x] ?></p>
+                            </div>
+                            <div class="col-3 bg-gray text-black border">
+                                <h3 class="m-0 fw-bold">Type</h3>
+                            </div>
+                            <div class="col-3  bg-white text-black border">
+                                <p class="m-0"><?= @$lowerdata5->collect_embroid_gzanah_type[$x] ?></p>
+                            </div>
+
+                        </div>
+                        <div class="row m-0 p-0">
+                            <div class="col-3 bg-gray text-black border">
+                                <h3 class="m-0 fw-bold">Status</h3>
+                            </div>
+                            <div class="col-9  bg-white text-black border">
+                                <p class="m-0"><?= @$lowerdata5->collect_embroid_status[$x] ?></p>
+                            </div>
+
+
+                        </div>
+
+
+
+                    </div>
+            <?php
+                }
+            }
+            ?>
+
+        </div>
+        <!-- Stiching & Packing Voucher Details -->
+        <div class="mt-3">
+            <h2>Stiching & Packing Details</h2>
+
+            <div class="container-fluid ">
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Date</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$sti_pakVoucherProduction['stiching_date'] ?></p>
+                    </div>
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0">Quality</h3>
+
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$sti_pakProduct['product_name'] ?></p>
+                    </div>
+                </div>
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Gate Pass No.</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$sti_pakVoucherProduction['stiching_gate_no'] ?></p>
+                    </div>
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0">Party Name</h3>
+
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$sti_pakCustName['customer_name'] ?></p>
+                    </div>
+                </div>
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Details Name</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= ucwords(@$sti_pakVoucherProduction['stiching_details_name']) ?></p>
+                    </div>
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0">Stock</h3>
+
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= ucwords(@$sti_pakVoucherProduction['stiching_stock']) ?></p>
+                    </div>
+                </div>
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Status</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$sti_pakVoucherProduction['stiching_status'] ?></p>
+                    </div>
+
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Volume No</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$sti_pakVoucherProduction['stiching_volume_no'] ?></p>
+                    </div>
+                </div>
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Remarks</h3>
+                    </div>
+                    <div class="col-9  bg-white text-black border">
+                        <p class="m-0"><?= ucwords(@$sti_pakVoucherProduction['stiching_remarks']) ?></p>
+                    </div>
+                </div>
+
+            </div>
+
+            <h1 class="pt-4 pb-2 pl-3">List:-</h1>
+
+            <?php
+            if (@$sti_pakVoucherProduction != 0) {
+                $lowerdata6 = json_decode(@$sti_pakVoucherProduction['stiching_list']);
+                for ($x = 0; $x < count(@$lowerdata6->stiching_type); $x++) {
+
+            ?>
+
+                    <div class="container-fluid mt-3">
+                        <div class="row m-0 p-0">
+                            <div class="col-3 bg-gray text-black border">
+                                <h3 class="m-0 fw-bold">Quantity</h3>
+                            </div>
+                            <div class="col-3  bg-white text-black border">
+                                <p class="m-0"><?= @$lowerdata6->stiching_type[$x] ?></p>
+                            </div>
+                            <div class="col-3 bg-gray text-black border">
+                                <h3 class="m-0">Name</h3>
+
+                            </div>
+                            <div class="col-3  bg-white text-black border">
+                                <p class="m-0"><?= @$lowerdata6->stiching_type_name[$x] ?></p>
+                            </div>
+                        </div>
+                        <div class="row m-0 p-0">
+                            <div class="col-3 bg-gray text-black border">
+                                <h3 class="m-0 fw-bold">Print</h3>
+                            </div>
+                            <div class="col-3  bg-white text-black border">
+                                <p class="m-0"><?= @$lowerdata6->stiching_gzanah[$x] ?></p>
+                            </div>
+                            <div class="col-3 bg-gray text-black border">
+                                <h3 class="m-0 fw-bold">Type</h3>
+                            </div>
+                            <div class="col-3  bg-white text-black border">
+                                <p class="m-0"><?= @$lowerdata6->stiching_gzanah_type[$x] ?></p>
+                            </div>
+
+                        </div>
+                        <div class="row m-0 p-0">
+                            <div class="col-3 bg-gray text-black border">
+                                <h3 class="m-0 fw-bold">Status</h3>
+                            </div>
+                            <div class="col-9  bg-white text-black border">
+                                <p class="m-0"><?= @$lowerdata6->stiching_status[$x] ?></p>
+                            </div>
+
+
+                        </div>
+
+
+
+                    </div>
+            <?php
+                }
+            }
+            ?>
+
+        </div>
+
+        <!-- Calander Stander Voucher Details -->
+
+
+        <div class="mt-3">
+            <h2>Calander & Stander Details</h2>
+
+            <div class="container-fluid ">
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Date</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$cal_calVoucherProduction['cal_sat_date'] ?></p>
+                    </div>
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0">Calander Name</h3>
+
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= ucwords(@$cal_calVoucherProduction['cal_sat_cal_name']) ?></p>
+                    </div>
+                </div>
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Gate Pass No.</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= @$cal_calVoucherProduction['cal_sat_gate_no'] ?></p>
+                    </div>
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0">Quality</h3>
+
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= ucwords(@$cal_calProduct['product_name']) ?></p>
+                    </div>
+                </div>
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Gazana</h3>
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= ucwords(@$cal_calVoucherProduction['cal_sat_gazana']) ?></p>
+                    </div>
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0">Thaan</h3>
+
+                    </div>
+                    <div class="col-3  bg-white text-black border">
+                        <p class="m-0"><?= ucwords(@$cal_calVoucherProduction['cal_sat_thaan']) ?></p>
+                    </div>
+                </div>
+
+                <div class="row m-0 p-0">
+                    <div class="col-3 bg-gray text-black border">
+                        <h3 class="m-0 fw-bold">Remarks</h3>
+                    </div>
+                    <div class="col-9  bg-white text-black border">
+                        <p class="m-0"><?= ucwords(@$cal_calVoucherProduction['cal_sat_remarks']) ?></p>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
 
 
 
