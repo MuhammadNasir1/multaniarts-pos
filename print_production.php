@@ -252,41 +252,43 @@ if (@$_REQUEST['print']) {
             ?>
 
                     <div class="container-fluid mt-3">
+
                         <div class="row m-0 p-0">
-                            <div class="col-3 bg-gray text-black border">
+                            <div class="col  bg-secondary text-white border">
+                                <p class="m-0"><?= $x + 1 ?></p>
+                            </div>
+                            <div class="col bg-gray text-black border">
                                 <h3 class="m-0 fw-bold">Design No</h3>
                             </div>
-                            <div class="col-3  bg-white text-black border">
+                            <div class="col  bg-white text-black border">
                                 <p class="m-0"><?= @$lowerdata->cutt_designe_no[$x] ?></p>
                             </div>
-                            <div class="col-3 bg-gray text-black border">
+                            <div class="col bg-gray text-black border">
                                 <h3 class="m-0">Quantity</h3>
 
                             </div>
-                            <div class="col-3  bg-white text-black border">
+                            <div class="col  bg-white text-black border">
                                 <p class="m-0"><?= @$lowerdata->cutt_type[$x] ?></p>
                             </div>
-                        </div>
-                        <div class="row m-0 p-0">
-                            <div class="col-3 bg-gray text-black border">
+
+                            <div class="col bg-gray text-black border">
                                 <h3 class="m-0 fw-bold">Gzanah</h3>
                             </div>
-                            <div class="col-3  bg-white text-black border">
+                            <div class="col  bg-white text-black border">
                                 <p class="m-0"><?= @$lowerdata->cutt_gzanah[$x] ?></p>
                             </div>
-                            <div class="col-3 bg-gray text-black border">
+                            <div class="col bg-gray text-black border">
                                 <h3 class="m-0">Type</h3>
 
                             </div>
-                            <div class="col-3  bg-white text-black border">
+                            <div class="col  bg-white text-black border">
                                 <p class="m-0"><?= @$lowerdata->cutt_gzanah_type[$x] ?></p>
                             </div>
-                        </div>
-                        <div class="row m-0 p-0">
-                            <div class="col-3 bg-gray text-black border">
+
+                            <div class="col bg-gray text-black border">
                                 <h3 class="m-0 fw-bold">Status</h3>
                             </div>
-                            <div class="col-9  bg-white text-black border">
+                            <div class="col text-white <?php if (@$lowerdata->cutt_status[$x] == 'Sent') { ?> bg-danger <?php } else { ?> bg-success <?php } ?>  border">
                                 <p class="m-0"><?= @$lowerdata->cutt_status[$x] ?></p>
                             </div>
                         </div>
@@ -402,26 +404,29 @@ if (@$_REQUEST['print']) {
             ?>
 
                     <div class="container-fluid mt-3">
+
                         <div class="row m-0 p-0">
-                            <div class="col-3 bg-gray text-black border">
+                            <div class="col  bg-secondary text-white border">
+                                <p class="m-0"><?= $x + 1 ?></p>
+                            </div>
+                            <div class="col bg-gray text-black border">
                                 <h3 class="m-0 fw-bold">Quantity</h3>
                             </div>
-                            <div class="col-3  bg-white text-black border">
+                            <div class="col  bg-white text-black border">
                                 <p class="m-0"><?= @$lowerdata2->print_quantity[$x] ?></p>
                             </div>
-                            <div class="col-3 bg-gray text-black border">
+                            <div class="col bg-gray text-black border">
                                 <h3 class="m-0">Name</h3>
 
                             </div>
-                            <div class="col-3  bg-white text-black border">
+                            <div class="col  bg-white text-black border">
                                 <p class="m-0"><?= @$lowerdata2->print_quantity_name[$x] ?></p>
                             </div>
-                        </div>
-                        <div class="row m-0 p-0">
-                            <div class="col-3 bg-gray text-black border">
+
+                            <div class="col bg-gray text-black border">
                                 <h3 class="m-0 fw-bold">Status</h3>
                             </div>
-                            <div class="col-9  bg-white text-black border">
+                            <div class="col  text-white <?php if (@$lowerdata2->print_status[$x] == 'Sent') { ?> bg-danger <?php } else { ?> bg-success <?php } ?> text-black border">
                                 <p class="m-0"><?= @$lowerdata2->print_status[$x] ?></p>
                             </div>
 
@@ -643,31 +648,33 @@ if (@$_REQUEST['print']) {
 
                     <div class="container-fluid mt-3">
                         <div class="row m-0 p-0">
-                            <div class="col-3 bg-gray text-black border">
+                            <div class="col  bg-secondary text-white border">
+                                <p class="m-0"><?= $x + 1 ?></p>
+                            </div>
+                            <div class="col bg-gray text-black border">
                                 <h3 class="m-0 fw-bold">DP No</h3>
                             </div>
-                            <div class="col-3  bg-white text-black border">
+                            <div class="col  bg-white text-black border">
                                 <p class="m-0"><?= @$lowerdata3->singleprint_dp_no[$x] ?></p>
                             </div>
-                            <div class="col-3 bg-gray text-black border">
+                            <div class="col bg-gray text-black border">
                                 <h3 class="m-0">Type</h3>
 
                             </div>
-                            <div class="col-3  bg-white text-black border">
+                            <div class="col  bg-white text-black border">
                                 <p class="m-0"><?= @$lowerdata3->singleprint_type[$x] ?></p>
                             </div>
-                        </div>
-                        <div class="row m-0 p-0">
-                            <div class="col-3 bg-gray text-black border">
+
+                            <div class="col bg-gray text-black border">
                                 <h3 class="m-0 fw-bold">Type Name</h3>
                             </div>
-                            <div class="col-3  bg-white text-black border">
+                            <div class="col  bg-white text-black border">
                                 <p class="m-0"><?= @$lowerdata3->singleprint_type_name[$x] ?></p>
                             </div>
-                            <div class="col-3 bg-gray text-black border">
+                            <div class="col bg-gray text-black border">
                                 <h3 class="m-0 fw-bold">Status</h3>
                             </div>
-                            <div class="col-3  bg-white text-black border">
+                            <div class="col  text-white <?php if (@$lowerdata3->print2_status[$x] == 'Sent') { ?> bg-danger <?php } else { ?> bg-success <?php } ?> text-black border">
                                 <p class="m-0"><?= @$lowerdata3->print2_status[$x] ?></p>
                             </div>
 
@@ -762,40 +769,41 @@ if (@$_REQUEST['print']) {
 
                     <div class="container-fluid mt-3">
                         <div class="row m-0 p-0">
-                            <div class="col-3 bg-gray text-black border">
+                            <div class="col  bg-secondary text-white border">
+                                <p class="m-0"><?= $x + 1 ?></p>
+                            </div>
+                            <div class="col bg-gray text-black border">
                                 <h3 class="m-0 fw-bold">Quantity</h3>
                             </div>
-                            <div class="col-3  bg-white text-black border">
+                            <div class="col  bg-white text-black border">
                                 <p class="m-0"><?= @$lowerdata4->embroid_type[$x] ?></p>
                             </div>
-                            <div class="col-3 bg-gray text-black border">
+                            <div class="col bg-gray text-black border">
                                 <h3 class="m-0">Name</h3>
 
                             </div>
-                            <div class="col-3  bg-white text-black border">
+                            <div class="col  bg-white text-black border">
                                 <p class="m-0"><?= @$lowerdata4->embroid_type_name[$x] ?></p>
                             </div>
-                        </div>
-                        <div class="row m-0 p-0">
-                            <div class="col-3 bg-gray text-black border">
+
+                            <div class="col bg-gray text-black border">
                                 <h3 class="m-0 fw-bold">Print</h3>
                             </div>
-                            <div class="col-3  bg-white text-black border">
+                            <div class="col  bg-white text-black border">
                                 <p class="m-0"><?= @$lowerdata4->embroid_gzanah[$x] ?></p>
                             </div>
-                            <div class="col-3 bg-gray text-black border">
+                            <div class="col bg-gray text-black border">
                                 <h3 class="m-0 fw-bold">Type</h3>
                             </div>
-                            <div class="col-3  bg-white text-black border">
+                            <div class="col  bg-white text-black border">
                                 <p class="m-0"><?= @$lowerdata4->embroid_gzanah_type[$x] ?></p>
                             </div>
 
-                        </div>
-                        <div class="row m-0 p-0">
-                            <div class="col-3 bg-gray text-black border">
+
+                            <div class="col bg-gray text-black border">
                                 <h3 class="m-0 fw-bold">Status</h3>
                             </div>
-                            <div class="col-9  bg-white text-black border">
+                            <div class="col  text-white <?php if (@$lowerdata4->emb_status[$x] == 'Sent') { ?> bg-danger <?php } else { ?> bg-success <?php } ?> text-black border">
                                 <p class="m-0"><?= @$lowerdata4->emb_status[$x] ?></p>
                             </div>
 
@@ -909,40 +917,40 @@ if (@$_REQUEST['print']) {
 
                     <div class="container-fluid mt-3">
                         <div class="row m-0 p-0">
-                            <div class="col-3 bg-gray text-black border">
+                            <div class="col  bg-secondary text-white border">
+                                <p class="m-0"><?= $x + 1 ?></p>
+                            </div>
+                            <div class="col bg-gray text-black border">
                                 <h3 class="m-0 fw-bold">Quantity</h3>
                             </div>
-                            <div class="col-3  bg-white text-black border">
+                            <div class="col  bg-white text-black border">
                                 <p class="m-0"><?= @$lowerdata5->collect_embroid_type[$x] ?></p>
                             </div>
-                            <div class="col-3 bg-gray text-black border">
+                            <div class="col bg-gray text-black border">
                                 <h3 class="m-0">Name</h3>
 
                             </div>
-                            <div class="col-3  bg-white text-black border">
+                            <div class="col  bg-white text-black border">
                                 <p class="m-0"><?= @$lowerdata5->collect_embroid_type_name[$x] ?></p>
                             </div>
-                        </div>
-                        <div class="row m-0 p-0">
-                            <div class="col-3 bg-gray text-black border">
+
+                            <div class="col bg-gray text-black border">
                                 <h3 class="m-0 fw-bold">Print</h3>
                             </div>
-                            <div class="col-3  bg-white text-black border">
+                            <div class="col  bg-white text-black border">
                                 <p class="m-0"><?= @$lowerdata5->collect_embroid_gzanah[$x] ?></p>
                             </div>
-                            <div class="col-3 bg-gray text-black border">
+                            <div class="col bg-gray text-black border">
                                 <h3 class="m-0 fw-bold">Type</h3>
                             </div>
-                            <div class="col-3  bg-white text-black border">
+                            <div class="col  bg-white text-black border">
                                 <p class="m-0"><?= @$lowerdata5->collect_embroid_gzanah_type[$x] ?></p>
                             </div>
 
-                        </div>
-                        <div class="row m-0 p-0">
-                            <div class="col-3 bg-gray text-black border">
+                            <div class="col bg-gray text-black border">
                                 <h3 class="m-0 fw-bold">Status</h3>
                             </div>
-                            <div class="col-9  bg-white text-black border">
+                            <div class="col  text-white <?php if (@$lowerdata5->collect_embroid_status[$x] == 'Sent') { ?> bg-danger <?php } else { ?> bg-success <?php } ?> text-black border">
                                 <p class="m-0"><?= @$lowerdata5->collect_embroid_status[$x] ?></p>
                             </div>
 
@@ -1045,40 +1053,40 @@ if (@$_REQUEST['print']) {
 
                     <div class="container-fluid mt-3">
                         <div class="row m-0 p-0">
-                            <div class="col-3 bg-gray text-black border">
+                            <div class="col  bg-secondary text-white border">
+                                <p class="m-0"><?= $x + 1 ?></p>
+                            </div>
+                            <div class="col bg-gray text-black border">
                                 <h3 class="m-0 fw-bold">Quantity</h3>
                             </div>
-                            <div class="col-3  bg-white text-black border">
+                            <div class="col  bg-white text-black border">
                                 <p class="m-0"><?= @$lowerdata6->stiching_type[$x] ?></p>
                             </div>
-                            <div class="col-3 bg-gray text-black border">
+                            <div class="col bg-gray text-black border">
                                 <h3 class="m-0">Name</h3>
 
                             </div>
-                            <div class="col-3  bg-white text-black border">
+                            <div class="col  bg-white text-black border">
                                 <p class="m-0"><?= @$lowerdata6->stiching_type_name[$x] ?></p>
                             </div>
-                        </div>
-                        <div class="row m-0 p-0">
-                            <div class="col-3 bg-gray text-black border">
+
+                            <div class="col bg-gray text-black border">
                                 <h3 class="m-0 fw-bold">Print</h3>
                             </div>
-                            <div class="col-3  bg-white text-black border">
+                            <div class="col  bg-white text-black border">
                                 <p class="m-0"><?= @$lowerdata6->stiching_gzanah[$x] ?></p>
                             </div>
-                            <div class="col-3 bg-gray text-black border">
+                            <div class="col bg-gray text-black border">
                                 <h3 class="m-0 fw-bold">Type</h3>
                             </div>
-                            <div class="col-3  bg-white text-black border">
+                            <div class="col  bg-white text-black border">
                                 <p class="m-0"><?= @$lowerdata6->stiching_gzanah_type[$x] ?></p>
                             </div>
 
-                        </div>
-                        <div class="row m-0 p-0">
-                            <div class="col-3 bg-gray text-black border">
+                            <div class="col bg-gray text-black border">
                                 <h3 class="m-0 fw-bold">Status</h3>
                             </div>
-                            <div class="col-9  bg-white text-black border">
+                            <div class="col  text-white <?php if (@$lowerdata6->stiching_status[$x] == 'Sent') { ?> bg-danger <?php } else { ?> bg-success <?php } ?> text-black border">
                                 <p class="m-0"><?= @$lowerdata6->stiching_status[$x] ?></p>
                             </div>
 
