@@ -56,7 +56,7 @@ if (@$_REQUEST['update-production']) {
                                 </div>
                                 <div class="col-lg-2 col-md-3 col-sm-4 col-xs-2 mb-3 mb-sm-0">
                                     <label for="" class="font-weight-bold text-dark">Production Cost</label>
-                                    <input type="number" class="form-control" id="production_cost" placeholder="Enter Production Cost " oninput="onlyNumberInput(event)" name="production_cost" value="<?= @$updateProduction['production_cost'] ?>">
+                                    <input type="number" min="0" class="form-control" id="production_cost" placeholder="Enter Production Cost " oninput="onlyNumberInput(event)" name="production_cost" value="<?= @$updateProduction['production_cost'] ?>">
                                 </div>
                                 <div class="col-lg-2 col-md-3 col-sm-4 col-xs-2 mb-3 mb-sm-0">
                                     <label for="" class="font-weight-bold text-dark">Customer Name</label>
