@@ -48,7 +48,7 @@ if (@$_REQUEST['update-production']) {
                                 </div>
                                 <div class="col-lg-2 col-md-3 col-sm-4 col-xs-2 mb-3 mb-sm-0">
                                     <label for="" class="font-weight-bold text-dark">Lat No</label>
-                                    <input type="text" class="form-control" id="production_lat_no" name="production_lat_no" required <?php if (@$_REQUEST['update-production']) { ?> value="<?= @$updateProduction['production_lat_no'] ?>" readonly <?php } else { ?> value="<?= @$randomCode ?>" <?php } ?>>
+                                    <input type="text" readonly class="form-control" id="production_lat_no" name="production_lat_no" required <?php if (@$_REQUEST['update-production']) { ?> value="<?= @$updateProduction['production_lat_no'] ?>" <?php } else { ?> value="<?= @$randomCode ?>" <?php } ?>>
                                 </div>
                                 <div class="col-lg-2 col-md-3 col-sm-4 col-xs-2 mb-3 mb-sm-0">
                                     <label for="" class="font-weight-bold text-dark">Production Name</label>
@@ -56,7 +56,7 @@ if (@$_REQUEST['update-production']) {
                                 </div>
                                 <div class="col-lg-2 col-md-3 col-sm-4 col-xs-2 mb-3 mb-sm-0">
                                     <label for="" class="font-weight-bold text-dark">Production Cost</label>
-                                    <input type="" class="form-control" id="production_cost" placeholder="Enter Production Cost " oninput="onlyNumberInput(event)" name="production_cost" value="<?= @$updateProduction['production_cost'] ?>">
+                                    <input type="number" class="form-control" id="production_cost" placeholder="Enter Production Cost " oninput="onlyNumberInput(event)" name="production_cost" value="<?= @$updateProduction['production_cost'] ?>">
                                 </div>
                                 <div class="col-lg-2 col-md-3 col-sm-4 col-xs-2 mb-3 mb-sm-0">
                                     <label for="" class="font-weight-bold text-dark">Customer Name</label>
