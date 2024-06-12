@@ -441,11 +441,11 @@ $formattedDate = $currentDate->format('Y-m-d');
                             <div class=" bg-white rounded shadow mb-5">
                                 <!-- Rounded tabs -->
                                 <ul id="myTab" role="tablist" class="nav nav-tabs nav-pills flex-column flex-sm-row text-center bg-light border-0 rounded-nav">
-                                    <!-- <li class="nav-item flex-sm-fill">
-                                        <a id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true" class="nav-link border-0 font-weight-bold active">Purchase Voucher</a>
-                                    </li> -->
                                     <li class="nav-item flex-sm-fill">
-                                        <a id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="true" class="nav-link border-0 font-weight-bold active">Cutting Voucher</a>
+                                        <a id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true" class="nav-link border-0 font-weight-bold active">Purchase Voucher</a>
+                                    </li>
+                                    <li class="nav-item flex-sm-fill">
+                                        <a id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false" class="nav-link border-0 font-weight-bold ">Cutting Voucher</a>
                                     </li>
                                     <li class="nav-item flex-sm-fill">
                                         <a id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false" class="nav-link border-0 font-weight-bold">Print Voucher</a>
@@ -471,8 +471,9 @@ $formattedDate = $currentDate->format('Y-m-d');
 
                                 </ul>
                                 <div id="myTabContent" class="tab-content">
-                                    <!-- <div id="home" role="tabpanel" aria-labelledby="home-tab" class="tab-pane fade px-4 py-5 show active">
-                                        <form action="">
+                                    <div id="home" role="tabpanel" aria-labelledby="home-tab" class="tab-pane fade px-4 py-5 show active">
+                                        <?php include_once './credit_purchase.php'; ?>
+                                        <!-- <form action="">
                                             <div class="row pb-2">
                                                 <div class="col-lg-2">
                                                     <label class="font-weight-bold text-dark" for="purchase_date">Date</label>
@@ -482,6 +483,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                     <label class="font-weight-bold text-dark" for="bill_num">Bill No.</label>
                                                     <input type="text" class="form-control" name="bill_num" id="bill_num" value="" placeholder="Bill Number">
                                                 </div>
+
                                                 <div class="col-lg-2">
                                                     <label class="font-weight-bold text-dark" for="party_name">Party Name</label>
                                                     <input type="text" class="form-control" name="party_name" id="party_name" value="" placeholder="Party Name">
@@ -541,9 +543,9 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                     <input class="btn btn-success" type="submit" value="Save" name="purchase_btn">
                                                 </div>
                                             </div>
-                                        </form>
-                                    </div> -->
-                                    <div id="profile" role="tabpanel" aria-labelledby="profile-tab" class="tab-pane fade px-4 py-5 show active">
+                                        </form> -->
+                                    </div>
+                                    <div id="profile" role="tabpanel" aria-labelledby="profile-tab" class="tab-pane fade px-4 py-5">
                                         <form action="#" id="cutt_voucher_form" method="post">
                                             <input type="hidden" value="<?= @$cuttingDatafetch['id'] ?>" name="cutt_id">
                                             <div class="row pb-2">
@@ -1808,6 +1810,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                 </div>
                                             </div>
                                         </form>
+                                        <?php include_once("./credit_purchase.php") ?>
                                     </div>
                                 </div>
                                 <!-- End rounded tabs -->
