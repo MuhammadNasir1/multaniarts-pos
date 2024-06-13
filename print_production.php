@@ -5,51 +5,70 @@
 include_once 'includes/head.php';
 // print_r($_REQUEST);
 
+$d = $_REQUEST['print'];
+
+
 if (@$_REQUEST['print']) {
     $upd_id = $_REQUEST['print'];
-    $printProduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `production` WHERE production_id =  $upd_id"));
+    if (@$_GET['type'] == 'all' || @$_GET['part'] == 'production') {
+        $printProduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `production` WHERE production_id =  $upd_id"));
+    }
 
     // Cutting Voucher Data
-
-    $cuttVoucherProduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `cutting_voucher` WHERE cutt_production_id =  $upd_id"));
-    $cuttId = @$cuttVoucherProduction['cutt_voucher_quality'];
-    $cuttProduct = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM product WHERE product_id = @$cuttId"));
+    if (@$_GET['type'] == 'all' || @$_GET['part'] == 'cutting') {
+        $cuttVoucherProduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `cutting_voucher` WHERE cutt_production_id =  $upd_id"));
+        $cuttId = @$cuttVoucherProduction['cutt_voucher_quality'];
+        $cuttProduct = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM product WHERE product_id = @$cuttId"));
+    }
 
     // Print Voucher Data
-    $printVoucherProduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `print_voucher` WHERE print_production_id =  $upd_id"));
-    $printProductNameId = @$printVoucherProduction['print_quality'];
-    $printCustNameId = @$printVoucherProduction['print_party_name'];
-    $printProduct = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM product WHERE product_id = '$printProductNameId'"));
-    $printCustName = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `customers` WHERE customer_id = '$printCustNameId'"));
+    if (@$_GET['type'] == 'all' || @$_GET['part'] == 'print_voucher') {
+        $printVoucherProduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `print_voucher` WHERE print_production_id =  $upd_id"));
+        $printProductNameId = @$printVoucherProduction['print_quality'];
+        $printCustNameId = @$printVoucherProduction['print_party_name'];
+        $printProduct = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM product WHERE product_id = '$printProductNameId'"));
+        $printCustName = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `customers` WHERE customer_id = '$printCustNameId'"));
+    }
 
     // Dyeing Voucher Data
-    $dyeingVoucherProduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `deyeing` WHERE dey_production_id =  $upd_id"));
-    $dyeingCustNameId = @$dyeingVoucherProduction['dey_party_name'];
-    $dyeingCustName = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `customers` WHERE customer_id = '$dyeingCustNameId'"));
+    if (@$_GET['type'] == 'all' || @$_GET['part'] == 'deyeing') {
+        $dyeingVoucherProduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `deyeing` WHERE dey_production_id =  $upd_id"));
+        $dyeingCustNameId = @$dyeingVoucherProduction['dey_party_name'];
+        $dyeingCustName = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `customers` WHERE customer_id = '$dyeingCustNameId'"));
+    }
 
     // Single Print Voucher Data
-    $singlePrintVoucherProduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `single_print` WHERE single_production_id =  $upd_id"));
-    $singlePrintCustNameId = @$singlePrintVoucherProduction['single_party_name'];
-    $singlePrintCustName = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `customers` WHERE customer_id = '$singlePrintCustNameId'"));
+    if (@$_GET['type'] == 'all' || @$_GET['part'] == 'single_print') {
+        $singlePrintVoucherProduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `single_print` WHERE single_production_id =  $upd_id"));
+        $singlePrintCustNameId = @$singlePrintVoucherProduction['single_party_name'];
+        $singlePrintCustName = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `customers` WHERE customer_id = '$singlePrintCustNameId'"));
+    }
 
     // embroidery_voucher  Voucher Data
-    $embroideryVoucherProduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `embroidery_voucher` WHERE emb_production_id =  $upd_id"));
+    if (@$_GET['type'] == 'all' || @$_GET['part'] == 'embroidery') {
+        $embroideryVoucherProduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `embroidery_voucher` WHERE emb_production_id =  $upd_id"));
+    }
 
     // Collect Embroidery  Voucher Data
-    $collectEmbProduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM  `collect_embroid_voucher` WHERE coll_production_id =  $upd_id"));
+    if (@$_GET['type'] == 'all' || @$_GET['part'] == 'collect_embroidery') {
+        $collectEmbProduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM  `collect_embroid_voucher` WHERE coll_production_id =  $upd_id"));
+    }
 
     // Stiching & Packing Voucher Data
-    $sti_pakVoucherProduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `stiching_voucher` WHERE stiching_production_id =  $upd_id"));
-    $sti_pakProductNameId = @$sti_pakVoucherProduction['stiching_qlty'];
-    $sti_pakCustNameId = @$sti_pakVoucherProduction['stiching_party_no'];
-    $sti_pakProduct = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM product WHERE product_id = '$sti_pakProductNameId'"));
-    $sti_pakCustName = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `customers` WHERE customer_id = '$sti_pakCustNameId'"));
+    if (@$_GET['type'] == 'all' || @$_GET['part'] == 'stiching_packing') {
+        $sti_pakVoucherProduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `stiching_voucher` WHERE stiching_production_id =  $upd_id"));
+        $sti_pakProductNameId = @$sti_pakVoucherProduction['stiching_qlty'];
+        $sti_pakCustNameId = @$sti_pakVoucherProduction['stiching_party_no'];
+        $sti_pakProduct = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM product WHERE product_id = '$sti_pakProductNameId'"));
+        $sti_pakCustName = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `customers` WHERE customer_id = '$sti_pakCustNameId'"));
+    }
 
     // Calender Salender Voucher Data
-
-    $cal_calVoucherProduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `calander_satander` WHERE cal_sat_production_id =  $upd_id"));
-    $cal_calId = @$cal_calVoucherProduction['cal_sat_qlty'];
-    $cal_calProduct = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM product WHERE product_id = '$cal_calId'"));
+    if (@$_GET['type'] == 'all' || @$_GET['part'] == 'calender_salender') {
+        $cal_calVoucherProduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `calander_satander` WHERE cal_sat_production_id =  $upd_id"));
+        $cal_calId = @$cal_calVoucherProduction['cal_sat_qlty'];
+        $cal_calProduct = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM product WHERE product_id = '$cal_calId'"));
+    }
 }
 
 ?>
@@ -118,15 +137,17 @@ if (@$_REQUEST['print']) {
 
 <body>
 
+
+
     <div class="print-production">
         <header>
-            <h2 class="m-0">Production # <?= @$printProduction['production_id'] ?></h2>
+            <h2 class="m-0">Production # <?= @$d ?></h2>
         </header>
 
         <!-- Production Details -->
 
-
-        <div class="mt-3">
+        <input type="hidden" id="hiddenInput1" value="<?= @$printProduction['production_id'] ?>">
+        <div class="mt-3" id="showData1">
             <h2>Production Details</h2>
 
             <div class="container-fluid ">
@@ -134,6 +155,7 @@ if (@$_REQUEST['print']) {
                     <div class="col-3 bg-gray text-black border">
                         <h3 class="m-0 fw-bold">Date</h3>
                     </div>
+
                     <div class="col-3  bg-white text-black border">
                         <p class="m-0"><?= @$printProduction['production_date'] ?></p>
                     </div>
@@ -178,8 +200,12 @@ if (@$_REQUEST['print']) {
 
             </div>
         </div>
-        <div class="mt-3">
+        <input type="hidden" id="hiddenInput2" value="<?= @$cuttVoucherProduction['id'] ?>">
+        <div class="mt-3" id="showData2">
+
             <h2>Cutting Voucher Details</h2>
+
+
 
             <div class="container-fluid ">
                 <div class="row m-0 p-0">
@@ -299,11 +325,13 @@ if (@$_REQUEST['print']) {
                 }
             }
             ?>
+            <button><a href="?print=<?= $d ?>&part=cutting">print cutt data</a></button>
         </div>
 
         <!-- Print Voucher Details -->
+        <input type="hidden" id="hiddenInput3" value="<?= @$printVoucherProduction['id'] ?>">
 
-        <div class="mt-3">
+        <div class="mt-3" id="showData3">
             <h2>Print Voucher Details</h2>
 
             <div class="container-fluid ">
@@ -444,8 +472,9 @@ if (@$_REQUEST['print']) {
 
         <!-- Dyeing Voucher Details -->
 
+        <input type="hidden" id="hiddenInput4" value="<?= @$dyeingVoucherProduction['id'] ?>">
 
-        <div class="mt-3">
+        <div class="mt-3" id="showData4">
             <h2>Dyeing Details</h2>
 
             <div class="container-fluid ">
@@ -553,8 +582,8 @@ if (@$_REQUEST['print']) {
         </div>
 
         <!-- Single Print Voucher Details -->
-
-        <div class="mt-3">
+        <input type="hidden" id="hiddenInput5" value="<?= @$singlePrintVoucherProduction['id'] ?>">
+        <div class="mt-3" id="showData5">
             <h2>Print Details</h2>
 
             <div class="container-fluid ">
@@ -690,8 +719,8 @@ if (@$_REQUEST['print']) {
 
         </div>
         <!-- embroidery_voucher Voucher Details -->
-
-        <div class="mt-3">
+        <input type="hidden" id="hiddenInput6" value="<?= @$embroideryVoucherProduction['id'] ?>">
+        <div class="mt-3" id="showData6">
             <h2>Insuance Embroidery Details</h2>
 
             <div class="container-fluid ">
@@ -707,7 +736,7 @@ if (@$_REQUEST['print']) {
 
                     </div>
                     <div class="col-3  bg-white text-black border">
-                        <p class="m-0"><?= @$singlePrintCustName['emb_gate_no'] ?></p>
+                        <p class="m-0"><?= @$embroideryVoucherProduction['emb_gate_no'] ?></p>
                     </div>
                 </div>
                 <div class="row m-0 p-0">
@@ -823,8 +852,8 @@ if (@$_REQUEST['print']) {
 
 
         <!-- embroidery_voucher Voucher Details -->
-
-        <div class="mt-3">
+        <input type="hidden" id="hiddenInput7" value="<?= @$collectEmbProduction['id'] ?>">
+        <div class="mt-3" id="showData7">
             <h2>Recieving Embroidery Details</h2>
 
             <div class="container-fluid ">
@@ -967,7 +996,8 @@ if (@$_REQUEST['print']) {
 
         </div>
         <!-- Stiching & Packing Voucher Details -->
-        <div class="mt-3">
+        <input type="hidden" id="hiddenInput8" value="<?= @$sti_pakVoucherProduction['id'] ?>">
+        <div class="mt-3" id="showData8">
             <h2>Stiching & Packing Details</h2>
 
             <div class="container-fluid ">
@@ -1105,8 +1135,8 @@ if (@$_REQUEST['print']) {
 
         <!-- Calander Stander Voucher Details -->
 
-
-        <div class="mt-3">
+        <input type="hidden" id="hiddenInput9" value="<?= @$cal_calVoucherProduction['id'] ?>">
+        <div class="mt-3" id="showData9">
             <h2>Calander & Stander Details</h2>
 
             <div class="container-fluid ">
@@ -1177,5 +1207,15 @@ if (@$_REQUEST['print']) {
 
 </html>
 <?php
+
 include_once 'includes/foot.php';
 ?>
+<script>
+    for (let i = 1; i <= 9; i++) {
+        if (document.getElementById('hiddenInput' + i).value == '') {
+            document.getElementById('showData' + i).style.display = 'none';
+        } else {
+            document.getElementById('showData' + i).style.display = 'block';
+        }
+    }
+</script>
