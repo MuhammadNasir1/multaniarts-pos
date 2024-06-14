@@ -96,13 +96,13 @@ if (@$_REQUEST['update-production']) {
                                     <th width="5%">
                                         Production
                                     </th>
-                                    <th width="5%">
+                                    <th width="3%">
                                         Customer
                                     </th>
                                     <th width="5%">
                                         Address
                                     </th>
-                                    <th width="4%">Total Amount</th>
+                                    <th width="2%">Total Amount</th>
                                     <!-- <th width="5%">By</th> -->
                                     <th width="6%">Action</th>
                                 </tr>
@@ -132,9 +132,26 @@ if (@$_REQUEST['update-production']) {
                                                 <a class="btn btn-secondary py-1 px-2 m-1" href="Production.php?ProductionID=<?= base64_encode($a['production_id']) ?>">
                                                     <i class="fa fa-edit"></i> Edit Voucher
                                                 </a>
-                                                <a target="_blank" class="btn btn-primary py-1 px-2 m-1" href="print_production.php?print=<?= $a['production_id'] ?>&type=all">
+                                                <!-- <a target="_blank" class="btn btn-primary py-1 px-2 m-1" href="print_production.php?print=<?= $a['production_id'] ?>&type=all">
                                                     <i class="fa fa-print"></i> Print
-                                                </a>
+                                                </a> -->
+                                                <div class="dropdown d-inline">
+                                                    <a class="btn btn-primary dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                                                        <i class="fa fa-print"></i> Print
+                                                    </a>
+
+                                                    <div class="dropdown-menu mr-5">
+                                                        <a class="dropdown-item" target="_blank" href="print_production.php?print=<?= $a['production_id'] ?>&type=all">All</a>
+                                                        <a class="dropdown-item" target="_blank" href="print_production.php?print=<?= $a['production_id'] ?>&part=cutting">Cutting Voucher</a>
+                                                        <a class="dropdown-item" target="_blank" href="print_production.php?print=<?= $a['production_id'] ?>&part=print_voucher">Print Voucher</a>
+                                                        <a class="dropdown-item" target="_blank" href="print_production.php?print=<?= $a['production_id'] ?>&part=deyeing">Dyeing</a>
+                                                        <a class="dropdown-item" target="_blank" href="print_production.php?print=<?= $a['production_id'] ?>&part=single_print">Print</a>
+                                                        <a class="dropdown-item" target="_blank" href="print_production.php?print=<?= $a['production_id'] ?>&part=embroidery">Insuance Embroidery</a>
+                                                        <a class="dropdown-item" target="_blank" href="print_production.php?print=<?= $a['production_id'] ?>&part=collect_embroidery">Recieving Embroidery</a>
+                                                        <a class="dropdown-item" target="_blank" href="print_production.php?print=<?= $a['production_id'] ?>&part=stiching_packing">Stiching & Packing</a>
+                                                        <a class="dropdown-item" target="_blank" href="print_production.php?print=<?= $a['production_id'] ?>&part=calender_salender">Calander & Stander</a>
+                                                    </div>
+                                                </div>
 
                                                 <!-- <button class="btn btn-danger py-1 px-2 m-1" onclick="deleteProductionData(<?= $a['quotation_id'] ?>)">
                                                     <i class="fa fa-trash"></i> Delete
@@ -148,6 +165,7 @@ if (@$_REQUEST['update-production']) {
                                     endwhile;
                                 endif;
                                 ?>
+
                             </tbody>
                         </table>
                     </div>

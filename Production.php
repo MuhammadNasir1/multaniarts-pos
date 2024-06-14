@@ -17,6 +17,7 @@ if (!empty($_REQUEST['ProductionID']) && isset($_REQUEST['ProductionID'])) {
 //Cutting Data
 $cuttingDatafetch = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `cutting_voucher` WHERE cutt_production_id =  $ProductionID"));
 
+
 //Print Voucher Data
 $printfetch = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `print_voucher` WHERE print_production_id =  $ProductionID"));
 
@@ -547,7 +548,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                     </div>
                                     <div id="profile" role="tabpanel" aria-labelledby="profile-tab" class="tab-pane fade px-4 py-5">
                                         <form action="#" id="cutt_voucher_form" method="post">
-                                            <input type="hidden" value="<?= @$cuttingDatafetch['id'] ?>" name="cutt_id">
+                                            <input type="hidden" id="hiddenInput1" value="<?= @$cuttingDatafetch['id'] ?>" name="cutt_id">
                                             <div class="row pb-2">
                                                 <div class="col-lg-2">
                                                     <label class="font-weight-bold text-dark" for="cutting_date">Date</label>
@@ -720,14 +721,8 @@ $formattedDate = $currentDate->format('Y-m-d');
 
 
 
-
-
-
-
-
-
-
                                             </div>
+
                                             <div class="row my-4 justify-content-end">
                                                 <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
                                                     <div id="cutt_voucher_btn">
@@ -737,8 +732,16 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="row justify-content-end">
-                                                <div class="col-lg-2 text-right">
+
+                                            <div class="row  justify-content-end">
+                                                <div class="col-lg-2 d-inline text-left p-0">
+
+                                                    <a target="_blank" href="print_production.php?print=<?= $ProductionID ?>&part=cutting" id="showData1">
+                                                        <div class="btn btn-primary">
+                                                            <i class="fa fa-print"></i> Print
+                                                        </div>
+                                                    </a>
+
                                                     <input class="btn btn-success" type="submit" value="Save" name="cutting_btn">
                                                 </div>
                                             </div>
@@ -747,7 +750,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                     </div>
                                     <div id="contact" role="tabpanel" aria-labelledby="contact-tab" class="tab-pane fade px-4 py-5">
                                         <form action="" id="print_voucher_form" method="post">
-                                            <input type="hidden" value="<?= @$printfetch['id'] ?>" name="print_id">
+                                            <input type="hidden" id="hiddenInput2" value="<?= @$printfetch['id'] ?>" name="print_id">
                                             <div class="row pb-2">
                                                 <div class="col-lg-2">
                                                     <label class="font-weight-bold text-dark" for="print_date">Date</label>
@@ -931,6 +934,11 @@ $formattedDate = $currentDate->format('Y-m-d');
                                             </div>
                                             <div class="row justify-content-end">
                                                 <div class="col-lg-2 text-right">
+                                                    <a target="_blank" href="print_production.php?print=<?= $ProductionID ?>&part=print_voucher" id="showData2">
+                                                        <div class="btn btn-primary">
+                                                            <i class="fa fa-print"></i> Print
+                                                        </div>
+                                                    </a>
                                                     <input class="btn btn-success" type="submit" value="Save" name="print_btn">
                                                 </div>
                                             </div>
@@ -938,7 +946,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                     </div>
                                     <div id="Dyeing_content" role="tabpanel" aria-labelledby="home-tab" class="tab-pane fade px-4 py-5">
                                         <form action="" method="post">
-                                            <input type="hidden" value="<?= @$deyeingfetch['id'] ?>" name="deyeing_id">
+                                            <input type="hidden" id="hiddenInput3" value="<?= @$deyeingfetch['id'] ?>" name="deyeing_id">
                                             <div class="row pb-2">
                                                 <div class="col-lg-2">
                                                     <label class="font-weight-bold text-dark" for="dyeing_date">Date</label>
@@ -1013,6 +1021,11 @@ $formattedDate = $currentDate->format('Y-m-d');
                                             </div>
                                             <div class="row justify-content-end">
                                                 <div class="col-lg-2 text-right">
+                                                    <a target="_blank" href="print_production.php?print=<?= $ProductionID ?>&part=deyeing" id="showData3">
+                                                        <div class="btn btn-primary">
+                                                            <i class="fa fa-print"></i> Print
+                                                        </div>
+                                                    </a>
                                                     <input class="btn btn-success" type="submit" value="Save" name="dyeing_btn">
                                                 </div>
                                             </div>
@@ -1020,7 +1033,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                     </div>
                                     <div id="print_content" role="tabpanel" aria-labelledby="profile-tab" class="tab-pane fade px-4 py-5">
                                         <form action="" method="post">
-                                            <input type="hidden" value="<?= @$singlePrintfetch['id'] ?>" name="single_print_id">
+                                            <input type="hidden" id="hiddenInput4" value="<?= @$singlePrintfetch['id'] ?>" name="single_print_id">
                                             <div class="row pb-2">
                                                 <div class="col-lg-2">
                                                     <label class="font-weight-bold text-dark" for="print_date">Date</label>
@@ -1193,6 +1206,11 @@ $formattedDate = $currentDate->format('Y-m-d');
                                             </div>
                                             <div class="row justify-content-end">
                                                 <div class="col-lg-2 text-right">
+                                                    <a target="_blank" href="print_production.php?print=<?= $ProductionID ?>&part=single_print" id="showData4">
+                                                        <div class="btn btn-primary">
+                                                            <i class="fa fa-print"></i> Print
+                                                        </div>
+                                                    </a>
                                                     <input class="btn btn-success" type="submit" value="Save" name="singleprint_btn">
                                                 </div>
                                             </div>
@@ -1200,7 +1218,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                     </div>
                                     <div id="embroidery_content" role="tabpanel" aria-labelledby="contact-tab" class="tab-pane fade px-4 py-5">
                                         <form action="" method="post">
-                                            <input type="hidden" value="<?= @$embroideryVoucherfetch['id'] ?>" name="embroidery_voucher_id">
+                                            <input type="hidden" id="hiddenInput5" value="<?= @$embroideryVoucherfetch['id'] ?>" name="embroidery_voucher_id">
                                             <div class="row pb-2">
                                                 <div class="col-lg-2">
                                                     <label class="font-weight-bold text-dark" for="emb_out_date">Out Date</label>
@@ -1366,6 +1384,11 @@ $formattedDate = $currentDate->format('Y-m-d');
                                             </div>
                                             <div class="row justify-content-end">
                                                 <div class="col-lg-2 text-right">
+                                                    <a target="_blank" id="showData5" href="print_production.php?print=<?= $ProductionID ?>&part=embroidery">
+                                                        <div class="btn btn-primary">
+                                                            <i class="fa fa-print"></i> Print
+                                                        </div>
+                                                    </a>
                                                     <input class="btn btn-success" type="submit" value="Save" name="embroidery_btn">
                                                 </div>
                                             </div>
@@ -1373,7 +1396,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                     </div>
                                     <div id="collect_emb_content" role="tabpanel" aria-labelledby="home-tab" class="tab-pane fade px-4 py-5">
                                         <form action="" method="post">
-                                            <input type="hidden" value="<?= @$collectEmbroideryfetch['id'] ?>" name="col_embroidery_id">
+                                            <input type="hidden" id="hiddenInput6" value="<?= @$collectEmbroideryfetch['id'] ?>" name="col_embroidery_id">
                                             <div class="row pb-2">
                                                 <div class="col-lg-2">
                                                     <label class="font-weight-bold text-dark" for="coll_emb_date">Date</label>
@@ -1548,6 +1571,11 @@ $formattedDate = $currentDate->format('Y-m-d');
                                             </div>
                                             <div class="row justify-content-end">
                                                 <div class="col-lg-2 text-right">
+                                                    <a target="_blank" id="showData6" href="print_production.php?print=<?= $ProductionID ?>&part=collect_embroidery">
+                                                        <div class="btn btn-primary">
+                                                            <i class="fa fa-print"></i> Print
+                                                        </div>
+                                                    </a>
                                                     <input class="btn btn-success" type="submit" value="Save" name="collect_embroidery_btn">
                                                 </div>
                                             </div>
@@ -1555,7 +1583,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                     </div>
                                     <div id="stitch_pack_content" role="tabpanel" aria-labelledby="profile-tab" class="tab-pane fade px-4 py-5">
                                         <form action="" method="post">
-                                            <input type="hidden" value="<?= @$stichingfetch['id'] ?>" name="stiching_id">
+                                            <input type="hidden" id="hiddenInput7" value="<?= @$stichingfetch['id'] ?>" name="stiching_id">
                                             <div class="row pb-2">
                                                 <div class="col-lg-2">
                                                     <label class="font-weight-bold text-dark" for="stiching_date">Date</label>
@@ -1752,6 +1780,11 @@ $formattedDate = $currentDate->format('Y-m-d');
                                             </div>
                                             <div class="row justify-content-end">
                                                 <div class="col-lg-2 text-right">
+                                                    <a target="_blank" id="showData7" href="print_production.php?print=<?= $ProductionID ?>&part=stiching_packing">
+                                                        <div class="btn btn-primary">
+                                                            <i class="fa fa-print"></i> Print
+                                                        </div>
+                                                    </a>
                                                     <input class="btn btn-success" type="submit" value="Save" name="stitching_btn">
                                                 </div>
                                             </div>
@@ -1759,7 +1792,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                     </div>
                                     <div id="calander_satander_content" role="tabpanel" aria-labelledby="contact-tab" class="tab-pane fade px-4 py-5">
                                         <form action="" method="post">
-                                            <input type="hidden" value="<?= @$cal_salFetch['id'] ?>" name="cal_sal_id">
+                                            <input type="hidden" id="hiddenInput8" value="<?= @$cal_salFetch['id'] ?>" name="cal_sal_id">
                                             <div class="row pb-2">
                                                 <div class="col-lg-2">
                                                     <label class="font-weight-bold text-dark" for="calander_satander_date">Date</label>
@@ -1806,6 +1839,11 @@ $formattedDate = $currentDate->format('Y-m-d');
                                             </div>
                                             <div class="row justify-content-end">
                                                 <div class="col-lg-2 text-right">
+                                                    <a target="_blank" id="showData8" href="print_production.php?print=<?= $ProductionID ?>&part=calender_salender">
+                                                        <div class="btn btn-primary">
+                                                            <i class="fa fa-print"></i> Print
+                                                        </div>
+                                                    </a>
                                                     <input class="btn btn-success" type="submit" value="Save" name="calander_satander_btn">
                                                 </div>
                                             </div>
@@ -1883,4 +1921,14 @@ $formattedDate = $currentDate->format('Y-m-d');
     //         }
     //     }); //ajax call
     // });
+
+
+
+    for (let i = 1; i <= 8; i++) {
+        if (document.getElementById('hiddenInput' + i).value == '') {
+            document.getElementById('showData' + i).style.display = 'none';
+        } else {
+            document.getElementById('showData' + i).style.display = 'inline';
+        }
+    }
 </script>

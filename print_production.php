@@ -4,6 +4,8 @@
 
 include_once 'includes/head.php';
 // print_r($_REQUEST);
+// exit;
+
 
 $d = $_REQUEST['print'];
 
@@ -1218,4 +1220,6 @@ include_once 'includes/foot.php';
             document.getElementById('showData' + i).style.display = 'block';
         }
     }
+
+    window.print();
 </script>
