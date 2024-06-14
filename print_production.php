@@ -20,7 +20,7 @@ if (@$_REQUEST['print']) {
     if (@$_GET['type'] == 'all' || @$_GET['part'] == 'cutting') {
         $cuttVoucherProduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `cutting_voucher` WHERE cutt_production_id =  $upd_id"));
         $cuttId = @$cuttVoucherProduction['cutt_voucher_quality'];
-        $cuttProduct = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM product WHERE product_id = @$cuttId"));
+        $cuttProduct = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM product WHERE product_id = $cuttId"));
     }
 
     // Print Voucher Data
@@ -223,8 +223,7 @@ if (@$_REQUEST['print']) {
                     </div>
                     <div class="col-3  bg-white text-black border">
 
-
-                        <p class="m-0"><?= @$printProduct['product_name'] ?></p>
+                        <p class="m-0"><?= @$cuttProduct['product_name'] ?></p>
 
                     </div>
                 </div>
