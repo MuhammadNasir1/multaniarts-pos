@@ -327,7 +327,7 @@ if (@$_REQUEST['print']) {
                 }
             }
             ?>
-            <button><a href="?print=<?= $d ?>&part=cutting">print cutt data</a></button>
+
         </div>
 
         <!-- Print Voucher Details -->
