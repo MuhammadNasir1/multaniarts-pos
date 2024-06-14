@@ -767,12 +767,14 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                         <option value="">Part Name</option>
                                                         <?php
 
-                                                        $result = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'customer'");
+                                                        $result = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status = 1");
                                                         while ($row = mysqli_fetch_array($result)) {
 
                                                         ?>
                                                             <option <?= (@$printfetch['print_party_name'] == $row["customer_id"]) ? 'selected' : ''; ?> value="<?= $row["customer_id"] ?>">
-                                                                <?= ucwords($row["customer_name"]) ?> </option>
+                                                                <?php echo  ucwords($row["customer_name"]) ?>
+                                                                (<?= ucwords($row['customer_type']) ?>)
+                                                            </option>
 
                                                         <?php   } ?>
                                                     </select>
@@ -968,12 +970,13 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                         <option value="">Part Name</option>
                                                         <?php
 
-                                                        $result = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'customer'");
+                                                        $result = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status = 1");
                                                         while ($row = mysqli_fetch_array($result)) {
 
                                                         ?>
                                                             <option <?= (@$deyeingfetch['dey_party_name'] == $row["customer_id"]) ? 'selected' : ''; ?> value="<?= $row["customer_id"] ?>">
-                                                                <?= ucwords($row["customer_name"]) ?> </option>
+                                                                <?php echo  ucwords($row["customer_name"]) ?>
+                                                                (<?= ucwords($row['customer_type']) ?>) </option>
 
                                                         <?php   } ?>
                                                     </select>
@@ -1048,12 +1051,13 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                         <option value="">Part Name</option>
                                                         <?php
 
-                                                        $result = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'customer'");
+                                                        $result = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status = 1");
                                                         while ($row = mysqli_fetch_array($result)) {
 
                                                         ?>
                                                             <option <?= (@$singlePrintfetch['single_party_name'] == $row["customer_id"]) ? 'selected' : ''; ?> value="<?= $row["customer_id"] ?>">
-                                                                <?= ucwords($row["customer_name"]) ?> </option>
+                                                                <?php echo  ucwords($row["customer_name"]) ?>
+                                                                (<?= ucwords($row['customer_type']) ?>) </option>
 
                                                         <?php   } ?>
                                                     </select>
@@ -1618,12 +1622,13 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                         <option value="">Part Name</option>
                                                         <?php
 
-                                                        $result = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'customer'");
+                                                        $result = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status = 1");
                                                         while ($row = mysqli_fetch_array($result)) {
 
                                                         ?>
                                                             <option <?= (@$stichingfetch['stiching_party_no'] == $row["customer_id"]) ? 'selected' : ''; ?> value="<?= $row["customer_id"] ?>">
-                                                                <?= ucwords($row["customer_name"]) ?> </option>
+                                                                <?php echo  ucwords($row["customer_name"]) ?>
+                                                                (<?= ucwords($row['customer_type']) ?>) </option>
 
                                                         <?php   } ?>
                                                     </select>
