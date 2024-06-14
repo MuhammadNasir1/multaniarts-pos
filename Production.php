@@ -787,7 +787,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                             $getBrand = fetchRecord($dbc, "brands", "brand_id", $row['brand_id']);
                                                             $getCat = fetchRecord($dbc, "categories", "categories_id", $row['category_id']);
                                                         ?>
-                                                            <option <?= (@$printfetch['print_production_id'] == $row["product_id"]) ? 'selected' : ''; ?> data-price="<?= $row["current_rate"] ?>" <?= empty($r['product_id']) ? "" : "selected" ?> value="<?= $row["product_id"] ?>">
+                                                            <option <?= (@$printfetch['print_quality'] == $row["product_id"]) ? 'selected' : ''; ?> data-price="<?= $row["current_rate"] ?>" <?= empty($r['product_id']) ? "" : "selected" ?> value="<?= $row["product_id"] ?>">
                                                                 <?= ucwords($row["product_name"]) ?> | <?= ucwords(@$getBrand["brand_name"]) ?>(<?= ucwords(@$getCat["categories_name"]) ?>) </option>
 
                                                         <?php   } ?>
