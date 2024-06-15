@@ -189,7 +189,7 @@ if (@$_REQUEST['print']) {
                         <h3 class="m-0 fw-bold">Customer Name</h3>
                     </div>
                     <div class="col-3  bg-white text-black border">
-                        <p class="m-0"><?= ucwords(@$printProduction['customer']) ?></p>
+                        <p class="m-0"><?php ucwords(@$printProduction['customer']) ?></p>
                     </div>
                     <div class="col-3 bg-gray text-black border">
                         <h3 class="m-0">Customer Address</h3>
@@ -356,7 +356,8 @@ if (@$_REQUEST['print']) {
                         <h3 class="m-0 fw-bold">Party Name</h3>
                     </div>
                     <div class="col-3  bg-white text-black border">
-                        <p class="m-0"><?= ucwords(@$printCustName['customer_name']) ?></p>
+                        <p class="m-0"> <?= ucwords($printCustName["customer_name"]) ?>
+                            (<?= ucwords($printCustName['customer_type']) ?>)</p>
                     </div>
                     <div class="col-3 bg-gray text-black border">
                         <h3 class="m-0">Quality</h3>
@@ -506,7 +507,8 @@ if (@$_REQUEST['print']) {
 
                     </div>
                     <div class="col-3  bg-white text-black border">
-                        <p class="m-0"><?= ucwords(@$dyeingCustName['customer_name']) ?></p>
+                        <p class="m-0"> <?= ucwords($dyeingCustName["customer_name"]) ?>
+                            (<?= ucwords($dyeingCustName['customer_type']) ?>)</p>
                     </div>
                 </div>
                 <div class="row m-0 p-0">
@@ -600,7 +602,8 @@ if (@$_REQUEST['print']) {
 
                     </div>
                     <div class="col-3  bg-white text-black border">
-                        <p class="m-0"><?= @$singlePrintCustName['customer_name'] ?></p>
+                        <p class="m-0"><?= ucwords($singlePrintCustName["customer_name"]) ?>
+                            (<?= ucwords($singlePrintCustName['customer_type']) ?>)</p>
                     </div>
                 </div>
                 <div class="row m-0 p-0">
@@ -1029,7 +1032,8 @@ if (@$_REQUEST['print']) {
 
                     </div>
                     <div class="col-3  bg-white text-black border">
-                        <p class="m-0"><?= @$sti_pakCustName['customer_name'] ?></p>
+                        <p class="m-0"><?= ucwords($sti_pakCustName["customer_name"]) ?>
+                            (<?= ucwords($sti_pakCustName['customer_type']) ?>)</p>
                     </div>
                 </div>
                 <div class="row m-0 p-0">
