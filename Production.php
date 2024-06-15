@@ -547,7 +547,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                         </form> -->
                                     </div>
                                     <div id="profile" role="tabpanel" aria-labelledby="profile-tab" class="tab-pane fade px-4 py-5">
-                                        <form action="#" id="cutt_voucher_form" method="post">
+                                        <form action="" id="cutt_voucher_form" method="post">
                                             <input type="hidden" id="hiddenInput1" value="<?= @$cuttingDatafetch['id'] ?>" name="cutt_id">
                                             <div class="row pb-2">
                                                 <div class="col-lg-2">
