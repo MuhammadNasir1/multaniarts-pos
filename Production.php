@@ -764,7 +764,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                     <label class="font-weight-bold text-dark" for="print_party_name">Party Name</label>
 
                                                     <select class="form-control searchableSelect" name="print_party_name" id="print_party_name">
-                                                        <option value="">Part Name</option>
+                                                        <option value="">Party Name</option>
                                                         <?php
 
                                                         $result = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status = 1");
