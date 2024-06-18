@@ -223,7 +223,7 @@ if (@$_REQUEST['print']) {
                     </div>
                     <div class="col-3  bg-white text-black border">
 
-                        <p class="m-0"><?= @$cuttProduct['product_name'] ?></p>
+                        <p class="m-0"><?= ucwords(@$cuttProduct['product_name']) ?></p>
 
                     </div>
                 </div>
@@ -364,7 +364,7 @@ if (@$_REQUEST['print']) {
 
                     </div>
                     <div class="col-3  bg-white text-black border">
-                        <p class="m-0"><?= @$printProduct['product_name'] ?></p>
+                        <p class="m-0"><?= ucwords(@$printProduct['product_name']) ?></p>
                     </div>
                 </div>
                 <div class="row m-0 p-0">
@@ -1017,7 +1017,7 @@ if (@$_REQUEST['print']) {
 
                     </div>
                     <div class="col-3  bg-white text-black border">
-                        <p class="m-0"><?= @$sti_pakProduct['product_name'] ?></p>
+                        <p class="m-0"><?= ucwords(@$sti_pakProduct['product_name']) ?></p>
                     </div>
                 </div>
                 <div class="row m-0 p-0">
