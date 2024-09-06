@@ -956,6 +956,7 @@ if (isset($_REQUEST['cash_purchase_supplier'])) {
 			'paid' => $_REQUEST['paid_ammount'],
 			'payment_status' => 1,
 			'payment_type' => $_REQUEST['payment_type'],
+			'production_id' => $_REQUEST['production_id'],
 		];
 
 		if ($_REQUEST['product_purchase_id'] == "") {

@@ -32,6 +32,13 @@
           <form action="php_action/custom_action.php" method="POST" id="sale_order_fm">
             <input type="hidden" name="product_purchase_id" value="<?= @empty($_REQUEST['edit_purchase_id']) ? "" : base64_decode($_REQUEST['edit_purchase_id']) ?>">
             <input type="hidden" name="payment_type" id="payment_type" value="credit_purchase">
+            <?php
+            if (isset($_REQUEST['ProductionID'])) {
+            ?>
+              <input type="hidden" name="production_id" id="production_id" value="<?= base64_decode($_REQUEST['ProductionID']) ?>">
+            <?php
+            }
+            ?>
             <div class="row form-group">
               <div class="col-md-2">
                 <label>Purchase ID#</label>
