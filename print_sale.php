@@ -106,28 +106,26 @@
 
                 <header>
                     <div class="row">
-                        <div class="col-sm-7">
-                            <img src="img/logo/<?= $get_company['logo'] ?>" width="150" class="img-fluid float-right" style="margin-top: 10px">
+                        <div class="col-sm-9 mt-3 d-flex justify-content-start">
+                            <div align="left">
+                                <h1 class="font-weight-bold m-0 p-0 pt-2"><?= ucwords($get_company['name']) ?></h1>
+                                <p class="font-weight-bold m-0 p-0 pt-2"><?= ucwords($get_company['email']) ?></p>
+                                <p class="font-weight-bold m-0 p-0 pt-2"><?= ucwords($get_company['company_phone']) ?></p>
+                                <p class="font-weight-bold m-0 p-0 pt-2"><?= ucwords($get_company['address']) ?></p>
+                            </div>
                         </div>
-                        <div class="col-sm-5 mt-3 ">
-
-                            <p style="margin-left: -10px; font-weight: bolder;font-size: 15px" class="float-right">
-                                <?= $get_company['company_phone'] ?> , <?= $get_company['personal_phone'] ?>
-                            </p>
-
-
-
-
+                        <!-- <center style="width: 100%;margin-top: -5px;"></center> -->
+                        <div class="col-sm-3 d-flex justify-content-end">
+                            <img src="img/logo/<?= $get_company['logo'] ?>" width="150" class="img-fluid" style="margin-top: 10px">
                         </div>
-                        <center style="width: 100%;margin-top: -5px;"></center>
                     </div>
                 </header>
             <?php endif ?>
             <div class="row">
-                <div class="pt-2  col-sm-6  ">
+                <div class="pt-2  col-sm-6  pl-0">
                     <p class="h4 border p-2 font-weight-bold float-left"> Invoice # <b><?= $_REQUEST['id'] ?></b></p>
                 </div>
-                <div class="pt-2   col-sm-6">
+                <div class="pt-2   col-sm-6 pr-0">
 
                     <p class="h4 border p-2 font-weight-bold float-right"> Date : <b>
                             <?php //getDateFormat("D d-M-Y h:i a",($order['timestamp']))
@@ -141,29 +139,69 @@
                 </div>
             </div>
             <div class="row">
-                <div class="  col-sm-3  ">
+                <div class="col-6 pl-0">
+                    <table class="table">
+                        <tr>
+                            <th class="border font-weight-bold">Customer Name</th>
+                            <td class="border"><?= ucwords($order['client_name']) ?></td>
+                        </tr>
+                        <tr>
+                            <th class="border font-weight-bold">Purchase</th>
+                            <td class="border"><?= ucwords($order['purchase_for']) ?></td>
+                        </tr>
+                        <tr>
+                            <th class="border font-weight-bold">Gate Pass</th>
+                            <td class="border"><?= ucwords($order['gate_pass']) ?></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-6 pr-0">
+                    <table class="table">
+                        <tr>
+                            <th class="border font-weight-bold">Customer Contact</th>
+                            <td class="border"><?= ucwords($order['client_contact']) ?></td>
+                        </tr>
+                        <tr>
+                            <th class="border font-weight-bold">Bill No</th>
+                            <td class="border"><?= ucwords($order['bill_no']) ?></td>
+                        </tr>
+                        <tr>
+                            <th class="border font-weight-bold">Bilty No</th>
+                            <td class="border"><?= ucwords($order['bilty_no']) ?></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <!-- <div class="row">
+                <div class="  col-sm-4  ">
                     <p class="h4 border border-bottom-0 text-center p-0 m-0 font-weight-bold"> Customer Name </p>
                     <p class="h4 border p-0 m-0 font-weight-bold text-center"><b><?= ucwords($order['client_name']) ?></b></p>
+                    <p class="h4 border border-bottom-0 text-center p-0 m-0 font-weight-bold"> Purchase : <span><?= ucwords($order['purchase_for']) ?></span></p>
+                    <p class="h4 border border-bottom-0 text-center p-0 m-0 font-weight-bold"> Gate Pass : <span><?= ucwords($order['gate_pass']) ?></span></p>
                 </div>
-                <div class="col-sm-5">
+                <div class="col-sm-4">
                     <h2 class="text-center p-0 m-0">Bill</h2>
-                    <!--      <h4 class="text-center p-0 m-0"><?= @$order_type ?></h4> -->
+                    <h4 class="text-center p-0 m-0"><?= @$order_type ?></h4>
                 </div>
                 <div class="  col-sm-4 ">
-                    <p class="h4 border border-bottom-0 text-center p-0 m-0 font-weight-bold"> Customer Address </p>
+                    <p class="h4 border border-bottom-0 text-center p-0 m-0 font-weight-bold"> Customer Contact </p>
                     <p class="h4 border p-0 m-0 font-weight-bold text-center"><b><?= $order['client_contact'] ?></b></p>
+                    <p class="h4 border border-bottom-0 text-center p-0 m-0 font-weight-bold"> Bill No : <span><?= ucwords($order['bill_no']) ?></span></p>
+                    <p class="h4 border border-bottom-0 text-center p-0 m-0 font-weight-bold"> Billty No : <span><?= ucwords($order['bilty_no']) ?></span></p>
                 </div>
 
-            </div>
+            </div> -->
             <div class="row table_row mt-4" style="min-height: <?= $table_row ?>;">
                 <div class="col-sm-12 p-0">
                     <table class="w-100">
                         <thead class="thead_row">
                             <th>Sr</th>
-                            <th>VOUCHER</th>
-                            <th>DESCRIPTION</th>
+                            <th>PRODUCT</th>
                             <th>PRICE</th>
                             <th>QUANTITY</th>
+                            <th>Thaan</th>
+                            <th>Gzanah</th>
+                            <th>Unit</th>
                             <th>TOTAL</th>
                         </thead>
                         <tbody class="tbody_row">
@@ -174,10 +212,12 @@
                             ?>
                                 <tr>
                                     <td><?= $c ?></td>
-                                    <td><?= @$order['voucher_no'] ?></td>
                                     <td><?= strtoupper($r['product_name']) ?></td>
                                     <td><?= $r['rate'] ?></td>
                                     <td><?= $r['quantity'] ?></td>
+                                    <td><?= $r['pur_thaan'] ?></td>
+                                    <td><?= $r['pur_gzanah'] ?></td>
+                                    <td><?= ucwords($r['pur_unit']) ?></td>
                                     <td><?= $r['rate'] * $r['quantity'] ?></td>
                                 </tr>
 
@@ -188,12 +228,12 @@
                         <tfoot class="tfoot_row">
 
                             <tr>
-                                <td colspan="4"></td>
+                                <td colspan="6"></td>
                                 <td class="border"><b>Sub Total</b></td>
                                 <td class="border"><?= $order['total_amount'] ?></td>
                             </tr>
                             <tr>
-                                <td colspan="4"></td>
+                                <td colspan="6"></td>
                                 <td class="border"><b>Total Quantity</b></td>
                                 <td class="border"><?= $totalQTY ?></td>
                             </tr>
@@ -203,7 +243,7 @@
 
                             ?>
                                 <tr>
-                                    <td colspan="4"></td>
+                                    <td colspan="6"></td>
                                     <td class="border">DISCOUNT%</td>
                                     <td class="border"><?= $order['discount'] ?>%</td>
                                 </tr>
@@ -211,13 +251,13 @@
                             }
                             ?>
                             <tr>
-                                <td colspan="4"></td>
+                                <td colspan="6"></td>
                                 <td class="border">FREIGHT</td>
 
-                                <td class="border"><b><?= empty($order['freight']) ? "0" : $order['freight'] ?></b></td>
+                                <td class="border"><b><?= empty($order['pur_freight']) ? "0" : $order['pur_freight'] ?></b></td>
                             </tr>
                             <tr>
-                                <td colspan="4"></td>
+                                <td colspan="6"></td>
                                 <td class="border">GRAND TOTAL</td>
 
                                 <td class="border"><b><?= number_format($order['grand_total'], 2) ?></b></td>
@@ -225,7 +265,7 @@
                             <?php if ($_REQUEST['type'] == "order" and $order['payment_type'] == "credit_sale") : ?>
 
                                 <tr>
-                                    <td colspan="4"></td>
+                                    <td colspan="6"></td>
                                     <td class="border">Previous Balance</td>
 
                                     <td class="border"><b><?= getcustomerBlance($dbc, $order['customer_account']) + $order['due'] ?></b></td>
@@ -249,7 +289,7 @@
             <div class="row" style="font-size: 18px">
                 <div class="col-sm-12" style="border-bottom: 1px solid black">
                     <p class="" style="color: black ; ">
-                        <b>Details</b> : <?= $order['order_narration'] ?>
+                        <b>Details</b> : <?= $order['purchase_narration'] ?>
                     </p>
 
                 </div>
@@ -293,7 +333,6 @@
 </body>
 
 </html>
-<script type="text/javascript">
+<!-- <script type="text/javascript">
     window.print();
-    //   window.close();
-</script>
+</script> -->

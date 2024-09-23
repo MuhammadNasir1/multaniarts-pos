@@ -8,6 +8,24 @@ if (!empty($_REQUEST['edit_purchase_id'])) {
 }
 ?>
 
+<style>
+  .top-btn {
+    background-color: tranparent;
+    border: 2px solid black;
+    font-weight: bold;
+  }
+
+  .top-btn:hover {
+    background-color: orangered;
+    color: #fff;
+  }
+
+  .active {
+    background-color: #000;
+    color: #fff;
+  }
+</style>
+
 <body class="horizontal light  ">
   <div class="wrapper">
     <?php include_once 'includes/header.php'; ?>
@@ -21,15 +39,16 @@ if (!empty($_REQUEST['edit_purchase_id'])) {
               <b class="text-center card-text">Cash Purchase</b>
 
 
-              <a href="cash_purchase.php" class="btn btn-admin float-right btn-sm">Add New</a>
+              <a href="" class="btn btn-admin float-right btn-sm">Add New</a>
             </div>
           </div>
 
         </div>
         <div class="card-body">
+
           <form action="php_action/custom_action.php" method="POST" id="sale_order_fm">
             <input type="hidden" name="product_purchase_id" value="<?= @empty($_REQUEST['edit_purchase_id']) ? "" : base64_decode($_REQUEST['edit_purchase_id']) ?>">
-            <input type="hidden" name="payment_type" id="payment_type" value="cash_purchase">
+            <input type="hidden" name="payment_type" value="cash_puchase" id="payment_type">
             <div class="row form-group">
               <div class="col-md-2">
                 <label>Purchase ID#</label>
@@ -43,10 +62,10 @@ if (!empty($_REQUEST['edit_purchase_id'])) {
 
                 <input type="text" name="purchase_date" id="purchase_date" value="<?= @empty($_REQUEST['edit_purchase_id']) ? date('Y-m-d') : $fetchPurchase['purchase_date'] ?>" readonly class="form-control">
               </div>
-              <div class="col-sm-5">
+              <div class="col-md-4">
                 <label>Select Supplier</label>
                 <div class="input-group">
-                  <select class="form-control" name="cash_purchase_supplier" id="credit_order_client_name" required onchange="getBalance(this.value,'customer_account_exp')" aria-label="Username" aria-describedby="basic-addon1">
+                  <select class="form-control searchableSelect" name="cash_purchase_supplier" id="credit_order_client_name" required onchange="getBalance(this.value,'customer_account_exp')" aria-label="Username" aria-describedby="basic-addon1">
                     <option value="">Select Supplier</option>
                     <?php
                     $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status =1 AND customer_type='supplier'");
@@ -63,58 +82,101 @@ if (!empty($_REQUEST['edit_purchase_id'])) {
                 <input type="hidden" name="client_contact" id="client_contact" value="<?= @$fetchPurchase['client_contact'] ?>">
 
               </div>
-              <div class="col-sm-1">
+              <div class="col-md-1">
                 <br>
                 <a href="customers.php?type=supplier" class="btn btn-admin2 btn-sm mt-2">Add</a>
               </div>
-              <div class="col-sm-2">
-                <label>Narration</label>
-                <input type="text" value="<?= @$fetchPurchase['purchase_narration'] ?>" autocomplete="off" class="form-control" name="purchase_narration">
 
+              <div class="col-md-3">
+                <label class="text-dark" for="purchase_for">Purchase For</label>
+
+                <select class="form-control" name="purchase_for" id="purchase_for">
+                  <option disabled>Select Type</option>
+                  <option value="shafoon">Shafoon</option>
+                  <option value="others">Others</option>
+                </select>
+              </div>
+              <div class="col-md-2 mt-3">
+                <label>Bill No.</label>
+                <input type="number" min="0" placeholder="Bil No." value="" autocomplete="off" class="form-control" name="bill_no">
+              </div>
+              <div class="col-md-2 mt-3">
+                <label>Gate Pass</label>
+                <input type="text" placeholder="Gate Pass" value="" autocomplete="off" class="form-control " name="gate_pass">
+              </div>
+              <div class="col-md-2 mt-3">
+                <label>Bilty No.</label>
+                <input type="number" min="0" placeholder="Bilty No." value="" autocomplete="off" class="form-control" name="bilty_no">
+              </div>
+              <div class="col-md-2 mt-3">
+                <label>Location</label>
+                <input type="text" placeholder="Location Here" value="" autocomplete="off" class="form-control" name="pur_location">
+              </div>
+              <div class="col-md-2 mt-3">
+                <label>Cargo</label>
+                <input type="text" placeholder="Cargo Here" value="" autocomplete="off" class="form-control" name="pur_cargo">
+              </div>
+              <div class="col-md-2 mt-3">
+                <label>Type</label>
+                <input type="text" placeholder="Type Here" value="" autocomplete="off" class="form-control " name="pur_type">
+              </div>
+              <div class="col-12 mt-3">
+                <label>Remarks</label>
+                <textarea placeholder="Remarks Here" value="<?= @$fetchPurchase['purchase_narration'] ?>" autocomplete="off" class="form-control" name="purchase_narration" id="" cols="30" rows="3"></textarea>
               </div>
             </div> <!-- end of form-group -->
-            <div class="form-group row">
-              <div class="col-4 col-md-2">
-                <label>Product Code</label>
-                <input type="text" name="product_code" autocomplete="off" id="get_product_code" class="form-control">
-              </div>
+            <div class="form-group row ">
+              <div class="col-md-2 d-flex">
+                <div>
+                  <label>Products ( <span class="text-center w-100" id="instockQty">instock: 0</span> )</label>
+                  <input type="hidden" id="add_pro_type" value="add">
+                  <select class="form-control searchableSelect" id="get_product_name" name="product_id">
+                    <option value="" id="no">Select Product</option>
+                    <?php
+                    $result = mysqli_query($dbc, "SELECT * FROM product WHERE status=1 ");
+                    while ($row = mysqli_fetch_array($result)) {
+                      $getBrand = fetchRecord($dbc, "brands", "brand_id", $row['brand_id']);
+                      $getCat = fetchRecord($dbc, "categories", "categories_id", $row['category_id']);
+                    ?>
 
-              <div class="col-6 col-md-3">
-                <label>Products</label>
-                <input type="hidden" id="add_pro_type" value="add">
-                <select class="form-control searchableSelect" id="get_product_name" name="product_id">
-                  <option value="">Select Product</option>
-                  <?php
-                  $result = mysqli_query($dbc, "SELECT * FROM product WHERE status=1 ");
-                  while ($row = mysqli_fetch_array($result)) {
-                    $getBrand = fetchRecord($dbc, "brands", "brand_id", $row['brand_id']);
-                    $getCat = fetchRecord($dbc, "categories", "categories_id", $row['category_id']);
-                  ?>
+                      <option data-price="<?= $row["current_rate"] ?>" <?= empty($r['product_id']) ? "" : "selected" ?> value="<?= $row["product_id"] ?>">
+                        <?= $row["product_name"] ?> | <?= @$getBrand["brand_name"] ?>(<?= @$getCat["categories_name"] ?>) </option>
 
-                    <option data-price="<?= $row["current_rate"] ?>" <?= empty($r['product_id']) ? "" : "selected" ?> value="<?= $row["product_id"] ?>">
-                      <?= $row["product_name"] ?> | <?= @$getBrand["brand_name"] ?>(<?= @$getCat["categories_name"] ?>) </option>
+                    <?php   } ?>
+                  </select>
 
-                  <?php   } ?>
-                </select>
-                <span class="text-center w-100" id="instockQty"></span>
+                </div>
+                <div class="ml-3">
+                  <label class="invisible d-block">.</label>
+                  <button type="button" class="btn btn-danger btn-sm pt-1 pb-1" data-toggle="modal" data-target="#add_product_modal"> <i class="fa fa-plus"></i> </button>
+                </div>
               </div>
-              <div class="col-1 col-md-1">
-                <label class="invisible d-block">.</label>
-                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#add_product_modal"> <i class="fa fa-plus"></i> </button>
-              </div>
-              <div class="col-6 col-sm-2 col-md-2">
-                <label>Price/piece</label>
+              <div class="col-md-2">
+                <label>Rate</label>
                 <input type="number" min="0" <?= ($_SESSION['user_role'] == "admin") ? "" : "readonly" ?> class="form-control" id="get_product_price">
               </div>
-              <div class="col-6 col-sm-2 col-md-2">
+              <div class="col-md-2">
                 <label>Quantity</label>
-                <input type="number" class="form-control" id="get_product_quantity" value="1" min="1" name="quantity">
+                <input type="number" readonly class="form-control" id="get_product_quantity" value="1" min="1" name="quantity">
               </div>
-              <div class="col-sm-1">
-                <br>
-                <button type="button" class="btn btn-success btn-sm mt-2 float-right" id="addProductPurchase"><i class="fa fa-plus"></i> <b>Add</b></button>
+              <div class="col-md-2">
+                <label>Thaan</label>
+                <input type="number" min="0" placeholder="Thaan Here" value="" autocomplete="off" class="form-control" name="pur_thaan" id="get_pur_thaan">
+              </div>
+              <div class="col-md-2">
+                <label>Gzanah</label>
+                <input type="number" min="0" placeholder="Gzanah Here" value="" autocomplete="off" class="form-control" name="pur_gzanah" id="get_pur_gzanah">
               </div>
 
+              <div class="col-md-2  d-flex align-items-center">
+                <div>
+                  <label>Unit</label>
+                  <input type="text" placeholder="Unit Here" value="" autocomplete="off" class="form-control " name="pur_unit" id="get_pur_unit">
+                </div>
+                <div class="ml-3 mt-3">
+                  <button type="button" class="btn btn-success btn-sm mt-2 " id="addProductPurchase"><i class="fa fa-plus"></i> <b>Add</b></button>
+                </div>
+              </div>
             </div>
             <div class="row">
               <div class="col-12">
@@ -122,9 +184,11 @@ if (!empty($_REQUEST['edit_purchase_id'])) {
                 <table class="table  saleTable" id="myDiv">
                   <thead class="table-bordered">
                     <tr>
-                      <th>Code</th>
                       <th>Product Name</th>
-                      <th>Unit Price</th>
+                      <th>Thaan</th>
+                      <th>Gzanah</th>
+                      <th>Unit</th>
+                      <th>Rate</th>
                       <th>Quantity</th>
                       <th>Total Price</th>
                       <th>Action</th>
@@ -142,8 +206,8 @@ if (!empty($_REQUEST['edit_purchase_id'])) {
                           <input type="hidden" id="product_quantites_<?= $r['product_id'] ?>" name="product_quantites[]" value="<?= $r['quantity'] ?>">
                           <input type="hidden" id="product_rate_<?= $r['product_id'] ?>" name="product_rates[]" value="<?= $r['rate'] ?>">
                           <input type="hidden" id="product_totalrate_<?= $r['product_id'] ?>" name="product_totalrates[]" value="<?= $r['rate'] ?>">
-                          <td><?= $r['product_code'] ?></td>
                           <td><?= $r['product_name'] ?></td>
+                          <td><?= $r['pur_thaan'] ?></td>
                           <td><?= $r['rate'] ?></td>
                           <td><?= $r['quantity'] ?></td>
                           <td><?= (float)$r['rate'] * (float)$r['quantity'] ?></?>
@@ -166,7 +230,13 @@ if (!empty($_REQUEST['edit_purchase_id'])) {
                       <td class="table-bordered"> Sub Total :</td>
                       <td class="table-bordered" id="product_total_amount"><?= @$fetchPurchase['total_amount'] ?></td>
                       <td class="table-bordered"> Discount :</td>
-                      <td class="table-bordered" id="getDiscount"><input onkeyup="getOrderTotal()" type="number" id="ordered_discount" class="form-control form-control-sm" value="<?= @empty($_REQUEST['edit_order_id']) ? "0" : $fetchPurchase['discount'] ?>" min="0" max="100" name="ordered_discount">
+                      <td class="table-bordered row m-0 " id="getDiscount">
+                        <div class="col-sm-6 pl-0 m-0 p-0">
+                          <input onkeyup="getOrderTotal()" type="number" id="ordered_discount" class="form-control form-control-sm" value="<?= @empty($_REQUEST['edit_order_id']) ? "0" : $fetchPurchase['discount'] ?>" min="0" max="100" name="ordered_discount">
+                        </div>
+                        <div class="col-sm-6 pl-2 m-0 p-0">
+                          <input onkeyup="getOrderTotal()" type="number" id="freight" class="form-control form-control-sm " placeholder="Freight" value="<?= @$fetchOrder['freight'] ?>" min="0" name="freight">
+
                       </td>
                     </tr>
                     <tr>
@@ -231,6 +301,3 @@ if (!empty($_REQUEST['edit_purchase_id'])) {
 
 </html>
 <?php include_once 'includes/foot.php'; ?>
-<script type="text/javascript">
-
-</script>
