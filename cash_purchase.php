@@ -232,10 +232,10 @@ if (!empty($_REQUEST['edit_purchase_id'])) {
                       <td class="table-bordered"> Discount :</td>
                       <td class="table-bordered row m-0 " id="getDiscount">
                         <div class="col-sm-6 pl-0 m-0 p-0">
-                          <input onkeyup="getOrderTotal()" type="number" id="ordered_discount" class="form-control form-control-sm" value="<?= @empty($_REQUEST['edit_order_id']) ? "0" : $fetchPurchase['discount'] ?>" min="0" max="100" name="ordered_discount">
+                          <input onkeyup="getOrderTotal()" type="number" id="ordered_discount" class="form-control form-control-sm" value="<?= @$fetchPurchase['discount'] ?>" min="0" max="100" name="ordered_discount">
                         </div>
                         <div class="col-sm-6 pl-2 m-0 p-0">
-                          <input onkeyup="getOrderTotal()" type="number" id="freight" class="form-control form-control-sm " placeholder="Freight" value="<?= @$fetchOrder['freight'] ?>" min="0" name="freight">
+                          <input onkeyup="getOrderTotal()" type="number" id="freight" class="form-control form-control-sm " placeholder="Freight" value="<?= @$fetchPurchase['freight'] ?>" min="0" name="freight">
 
                       </td>
                     </tr>
