@@ -138,7 +138,43 @@
                         </b></p>
                 </div>
             </div>
-            <div class="row d-flex">
+            <div class="row">
+                <div class="d-flex justify-content-between m-0 p-0 col-12">
+                    <div class="m-0 p-0">
+                        <table class="table">
+                            <tr>
+                                <th class="border pr-5 font-weight-bold">Customer Name</th>
+                                <th class="border pr-5"><?= ucwords($order['client_name']) ?></th>
+                            </tr>
+                            <tr>
+                                <th class="border pr-5 font-weight-bold">Purchase</th>
+                                <th class="border pr-5"><?= ucwords($order['purchase_for']) ?></th>
+                            </tr>
+                            <tr>
+                                <th class="border pr-5 font-weight-bold">Gate Pass</th>
+                                <th class="border pr-5"><?= ucwords($order['gate_pass']) ?></th>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="m-0 p-0">
+                        <table class="table" align="left">
+                            <tr>
+                                <th class="border pr-5 font-weight-bold">Customer Contact</th>
+                                <th class="border pr-5"><?= ucwords($order['client_contact']) ?></th>
+                            </tr>
+                            <tr>
+                                <th class="border pr-5 font-weight-bold">Bill No</th>
+                                <th class="border pr-5"><?= ucwords($order['bill_no']) ?></th>
+                            </tr>
+                            <tr>
+                                <th class="border pr-5 font-weight-bold">Bilty No</th>
+                                <th class="border pr-5"><?= ucwords($order['bilty_no']) ?></th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="row ">
                 <div class="col-6 pl-0">
                     <table class="table">
                         <tr>
@@ -155,7 +191,7 @@
                         </tr>
                     </table>
                 </div>
-                <div class="col-6 pr-0">
+                <div class="col-6 p-0 d-flex justify-content-end">
                     <table class="table">
                         <tr>
                             <th class="border font-weight-bold">Customer Contact</th>
@@ -171,7 +207,7 @@
                         </tr>
                     </table>
                 </div>
-            </div>
+            </div> -->
             <!-- <div class="row">
                 <div class="  col-sm-4  ">
                     <p class="h4 border border-bottom-0 text-center p-0 m-0 font-weight-bold"> Customer Name </p>
@@ -262,7 +298,7 @@
 
                                 <td class="border"><b><?= number_format($order['grand_total'], 2) ?></b></td>
                             </tr>
-                            <?php if ($_REQUEST['type'] == "order" and $order['payment_type'] == "credit_sale") : ?>
+                            <?php if ($order['payment_type'] == "credit_purchase") : ?>
 
                                 <tr>
                                     <td colspan="6"></td>
@@ -271,7 +307,7 @@
                                     <td class="border"><b><?= getcustomerBlance($dbc, $order['customer_account']) + $order['due'] ?></b></td>
                                 </tr>
                                 <tr>
-                                    <td colspan="4"></td>
+                                    <td colspan="6"></td>
                                     <td class="border">Current Balance</td>
 
                                     <td class="border"><b><?= number_format(getcustomerBlance($dbc, $order['customer_account']), 2) ?></b></td>
