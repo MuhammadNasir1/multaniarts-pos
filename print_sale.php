@@ -138,7 +138,7 @@
                         </b></p>
                 </div>
             </div>
-            <div class="row">
+            <div class="row d-flex">
                 <div class="col-6 pl-0">
                     <table class="table">
                         <tr>
@@ -333,6 +333,6 @@
 </body>
 
 </html>
-<!-- <script type="text/javascript">
+<script type="text/javascript">
     window.print();
-</script> -->
+</script>

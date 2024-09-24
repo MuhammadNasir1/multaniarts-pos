@@ -1271,13 +1271,113 @@ function cutt_voucher_duplicateRow() {
 
   container.append(lastRow);
 }
-
 function cutt_voucher_remove(button) {
   var container = $("#container");
   var rowToRemove = $(button).closest(".row");
   rowToRemove.remove();
   if (container.children(".row").length === 0) {
     $("#cutt_voucher_btn").show();
+    location.reload();
+  }
+}
+
+// Function to calculate Thaan * Gzanah = Quantity for each row
+function calculateQuantity(row) {
+  var thaan = row.find(".thaan").val();
+  var gzanah = row.find(".gzanah").val();
+  var quantity = thaan * gzanah; // Multiply Thaan and Gzanah
+  row.find(".quantity").val(quantity); // Set the result in the Quantity field
+}
+
+// Attach the event listeners to existing rows
+$(document).ready(function () {
+  // For any existing rows on page load
+  $("#deyingContainer")
+    .find(".row")
+    .each(function () {
+      attachCalculation($(this));
+    });
+
+  // Bind the "Add" button event
+});
+
+// Function to attach calculation logic to Thaan and Gzanah fields for a row
+function attachCalculation(row) {
+  row.find(".thaan, .gzanah").on("input", function () {
+    calculateQuantity(row); // Call the function to update Quantity
+  });
+}
+
+function deying_voucher_duplicateRow() {
+  var container = $("#deyingContainer");
+
+  // Clone the last row without copying event handlers
+  var lastRow = container.children(".row:last").clone();
+
+  // Remove the remove button from the first row
+  container.find(".row:first .add_remove  button").remove();
+
+  var newRowId = "row" + (container.children(".row").length + 1);
+  lastRow.attr("id", newRowId);
+
+  // Generate unique ids for the inputs in the cloned row
+  var deying_product =
+    "deying_product" + (container.children(".row").length + 1);
+  var deying_thaan = "deying_thaan" + (container.children(".row").length + 1);
+  var deying_gzanah = "deying_gzanah" + (container.children(".row").length + 1);
+  var deying_gzanah_type =
+    "deying_gzanah_type" + (container.children(".row").length + 1);
+  var deying_status = "deying_status" + (container.children(".row").length + 1);
+
+  // Update the ids in the cloned row
+  lastRow.find('[name="deying_product[]"]').attr("id", deying_product);
+  lastRow.find('[name="deying_thaan[]"]').attr("id", deying_thaan);
+  lastRow.find('[name="deying_gzanah[]"]').attr("id", deying_gzanah);
+  lastRow.find('[name="deying_gzanah_type[]"]').attr("id", deying_gzanah_type);
+  lastRow.find('[name="deying_status[]"]').attr("id", deying_status);
+
+  // Clear the input values in the cloned row
+  lastRow.find("input, select").val("");
+
+  // Remove existing "Plus" button from the last row
+  lastRow.find(".add_remove button").remove();
+
+  // Add "Remove" button to the new row
+  lastRow.find(".add_remove").append(`
+    <button type="button" class="outline_none border-0 bg-white" onclick="deying_voucher_remove(this)">
+        <img title="Remove Row" src="img/remove.png" width="30px" alt="remove sign">
+    </button>`);
+
+  // Append the cloned row to the container
+  container.append(lastRow);
+
+  // Attach calculation to the new row
+  attachCalculation(lastRow);
+}
+$(document).ready(function () {
+  // Function to calculate quantity
+  function calculateQuantity() {
+    var thaanCount = parseFloat($(".thaanCount").val()) || 0;
+    var gzanahCount = parseFloat($(".gzanahCount").val()) || 0;
+    var quantityCount = thaanCount * gzanahCount;
+
+    // Set the calculated quantityCount
+    $(".quantityCount").val(quantityCount);
+  }
+
+  // Attach event listeners to inputs for real-time calculation
+  $(".thaanCount, .gzanahCount").on("input", function () {
+    calculateQuantity();
+  });
+});
+
+// Deying Voucher List Remove Closest Row
+function deying_voucher_remove(button) {
+  var container = $("#deyingContainer");
+  var rowToRemove = $(button).closest(".row");
+  rowToRemove.remove();
+  if (container.children(".row").length === 0) {
+    $("#deying_voucher_btn").show();
     location.reload();
   }
 }
