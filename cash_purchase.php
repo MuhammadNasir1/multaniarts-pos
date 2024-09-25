@@ -156,10 +156,6 @@ if (!empty($_REQUEST['edit_purchase_id'])) {
                 <input type="number" min="0" <?= ($_SESSION['user_role'] == "admin") ? "" : "readonly" ?> class="form-control" id="get_product_price">
               </div>
               <div class="col-md-2">
-                <label>Quantity</label>
-                <input type="number" readonly class="form-control" id="get_product_quantity" value="1" min="1" name="quantity">
-              </div>
-              <div class="col-md-2">
                 <label>Thaan</label>
                 <input type="number" min="0" placeholder="Thaan Here" value="" autocomplete="off" class="form-control" name="pur_thaan" id="get_pur_thaan">
               </div>
@@ -168,6 +164,10 @@ if (!empty($_REQUEST['edit_purchase_id'])) {
                 <input type="number" min="0" placeholder="Gzanah Here" value="" autocomplete="off" class="form-control" name="pur_gzanah" id="get_pur_gzanah">
               </div>
 
+              <div class="col-md-2">
+                <label>Quantity</label>
+                <input type="number" readonly class="form-control" id="get_product_quantity" value="1" min="1" name="quantity">
+              </div>
               <div class="col-md-2  d-flex align-items-center">
                 <div>
                   <label>Unit</label>

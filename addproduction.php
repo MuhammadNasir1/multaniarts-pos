@@ -22,7 +22,7 @@ if (@$_REQUEST['update-production']) {
         <?php include_once 'includes/header.php'; ?>
         <main role="main" class="main-content">
             <div class="container-fluid">
-                <div class="card my-5">
+                <div class="card my-5 d-none">
                     <div class="card-header card-bg" align="center">
                         <div class="row">
                             <div class="col-12 mx-auto h4">

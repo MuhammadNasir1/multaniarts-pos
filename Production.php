@@ -539,7 +539,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                 </div>
                                                 <div class="col-lg-1 mt-3">
                                                     <label class="font-weight-bold text-dark" for="cutt_thaan">Thaan</label>
-                                                    <input type="text" class="form-control" name="thaan" id="thaan" value="<?= @$cuttingDatafetch['cutt_thaan'] ?>" placeholder="Thaan">
+                                                    <input type="number" min="0" class="form-control" name="thaan" id="thaan" value="<?= @$cuttingDatafetch['cutt_thaan'] ?>" placeholder="Thaan">
                                                 </div>
                                                 <div class="col-lg-1 mt-3">
                                                     <label class="font-weight-bold text-dark">Gzanah</label>
@@ -547,7 +547,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                 </div>
                                                 <div class="col-lg-1 mt-3">
                                                     <label class="font-weight-bold text-dark">Quantity</label>
-                                                    <input type="number" readonly class="form-control" id="quantity" value="<?= isset($cuttingDatafetch['quantity']) ? $cuttingDatafetch['quantity'] : 0 ?>" min="1" name="quantity">
+                                                    <input type="number" readonly class="form-control" id="quantity" value="<?= isset($cuttingDatafetch['quantity']) ? $cuttingDatafetch['quantity'] : 0 ?>" min="0" name="quantity">
                                                 </div>
                                                 <div class="col-lg-1 mt-3">
                                                     <label class="font-weight-bold text-dark">Unit</label>
@@ -1012,7 +1012,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                 </div>
                                                 <div class="col-lg-1 ml-lg-4 mt-3">
                                                     <label class="font-weight-bold text-dark" for="Thaan">Thaan</label>
-                                                    <input type="text" class="form-control thaanCount" name="dey_thaan" id="thaan" value="<?= @$deyeingfetch['dey_thaan'] ?>" placeholder="Thaan">
+                                                    <input type="number" min="0" class="form-control thaanCount" name="dey_thaan" id="thaan" value="<?= @$deyeingfetch['dey_thaan'] ?>" placeholder="Thaan">
                                                 </div>
                                                 <div class="col-lg-1 mt-3 ">
                                                     <label class="font-weight-bold text-dark">Gzanah</label>
@@ -1020,7 +1020,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                 </div>
                                                 <div class="col-lg-1 mt-3 ">
                                                     <label class="font-weight-bold text-dark">Quantity</label>
-                                                    <input type="number" readonly class="form-control quantityCount" id="quantity" value="<?= isset($deyeingfetch['dey_quantity']) ? @$deyeingfetch['dey_quantity'] : 0  ?>" min="1" name="dey_quantity">
+                                                    <input type="number" readonly class="form-control quantityCount" id="quantity" value="<?= isset($deyeingfetch['dey_quantity']) ? @$deyeingfetch['dey_quantity'] : 0  ?>" min="0" name="dey_quantity">
                                                 </div>
 
                                                 <div class="col-lg-1 mt-3">
