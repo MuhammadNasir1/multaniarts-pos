@@ -110,20 +110,21 @@
                </div>
              </div>
              <div class="form-group row">
+
+               <input type="hidden" class="form-control" id="product_mm" placeholder=" MM" name="product_mm" required value="0">
+               <input type="hidden" class="form-control" id="product_inch" placeholder="Inch" name="product_inch" required value="0">
+               <input type="hidden" class="form-control" id="f_days" placeholder="15 Days Sale Rate" name="f_days" value="0">
+               <input type="hidden" class="form-control" id="t_days" placeholder="30 Days Sale Rate" name="t_days" value="0">
+               <div class="col-sm-4 mb-3 mb-sm-0">
+                 <label for="">Length(meter)</label>
+                 <input type="number" class="form-control" id="product_meter" placeholder="Length in Meter" name="product_meter" required value="<?= @$fetchproduct['product_meter'] ?>">
+               </div>
                <div class="col-sm-4 mb-3 mb-sm-0">
                  <label for=""> Rate</label>
                  <input type="number" class="form-control" id="current_rate" placeholder=" Rate" name="current_rate" required value="<?= @$fetchproduct['current_rate'] ?>">
                </div>
-               <div class="col-sm-4 mb-3 mb-sm-0">
-                 <label for="">15 Days Sale Rate</label>
-                 <input type="number" class="form-control" id="f_days" placeholder="15 Days Sale Rate" name="f_days" value="<?= @$fetchproduct['f_days'] ?>">
-               </div>
-               <div class="col-sm-4 mb-3 mb-sm-0">
-                 <label for="">30 Days Sale Rate</label>
-                 <input type="number" class="form-control" id="t_days" placeholder="30 Days Sale Rate" name="t_days" value="<?= @$fetchproduct['t_days'] ?>">
-               </div>
-
              </div>
+
              <div class="form-group row">
                <div class="col-sm-6">
                  <label for="">Product Alert on Quantity</label>
