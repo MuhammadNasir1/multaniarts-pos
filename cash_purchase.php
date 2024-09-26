@@ -225,7 +225,7 @@ if (!empty($_REQUEST['edit_purchase_id'])) {
 
                   <tfoot>
                     <tr>
-                      <td colspan="2"></td>
+                      <td colspan="4"></td>
 
                       <td class="table-bordered"> Sub Total :</td>
                       <td class="table-bordered" id="product_total_amount"><?= @$fetchPurchase['total_amount'] ?></td>
@@ -240,7 +240,7 @@ if (!empty($_REQUEST['edit_purchase_id'])) {
                       </td>
                     </tr>
                     <tr>
-                      <td colspan="2" class="border-none"></td>
+                      <td colspan="4" class="border-none"></td>
                       <td class="table-bordered"> <strong>Grand Total :</strong> </td>
                       <td class="table-bordered" id="product_grand_total_amount"><?= @$fetchPurchase['grand_total'] ?></td>
                       <td class="table-bordered">Paid :</td>
@@ -249,7 +249,7 @@ if (!empty($_REQUEST['edit_purchase_id'])) {
                       </td>
                     </tr>
                     <tr>
-                      <td colspan="2" class="border-none"></td>
+                      <td colspan="4" class="border-none"></td>
                       <td class="table-bordered">Remaing Amount :</td>
                       <td class="table-bordered"><input type="number" class="form-control form-control-sm" id="remaining_ammount" readonly name="remaining_ammount" value="<?= @$fetchPurchase['due'] ?>">
                       </td>

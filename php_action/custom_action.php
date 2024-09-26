@@ -321,9 +321,6 @@ if (isset($_REQUEST['new_sin_voucher_date'])) {
 if (!empty($_REQUEST['action']) and $_REQUEST['action'] == "product_module") {
 	$purchase_rate = $total = 0;
 	$category_price = fetchRecord($dbc, "categories", "categories_id", $_REQUEST['category_id']);
-
-	$total = (float)$_REQUEST['product_mm'] * (float)$_REQUEST['product_inch'] * (float)$_REQUEST['product_meter'];
-	$purchase_rate = ($total * (float)$category_price['category_purchase']) / 54;
 	$purchase_rate = round($purchase_rate);
 
 	$data_array = [
@@ -331,14 +328,10 @@ if (!empty($_REQUEST['action']) and $_REQUEST['action'] == "product_module") {
 		'product_code' => @$_REQUEST['product_code'],
 		'brand_id' => @$_REQUEST['brand_id'],
 		'category_id' => @$_REQUEST['category_id'],
-		'product_mm' => @$_REQUEST['product_mm'],
-		'product_inch' => @$_REQUEST['product_inch'],
-		'product_meter' => @$_REQUEST['product_meter'],
 		'current_rate' => @$_REQUEST['current_rate'],
 		'product_description' => @$_REQUEST['product_description'],
 		't_days' => @$_REQUEST['t_days'],
 		'f_days' => @$_REQUEST['f_days'],
-		'product_description' => @$_REQUEST['product_description'],
 		'alert_at' => @$_REQUEST['alert_at'],
 		'availability' => @$_REQUEST['availability'],
 		'purchase_rate' => $purchase_rate,

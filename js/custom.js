@@ -1111,42 +1111,42 @@ function readonlyIt(value, read_it_id) {
   }
 }
 
-$("#product_mm,#product_inch,#product_meter").on("keyup", function () {
-  getTotal_price();
-});
+// $("#product_mm,#product_inch,#product_meter").on("keyup", function () {
+//   getTotal_price();
+// });
 
-$("#tableData1").on("change", function () {
-  getTotal_price();
-});
+// $("#tableData1").on("change", function () {
+//   getTotal_price();
+// });
 
-function getTotal_price() {
-  var total = (total1 = total2 = fif_rate = current_cat = thir_rate = 0);
-  var cat = $("#tableData1 :selected").data("price");
-  var product_mm = $("#product_mm").val();
-  var product_inch = $("#product_inch").val();
-  var product_meter = $("#product_meter").val();
-  var product_mm = product_mm == "" ? (product_mm = 0) : parseFloat(product_mm);
-  var product_inch =
-    product_inch == "" ? (product_inch = 0) : parseFloat(product_inch);
-  var product_meter =
-    product_meter == "" ? (product_meter = 0) : parseFloat(product_meter);
-  total = product_mm * product_inch * product_meter;
-  total1 = (total * parseFloat(cat)) / 54;
-  total2 = Math.round(total1);
-  $("#current_rate").val(total2);
+// function getTotal_price() {
+//   var total = (total1 = total2 = fif_rate = current_cat = thir_rate = 0);
+//   var cat = $("#tableData1 :selected").data("price");
+//   var product_mm = $("#product_mm").val();
+//   var product_inch = $("#product_inch").val();
+//   var product_meter = $("#product_meter").val();
+//   var product_mm = product_mm == "" ? (product_mm = 0) : parseFloat(product_mm);
+//   var product_inch =
+//     product_inch == "" ? (product_inch = 0) : parseFloat(product_inch);
+//   var product_meter =
+//     product_meter == "" ? (product_meter = 0) : parseFloat(product_meter);
+//   total = product_mm * product_inch * product_meter;
+//   total1 = (total * parseFloat(cat)) / 54;
+//   total2 = Math.round(total1);
+//   $("#current_rate").val(total2);
 
-  current_cat = parseFloat(cat) + 0.05;
-  fif_rate = (total * current_cat) / 54;
-  fif_rate = Math.round(fif_rate);
-  $("#f_days").val(fif_rate);
+//   current_cat = parseFloat(cat) + 0.05;
+//   fif_rate = (total * current_cat) / 54;
+//   fif_rate = Math.round(fif_rate);
+//   $("#f_days").val(fif_rate);
 
-  current_cat = parseFloat(cat) + 0.1;
-  thir_rate = (total * current_cat) / 54;
-  thir_rate = Math.round(thir_rate);
-  $("#t_days").val(thir_rate);
+//   current_cat = parseFloat(cat) + 0.1;
+//   thir_rate = (total * current_cat) / 54;
+//   thir_rate = Math.round(thir_rate);
+//   $("#t_days").val(thir_rate);
 
-  console.log(total);
-}
+//   console.log(total);
+// }
 
 function getVoucherPrint(voucher_id) {
   Swal.fire({

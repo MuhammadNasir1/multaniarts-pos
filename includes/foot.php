@@ -104,25 +104,10 @@
                     $result = mysqli_query($dbc, "select * from categories");
                     while ($row = mysqli_fetch_array($result)) {
                     ?>
-                     <option data-price="<?= $row["category_price"] ?>" <?= @($fetchproduct['category_id'] != $row["categories_id"]) ? "" : "selected" ?> value="<?= $row["categories_id"] ?>"><?= $row["categories_name"] ?>-<?= $row["category_price"] ?></option>
+                     <option <?= @($fetchproduct['category_id'] != $row["categories_id"]) ? "" : "selected" ?> value="<?= $row["categories_id"] ?>"><?= $row["categories_name"] ?></option>
                    <?php   } ?>
                  </select>
                </div>
-             </div>
-             <div class="form-group row">
-               <div class="col-sm-4 mb-3 mb-sm-0">
-                 <label for="">MM</label>
-                 <input type="number" class="form-control" id="product_mm" placeholder=" MM" name="product_mm" required value="<?= @$fetchproduct['product_mm'] ?>">
-               </div>
-               <div class="col-sm-4 mb-3 mb-sm-0">
-                 <label for="">Inch</label>
-                 <input type="number" class="form-control" id="product_inch" placeholder="Inch" name="product_inch" required value="<?= @$fetchproduct['product_inch'] ?>">
-               </div>
-               <div class="col-sm-4 mb-3 mb-sm-0">
-                 <label for="">Length(meter)</label>
-                 <input type="number" class="form-control" id="product_meter" placeholder="Length in Meter" name="product_meter" required value="<?= @$fetchproduct['product_meter'] ?>">
-               </div>
-
              </div>
              <div class="form-group row">
                <div class="col-sm-4 mb-3 mb-sm-0">
@@ -244,21 +229,13 @@
            <form action="php_action/panel.php" method="POST" role="form" id="formData1">
              <div class="msg"></div>
              <div class="form-group row">
-               <div class="col-sm-3">
+               <div class="col-sm-6">
                  <label for="">Name</label>
                  <input type="text" class="form-control" value="<?= @$categories['categories_name'] ?>" id="categories_name" name="add_category_name">
                  <input type="hidden" class="form-control " value="<?= @$categories['categories_id'] ?>" id="categories_id" name="categories_id">
 
                </div>
-               <div class="col-sm-3">
-                 <label for="">Sale Price</label>
-                 <input type="text" class="form-control" value="<?= @$categories['category_price'] ?>" id="category_price" name="category_price" required min="1">
-               </div>
-               <div class="col-sm-3">
-                 <label for="">Purchase Price</label>
-                 <input type="text" class="form-control" value="<?= @$categories['category_purchase'] ?>" id="category_price" name="category_purchase" required min="1">
-               </div>
-               <div class="col-sm-3">
+               <div class="col-sm-6">
                  <label for=""> Status</label>
                  <select class="form-control" id="categories_status" name="categories_status">
 
@@ -314,18 +291,6 @@
                  <label for="" class="font-weight-bold text-dark">Production Name</label>
                  <input type="text" class="form-control" id="production_name" placeholder="Production Name" name="production_name" value="<?= ucwords(@$updateProduction['production_name']) ?>">
                </div>
-               <!-- <div class="col-lg-2 col-md-3 col-sm-4 col-xs-2 mb-3 mb-sm-0">
-                                    <label for="" class="font-weight-bold text-dark">Production Cost</label>
-                                    <input type="number" min="0" class="form-control" id="production_cost" placeholder="Enter Production Cost " oninput="onlyNumberInput(event)" name="production_cost" value="<?= @$updateProduction['production_cost'] ?>">
-                                </div>
-                                <div class="col-lg-2 col-md-3 col-sm-4 col-xs-2 mb-3 mb-sm-0">
-                                    <label for="" class="font-weight-bold text-dark">Customer Name</label>
-                                    <input type="text" class="form-control" id="production_customer" placeholder="Customer Name" name="production_customer" required value="<?= ucwords(@$updateProduction['customer']) ?>">
-                                </div>
-                                <div class="col-lg-2 col-md-3 col-sm-4 col-xs-2 mb-3 mb-sm-0">
-                                    <label for="" class="font-weight-bold text-dark">Customer Address</label>
-                                    <input type="text" class="form-control" id="cust_address" placeholder="Enter Address" name="cust_address" required value="<?= @$updateProduction['customer_address'] ?>">
-                                </div> -->
              </div>
 
          </div>
@@ -340,22 +305,7 @@
        </div>
      </div>
    </div>
-   <div class="modal fade" id="goToVoucherForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-     <div class="modal-dialog modal-dialog-centered" role="document">
-       <div class="modal-content">
-         <div class="modal-header bg-dark">
-           <h5 class="modal-title  text-white" id="exampleModalLongTitle">Vouchers</h5>
-           <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-             <span aria-hidden="true">&times;</span>
-           </button>
-         </div>
 
-         <div class="modal-body">
-           <button type="button" class="btn btn-outline-dark">Cutting Voucher</button>
-         </div>
-       </div>
-     </div>
-   </div>
 
 
    <script src="js/jquery.min.js"></script>
@@ -398,6 +348,17 @@
    <script src="js/custom.js"></script>
    <script src="js/panel.js"></script>
    <script>
+     $(document).ready(function() {
+       // When the rate field value changes
+       $('#current_rate').on('input', function() {
+         var rateValue = $(this).val();
+
+         // Set the same value for f_days and t_days
+         $('#f_days').val(rateValue);
+         $('#t_days').val(rateValue);
+       });
+     });
+
      function onlyNumberInput(event) {
        // Get the value of the input field
        let input = event.target.value;
