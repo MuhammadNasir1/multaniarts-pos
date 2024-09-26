@@ -321,9 +321,6 @@ if (isset($_REQUEST['new_sin_voucher_date'])) {
 if (!empty($_REQUEST['action']) and $_REQUEST['action'] == "product_module") {
 	$purchase_rate = $total = 0;
 	$category_price = fetchRecord($dbc, "categories", "categories_id", $_REQUEST['category_id']);
-
-	$total = (float)$_REQUEST['product_mm'] * (float)$_REQUEST['product_inch'] * (float)$_REQUEST['product_meter'];
-	$purchase_rate = ($total * (float)$category_price['category_purchase']) / 54;
 	$purchase_rate = round($purchase_rate);
 
 	$data_array = [
@@ -331,14 +328,10 @@ if (!empty($_REQUEST['action']) and $_REQUEST['action'] == "product_module") {
 		'product_code' => @$_REQUEST['product_code'],
 		'brand_id' => @$_REQUEST['brand_id'],
 		'category_id' => @$_REQUEST['category_id'],
-		'product_mm' => @$_REQUEST['product_mm'],
-		'product_inch' => @$_REQUEST['product_inch'],
-		'product_meter' => @$_REQUEST['product_meter'],
 		'current_rate' => @$_REQUEST['current_rate'],
 		'product_description' => @$_REQUEST['product_description'],
 		't_days' => @$_REQUEST['t_days'],
 		'f_days' => @$_REQUEST['f_days'],
-		'product_description' => @$_REQUEST['product_description'],
 		'alert_at' => @$_REQUEST['alert_at'],
 		'availability' => @$_REQUEST['availability'],
 		'purchase_rate' => $purchase_rate,
@@ -956,7 +949,14 @@ if (isset($_REQUEST['cash_purchase_supplier'])) {
 			'paid' => $_REQUEST['paid_ammount'],
 			'payment_status' => 1,
 			'payment_type' => $_REQUEST['payment_type'],
-			'production_id' => $_REQUEST['production_id'],
+			'pur_freight' => $_REQUEST['freight'],
+			'purchase_for' => $_REQUEST['purchase_for'],
+			'bill_no' => $_REQUEST['bill_no'],
+			'gate_pass' => $_REQUEST['gate_pass'],
+			'bilty_no' => $_REQUEST['bilty_no'],
+			'pur_location' => $_REQUEST['pur_location'],
+			'pur_cargo' => $_REQUEST['pur_cargo'],
+			'pur_type' => $_REQUEST['pur_type'],
 		];
 
 		if ($_REQUEST['product_purchase_id'] == "") {
@@ -979,6 +979,9 @@ if (isset($_REQUEST['cash_purchase_supplier'])) {
 						'purchase_id' => $last_id,
 						'quantity' => $product_quantites,
 						'purchase_item_status' => 1,
+						'pur_thaan' => $_REQUEST['pur_thaan'][$x],
+						'pur_gzanah' => $_REQUEST['pur_gzanah'][$x],
+						'pur_unit' => $_REQUEST['pur_unit'][$x],
 					];
 
 					insert_data($dbc, 'purchase_item', $order_items);
@@ -994,7 +997,7 @@ if (isset($_REQUEST['cash_purchase_supplier'])) {
 
 					$x++;
 				} //end of foreach
-				$total_grand = $total_ammount - $total_ammount * ((float)$_REQUEST['ordered_discount'] / 100);
+				$total_grand = $total_ammount - $total_ammount * ((float)$_REQUEST['ordered_discount'] / 100) + $_REQUEST['freight'];
 
 				$due_amount = (float)$total_grand - @(float)$_REQUEST['paid_ammount'];
 				if ($_REQUEST['payment_type'] == "credit_purchase") :
@@ -1081,6 +1084,9 @@ if (isset($_REQUEST['cash_purchase_supplier'])) {
 						'purchase_id' => $_REQUEST['product_purchase_id'],
 						'quantity' => $product_quantites,
 						'purchase_item_status' => 1,
+						'pur_thaan' => $_REQUEST['pur_thaan'][$x],
+						'pur_gzanah' => $_REQUEST['pur_gzanah'][$x],
+						'pur_unit' => $_REQUEST['pur_unit'][$x],
 					];
 
 					//update_data($dbc,'order_item', $order_items , 'purchase_id',$_REQUEST['product_purchase_id']);
@@ -1555,12 +1561,10 @@ if (!empty($_REQUEST['Quotation_delete_id']) && isset($_REQUEST['Quotation_delet
 if (@$_REQUEST['production_add_date'] && @$_REQUEST['production_lat_no']) {
 
 	$data = [
+		'purchase_id' => $_REQUEST['purchase_id'],
 		'production_date' => $_REQUEST['production_add_date'],
 		'production_name' => $_REQUEST['production_name'],
-		'customer' => $_REQUEST['production_customer'],
-		'customer_address' => $_REQUEST['cust_address'],
 		'production_lat_no' => $_REQUEST['production_lat_no'],
-		'production_cost' => $_REQUEST['production_cost'],
 	];
 
 	if (!empty($_REQUEST['prod_upd_id'])) {
@@ -1575,7 +1579,6 @@ if (@$_REQUEST['production_add_date'] && @$_REQUEST['production_lat_no']) {
 			$response = [
 				'sts' => 'warning',
 				'msg' => "Something went wrong" . mysqli_error($dbc)
-
 			];
 		}
 	} else {
@@ -1585,13 +1588,11 @@ if (@$_REQUEST['production_add_date'] && @$_REQUEST['production_lat_no']) {
 			$response = [
 				'sts' => 'success',
 				'msg' => 'Production Added Successfully'
-
 			];
 		} else {
 			$response = [
 				'sts' => 'warning',
 				'msg' => "Something went wrong" . mysqli_error($dbc)
-
 			];
 		}
 	}

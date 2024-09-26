@@ -49,7 +49,11 @@ if (isset($_POST['cutting_btn'])) {
     $cutt_id = $_POST['cutt_id'];
     $cutting_date = $_POST['cutting_date'];
     $cutt_qty = $_POST['cutt_qty'];
-    $cutt_thaan = $_POST['cutt_thaan'];
+    $quantity = $_POST['quantity'];
+    $cutt_party_name = $_POST['cutt_party_name'];
+    $cutt_thaan = $_POST['thaan'];
+    $gzanah = $_POST['gzanah'];
+    $unit = $_POST['unit'];
     $cutt_location = $_POST['cutt_location'];
     $cutt_dyeing_lat_no = $_POST['cutt_dyeing_lat_no'];
     $cutt_volume_no = $_POST['cutt_volume_no'];
@@ -57,9 +61,10 @@ if (isset($_POST['cutting_btn'])) {
 
 
     $formData = [
-        'cutt_designe_no' => $_POST['cutt_designe_no'],
-        'cutt_type' => $_POST['cutt_type'],
+        'cutt_product' => $_POST['cutt_product'],
+        'cutt_quantity' => $_POST['cutt_quantity'],
         'cutt_gzanah' => $_POST['cutt_gzanah'],
+        'cutt_thaan' => $_POST['cutt_thaan'],
         'cutt_gzanah_type' => $_POST['cutt_gzanah_type'],
         'cutt_status' => $_POST['cutt_status']
     ];
@@ -73,13 +78,13 @@ if (isset($_POST['cutting_btn'])) {
 
 
     if (empty($cutt_id)) {
-        $cuttingDataInsert = "INSERT INTO `cutting_voucher`(`cutt_production_id`, `cutt_voucher_date`, `cutt_voucher_quality`, `cutt_thaan`, `cutt_voucher_location`, `cutt_dyeing_lat_no`, `cutt_volume_no`, `cutt_voucher_remarks`, `cutting_vouc_list`) VALUES ('$ProductionID','$cutting_date','$cutt_qty','$cutt_thaan','$cutt_location','$cutt_dyeing_lat_no','$cutt_volume_no','$cutt_remarks','$jsonData')";
+        $cuttingDataInsert = "INSERT INTO `cutting_voucher`(`cutt_production_id`, `cutt_voucher_date`, `cutt_voucher_quality`, `cutt_party_name`, `quantity`, `cutt_thaan`,`gzanah`,`unit`, `cutt_voucher_location`, `cutt_dyeing_lat_no`, `cutt_volume_no`, `cutt_voucher_remarks`, `cutting_vouc_list`) VALUES ('$ProductionID','$cutting_date','$cutt_qty','$cutt_party_name','$quantity','$cutt_thaan','$gzanah','$unit','$cutt_location','$cutt_dyeing_lat_no','$cutt_volume_no','$cutt_remarks','$jsonData')";
         $cuttingQuery = mysqli_query($dbc, $cuttingDataInsert);
         if ($cuttingQuery) {
             header('Location: ' . $_SERVER['REQUEST_URI']);
         }
     } else {
-        $updateCuttVoucher = mysqli_query($dbc, "UPDATE `cutting_voucher` SET `cutt_voucher_quality`='$cutt_qty',`cutt_thaan`='$cutt_thaan',`cutt_voucher_location`='$cutt_location',`cutt_dyeing_lat_no`='$cutt_dyeing_lat_no',`cutt_volume_no`='$cutt_volume_no',`cutt_voucher_remarks`='$cutt_remarks',`cutting_vouc_list`='$jsonData' WHERE id = $cutt_id");
+        $updateCuttVoucher = mysqli_query($dbc, "UPDATE `cutting_voucher` SET `cutt_voucher_quality`='$cutt_qty',`cutt_party_name`='$cutt_party_name',`quantity`='$quantity',`cutt_thaan`='$cutt_thaan',`gzanah`='$gzanah',`unit`='$unit',`cutt_voucher_location`='$cutt_location',`cutt_dyeing_lat_no`='$cutt_dyeing_lat_no',`cutt_volume_no`='$cutt_volume_no',`cutt_voucher_remarks`='$cutt_remarks',`cutting_vouc_list`='$jsonData' WHERE id = $cutt_id");
         if ($updateCuttVoucher) {
             header('Location: ' . $_SERVER['REQUEST_URI']);
         }
@@ -142,22 +147,35 @@ if (isset($_POST['dyeing_btn'])) {
     $dyeing_cp = $_POST['dyeing_cp'];
     $dyeing_color_name = $_POST['dyeing_color_name'];
     $dyeing_color = $_POST['dyeing_color'];
-    $dyeing_thaan = $_POST['dyeing_thaan'];
+    $dyeing_thaan = $_POST['dey_thaan'];
     $dyeing_location = $_POST['dyeing_location'];
     $dyeing_remarks = $_POST['dyeing_remarks'];
+    $dey_quantity = $_POST['dey_quantity'];
+    $dey_gzanah = $_POST['dey_gzanah'];
+    $dey_quantity = $_POST['dey_quantity'];
+    $dey_quality = $_POST['dey_quality'];
 
+    $deyData = [
+        'deying_product' => $_POST['deying_product'],
+        'deying_thaan' => $_POST['deying_thaan'],
+        'deying_gzanah' => $_POST['deying_gzanah'],
+        'deying_quantity' => $_POST['deying_quantity'],
+        'deying_gzanah_type' => $_POST['deying_gzanah_type'],
+        'deying_status' => $_POST['deying_status'],
+    ];
+    $deyJson = json_encode($deyData);
 
 
 
     if (empty($deyeing_id)) {
-        $deyeingDataInsert = "INSERT INTO `deyeing`(`dey_production_id`, `dey_date`, `dey_gate_no`, `dey_lat_no`, `dey_party_name`, `dey_voucher_no`, `dey_qty`, `dey_ready_qty`, `dey_c_p`, `dey_color_name`, `dey_color`, `dey_thaan`, `dey_location`, `dey_remarks`) VALUES ('$ProductionID','$dyeing_date','$dyeing_gate_no','$dyeing_lat_name','$dyeing_party_name',' $dyeing_party_voucher','$dyeing_qty','$dyeing_readyqty','$dyeing_cp','$dyeing_color_name','$dyeing_color','$dyeing_thaan','$dyeing_location','$dyeing_remarks')";
+        $deyeingDataInsert = "INSERT INTO `deyeing`(`dey_production_id`, `dey_date`, `dey_gate_no`, `dey_lat_no`, `dey_party_name`, `dey_voucher_no`, `dey_qty`, `dey_ready_qty`, `dey_c_p`, `dey_color_name`, `dey_color`, `dey_thaan`, `dey_gzanah`, `dey_quantity`, `dey_quality`, `dey_location`, `dey_remarks`,`dey_vouc_list`) VALUES ('$ProductionID','$dyeing_date','$dyeing_gate_no','$dyeing_lat_name','$dyeing_party_name',' $dyeing_party_voucher','$dyeing_qty','$dyeing_readyqty','$dyeing_cp','$dyeing_color_name','$dyeing_color','$dyeing_thaan','$dey_gzanah','$dey_quantity','$dey_quality','$dyeing_location','$dyeing_remarks','$deyJson')";
         $deyeingQuery = mysqli_query($dbc, $deyeingDataInsert);
 
         if ($deyeingQuery) {
             header('Location: ' . $_SERVER['REQUEST_URI']);
         }
     } else {
-        $deyeingUpdate = mysqli_query($dbc, "UPDATE `deyeing` SET `dey_gate_no`='$dyeing_gate_no',`dey_lat_no`='$dyeing_lat_name',`dey_party_name`='$dyeing_party_name',`dey_voucher_no`='$dyeing_party_voucher',`dey_qty`='$dyeing_qty',`dey_ready_qty`='$dyeing_readyqty',`dey_c_p`='$dyeing_cp',`dey_color_name`='$dyeing_color_name',`dey_color`='$dyeing_color',`dey_thaan`='$dyeing_thaan',`dey_location`='$dyeing_location',`dey_remarks`='$dyeing_remarks' WHERE id = $deyeing_id");
+        $deyeingUpdate = mysqli_query($dbc, "UPDATE `deyeing` SET `dey_gate_no`='$dyeing_gate_no',`dey_lat_no`='$dyeing_lat_name',`dey_party_name`='$dyeing_party_name',`dey_voucher_no`='$dyeing_party_voucher',`dey_qty`='$dyeing_qty',`dey_ready_qty`='$dyeing_readyqty',`dey_c_p`='$dyeing_cp',`dey_color_name`='$dyeing_color_name',`dey_color`='$dyeing_color',`dey_thaan`='$dyeing_thaan',`dey_gzanah`='$dey_gzanah',`dey_quantity`='$dey_quantity',`dey_quality`='$dey_quality',`dey_location`='$dyeing_location',`dey_remarks`='$dyeing_remarks',`dey_vouc_list`='$$deyJson' WHERE id = $deyeing_id");
         if ($deyeingUpdate) {
             header('Location: ' . $_SERVER['REQUEST_URI']);
         }
@@ -443,10 +461,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                 <!-- Rounded tabs -->
                                 <ul id="myTab" role="tablist" class="nav nav-tabs nav-pills flex-column flex-sm-row text-center bg-light border-0 rounded-nav">
                                     <li class="nav-item flex-sm-fill">
-                                        <a id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true" class="nav-link border-0 font-weight-bold active">Purchase Voucher</a>
-                                    </li>
-                                    <li class="nav-item flex-sm-fill">
-                                        <a id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false" class="nav-link border-0 font-weight-bold ">Cutting Voucher</a>
+                                        <a id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="true" class="nav-link border-0 font-weight-bold active ">Cutting Voucher</a>
                                     </li>
                                     <li class="nav-item flex-sm-fill">
                                         <a id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false" class="nav-link border-0 font-weight-bold">Print Voucher</a>
@@ -472,127 +487,90 @@ $formattedDate = $currentDate->format('Y-m-d');
 
                                 </ul>
                                 <div id="myTabContent" class="tab-content">
-                                    <div id="home" role="tabpanel" aria-labelledby="home-tab" class="tab-pane fade px-4 py-5 show active">
-                                        <?php include_once './credit_purchase.php'; ?>
-                                        <!-- <form action="">
-                                            <div class="row pb-2">
-                                                <div class="col-lg-2">
-                                                    <label class="font-weight-bold text-dark" for="purchase_date">Date</label>
-                                                    <input type="date" class="form-control" name="purchase_date" id="purchase_date" value="<?= date('Y-m-d') ?>" placeholder="Select Date">
-                                                </div>
-                                                <div class="col-lg-2">
-                                                    <label class="font-weight-bold text-dark" for="bill_num">Bill No.</label>
-                                                    <input type="text" class="form-control" name="bill_num" id="bill_num" value="" placeholder="Bill Number">
-                                                </div>
 
-                                                <div class="col-lg-2">
-                                                    <label class="font-weight-bold text-dark" for="party_name">Party Name</label>
-                                                    <input type="text" class="form-control" name="party_name" id="party_name" value="" placeholder="Party Name">
-                                                </div>
-                                                <div class="col-lg-2">
-                                                    <label class="font-weight-bold text-dark" for="gzanah">Gzanah</label>
-                                                    <input type="text" class="form-control" name="gzanah" id="gzanah" value="" placeholder="Gzanah">
-                                                </div>
-                                                <div class="col-lg-2">
-                                                    <label class="font-weight-bold text-dark" for="unit">Unit</label>
-                                                    <input type="text" class="form-control" name="unit" id="unit" value="" placeholder="Unit">
-                                                </div>
-                                                <div class="col-lg-2">
-                                                    <label class="font-weight-bold text-dark" for="quality">Quality</label>
-                                                    <input type="text" class="form-control" name="quality" id="quality" value="" placeholder="Quality">
-                                                </div>
-                                            </div>
-                                            <div class="row pb-2">
-                                                <div class="col-lg-2">
-                                                    <label class="font-weight-bold text-dark" for="thaan">Thaan</label>
-                                                    <input type="text" class="form-control" name="thaan" id="thaan" value="" placeholder="Thaan">
-                                                </div>
-                                                <div class="col-lg-2">
-                                                    <div class="row">
-                                                        <div class="col-lg-6">
-                                                            <label class="font-weight-bold text-dark" for="rate">Rate</label>
-                                                            <input type="text" class="form-control" name="rate" id="rate" value="" placeholder="Rate">
-                                                        </div>
-                                                        <div class="col-lg-6">
-                                                            <label class="font-weight-bold text-dark" for="price">Price</label>
-                                                            <input type="text" class="form-control" name="price" id="price" value="" placeholder="Price">
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-                                                <div class="col-lg-2">
-                                                    <label class="font-weight-bold text-dark" for="location">Location</label>
-                                                    <input type="text" class="form-control" name="location" id="location" value="" placeholder="Location">
-                                                </div>
-                                                <div class="col-lg-2">
-                                                    <label class="font-weight-bold text-dark" for="builty">Builty</label>
-                                                    <input type="text" class="form-control" name="builty" id="builty" value="" placeholder="Builty">
-                                                </div>
-                                                <div class="col-lg-2">
-                                                    <label class="font-weight-bold text-dark" for="cargo">Cargo</label>
-                                                    <input type="text" class="form-control" name="cargo" id="cargo" value="" placeholder="Cargo">
-                                                </div>
-                                            </div>
-                                            <div class="row pb-2">
-                                                <div class="col-lg-12">
-                                                    <label class="font-weight-bold text-dark" for="remarks">Remarks</label>
-                                                    <textarea name="Remarks" id="Remarks" placeholder="Remarks" class="form-control"></textarea>
-                                                </div>
-                                            </div>
-                                            <div class="row justify-content-end">
-                                                <div class="col-lg-2 text-right">
-                                                    <input class="btn btn-success" type="submit" value="Save" name="purchase_btn">
-                                                </div>
-                                            </div>
-                                        </form> -->
-                                    </div>
-                                    <div id="profile" role="tabpanel" aria-labelledby="profile-tab" class="tab-pane fade px-4 py-5">
+                                    <div id="profile" role="tabpanel" aria-labelledby="profile-tab" class="tab-pane fade px-4 py-5 show active">
                                         <form action="" id="cutt_voucher_form" method="post">
                                             <input type="hidden" id="hiddenInput1" value="<?= @$cuttingDatafetch['id'] ?>" name="cutt_id">
                                             <div class="row pb-2">
-                                                <div class="col-lg-2">
+                                                <div class="col-lg-2 mt-3">
                                                     <label class="font-weight-bold text-dark" for="cutting_date">Date</label>
                                                     <input type="date" class="form-control" name="cutting_date" id="cutting_date" value="<?= date('Y-m-d') ?>">
                                                 </div>
-                                                <div class="col-lg-2">
-                                                    <label class="font-weight-bold text-dark" for="cutt_qty">Quality</label>
-                                                    <select class="form-control searchableSelect" name="cutt_qty" id="cutt_qty" value="<?= @$cuttingDatafetch['id'] ?>">
-                                                        <option value="">Select Product</option>
+                                                <div class="col-lg-2 mt-3">
+                                                    <label class="font-weight-bold text-dark" for="cutt_party_name">Party Name</label>
+
+                                                    <select class="form-control searchableSelect" name="cutt_party_name" id="cutt_party_name">
+                                                        <option value="">Party Name</option>
                                                         <?php
-                                                        $result = mysqli_query($dbc, "SELECT * FROM product WHERE status=1 ");
+
+                                                        $result = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status = 1");
                                                         while ($row = mysqli_fetch_array($result)) {
-                                                            $getBrand = fetchRecord($dbc, "brands", "brand_id", $row['brand_id']);
-                                                            $getCat = fetchRecord($dbc, "categories", "categories_id", $row['category_id']);
+
                                                         ?>
-                                                            <option <?= (@$cuttingDatafetch['cutt_voucher_quality'] == $row["product_id"]) ? 'selected' : ''; ?> data-price="<?= $row["current_rate"] ?>" <?= empty($r['product_id']) ? "" : "selected" ?> value="<?= $row["product_id"] ?> ">
-                                                                <?= ucwords($row["product_name"]) ?> | <?= ucwords(@$getBrand["brand_name"]) ?>(<?= ucwords(@$getCat["categories_name"]) ?>) </option>
+                                                            <option <?= (@$cuttingDatafetch['cutt_party_name'] == $row["customer_id"]) ? 'selected' : ''; ?> value="<?= $row["customer_id"] ?>">
+                                                                <?php echo  ucwords($row["customer_name"]) ?>
+                                                                (<?= ucwords($row['customer_type']) ?>)
+                                                            </option>
 
                                                         <?php   } ?>
                                                     </select>
                                                 </div>
-                                                <div class="col-lg-2">
-                                                    <label class="font-weight-bold text-dark" for="cutt_thaan">Thaan</label>
-                                                    <input type="text" class="form-control" name="cutt_thaan" id="cutt_thaan" value="<?= @$cuttingDatafetch['cutt_thaan'] ?>" placeholder="Thaan">
+                                                <div class="col-lg-2 mt-3 row ">
+                                                    <div class="col-11 pr-3 m-0 p-0">
+                                                        <label class="font-weight-bold text-dark" for="cutt_qty">Quality</label>
+                                                        <select class="form-control searchableSelect" name="cutt_qty" id="cutt_qty" value="<?= @$cuttingDatafetch['id'] ?>">
+                                                            <option value="">Select Product</option>
+                                                            <?php
+                                                            $result = mysqli_query($dbc, "SELECT * FROM product WHERE status=1 ");
+                                                            while ($row = mysqli_fetch_array($result)) {
+                                                                $getBrand = fetchRecord($dbc, "brands", "brand_id", $row['brand_id']);
+                                                                $getCat = fetchRecord($dbc, "categories", "categories_id", $row['category_id']);
+                                                            ?>
+                                                                <option <?= (@$cuttingDatafetch['cutt_voucher_quality'] == $row["product_id"]) ? 'selected' : ''; ?> data-price="<?= $row["current_rate"] ?>" <?= empty($r['product_id']) ? "" : "selected" ?> value="<?= $row["product_id"] ?> ">
+                                                                    <?= ucwords($row["product_name"]) ?> | <?= ucwords(@$getBrand["brand_name"]) ?>(<?= ucwords(@$getCat["categories_name"]) ?>) </option>
+
+                                                            <?php   } ?>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-1 m-0 p-0 mt-1">
+                                                        <label class="invisible d-block">.</label>
+                                                        <button type="button" class="btn btn-danger btn-sm pt-1 pb-1" data-toggle="modal" data-target="#add_product_modal"> <i class="fa fa-plus"></i> </button>
+                                                    </div>
                                                 </div>
-                                                <div class="col-lg-2">
+                                                <div class="col-lg-1 mt-3">
+                                                    <label class="font-weight-bold text-dark" for="cutt_thaan">Thaan</label>
+                                                    <input type="number" min="0" class="form-control" name="thaan" id="thaan" value="<?= @$cuttingDatafetch['cutt_thaan'] ?>" placeholder="Thaan">
+                                                </div>
+                                                <div class="col-lg-1 mt-3">
+                                                    <label class="font-weight-bold text-dark">Gzanah</label>
+                                                    <input type="number" min="0" placeholder="Gzanah Here" value="<?= @$cuttingDatafetch['gzanah'] ?>" autocomplete="off" class="form-control" name="gzanah" id="gzanah">
+                                                </div>
+                                                <div class="col-lg-1 mt-3">
+                                                    <label class="font-weight-bold text-dark">Quantity</label>
+                                                    <input type="number" readonly class="form-control" id="quantity" value="<?= isset($cuttingDatafetch['quantity']) ? $cuttingDatafetch['quantity'] : 0 ?>" min="0" name="quantity">
+                                                </div>
+                                                <div class="col-lg-1 mt-3">
+                                                    <label class="font-weight-bold text-dark">Unit</label>
+                                                    <input type="text" placeholder="Unit Here" value="<?= @$cuttingDatafetch['unit'] ?>" autocomplete="off" class="form-control " name="unit" id="get_pur_unit">
+                                                </div>
+                                                <div class="col-lg-2 mt-3">
                                                     <label class="font-weight-bold text-dark" for="Location">Location</label>
                                                     <input type="text" class="form-control" name="cutt_location" id="cutt_location" value="<?= @$cuttingDatafetch['cutt_voucher_location'] ?>" placeholder="Location">
                                                 </div>
-                                                <div class="col-lg-2">
+                                                <div class="col-lg-2 mt-3">
                                                     <label class="font-weight-bold text-dark" for="Dyeing Lat No">Dyeing Lat No</label>
                                                     <input type="text" class="form-control" name="cutt_dyeing_lat_no" id="cutt_dyeing_lat_no" value="<?= @$cuttingDatafetch['cutt_dyeing_lat_no'] ?>" placeholder="Dyeing Lat No">
                                                 </div>
-                                                <div class="col-lg-2">
+                                                <div class="col-lg-2 mt-3">
                                                     <label class="font-weight-bold text-dark" for="Volume No">Volume No</label>
                                                     <input type="text" class="form-control" name="cutt_volume_no" id="cutt_volume_no" value="<?= @$cuttingDatafetch['cutt_volume_no'] ?>" placeholder="Volume No">
                                                 </div>
-                                            </div>
-                                            <div class="row pb-2">
-                                                <div class="col-lg-12">
+                                                <div class="col-lg-8 mt-3">
                                                     <label class="font-weight-bold text-dark" for="remarks">Remarks</label>
                                                     <textarea name="cutt_remarks" id="cutt_remarks" placeholder="Remarks" class="form-control"><?= @$cuttingDatafetch['cutt_voucher_remarks'] ?></textarea>
                                                 </div>
                                             </div>
+
                                             <div class="row mt-5">
                                                 <div class="col">
                                                     <h4>
@@ -605,34 +583,52 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                 // print_r($cuttingDatafetch['cutting_vouc_list']);
                                                 if (@$cuttingDatafetch != 0) {
                                                     $lowerdata = json_decode(@$cuttingDatafetch['cutting_vouc_list']);
-                                                    for ($x = 0; $x < count(@$lowerdata->cutt_designe_no); $x++) {
+                                                    for ($x = 0; $x < count(@$lowerdata->cutt_product); $x++) {
 
                                                 ?>
 
                                                         <div class="row">
 
-                                                            <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
-                                                                <div class="form-group mb-0">
-                                                                    <label class="font-weight-bold text-dark">Design No</label>
-                                                                    <input type="text" class="form-control" placeholder="Design No" required id="cutt_designe_no" name="cutt_designe_no[]" value="<?= @$lowerdata->cutt_designe_no[$x] ?> ">
+                                                            <div class="ccol-lg-2 col-md-2 col-sm-4 col-xs-4 row m-0 p-0">
+                                                                <div class="col-11 m-0 p-0 pr-2">
+                                                                    <label class=" font-weight-bold text-dark" for="cutt_product">Party Name</label>
+
+                                                                    <select class="form-control " name="cutt_product[]">
+                                                                        <option value="">Party Name</option>
+                                                                        <?php
+
+                                                                        $result = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status = 1");
+                                                                        while ($row = mysqli_fetch_array($result)) {
+
+                                                                        ?>
+                                                                            <option <?= (@$lowerdata->cutt_product[$x] == $row["customer_id"]) ? 'selected' : ''; ?> value="<?= $row["customer_id"] ?>">
+                                                                                <?php echo  ucwords($row["customer_name"]) ?>
+                                                                                (<?= ucwords($row['customer_type']) ?>)
+                                                                            </option>
+
+                                                                        <?php   } ?>
+                                                                    </select>
+
+                                                                </div>
+                                                                <div class="col-1 m-0 p-0 mt-1 ">
+                                                                    <label class="invisible d-block">.</label>
+                                                                    <button type="button" class="btn btn-danger btn-sm pt-1 pb-1" data-toggle="modal" data-target="#add_product_modal"> <i class="fa fa-plus"></i> </button>
                                                                 </div>
                                                             </div>
 
 
 
                                                             <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
-                                                                <div class="form-group mb-0">
-                                                                    <label class="font-weight-bold text-dark">Quantity</label>
-                                                                    <input type="text" class="form-control" placeholder="Qty" required id="cutt_type" name="cutt_type[]" value="<?= @$lowerdata->cutt_type[$x] ?>">
-                                                                </div>
+                                                                <label>Thaan</label>
+                                                                <input type="text" class="form-control thaan" value="<?= @$lowerdata->cutt_thaan[$x] ?>" name="cutt_thaan[]" placeholder="Thaan">
                                                             </div>
-
-
                                                             <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
-                                                                <div class="form-group mb-0">
-                                                                    <label class="font-weight-bold text-dark">Gzanah</label>
-                                                                    <input type="text" class="form-control" placeholder="Gzanah" id="cutt_gzanah" name="cutt_gzanah[]" required value="<?= @$lowerdata->cutt_gzanah[$x] ?>">
-                                                                </div>
+                                                                <label>Gzanah</label>
+                                                                <input type="text" class="form-control gzanah" value="<?= @$lowerdata->cutt_gzanah[$x] ?>" name="cutt_gzanah[]" placeholder="Gzanah">
+                                                            </div>
+                                                            <div class="col-lg-1 col-md-2 col-sm-4 col-xs-4">
+                                                                <label>Quantity</label>
+                                                                <input type="text" class="form-control quantity" value="<?= @$lowerdata->cutt_quantity[$x] ?>" name="cutt_quantity[]" readonly value="0" placeholder="Quanitity">
                                                             </div>
 
                                                             <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
@@ -646,7 +642,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                                     <label class="font-weight-bold text-dark">Status</label>
                                                                     <select name="cutt_status[]" id="cutt_status" class="form-control">
                                                                         <option value="">Select</option>
-                                                                        <option <?= (@$lowerdata->cutt_status[$x] == 'Sent') ? 'selected' : ''; ?> value="Sent">Sent</option>
+                                                                        <option <?= (@$lowerdata->cutt_status[$x] == 'Receivable') ? 'selected' : ''; ?> value="Receivable">Receivable</option>
                                                                         <option <?= (@$lowerdata->cutt_status[$x] == 'Recieved') ? 'selected' : ''; ?> value="Recieved">Recieved</option>
                                                                     </select>
                                                                 </div>
@@ -668,28 +664,47 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                     ?>
                                                     <div class="row">
 
-                                                        <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
-                                                            <div class="form-group mb-0">
-                                                                <label class="font-weight-bold text-dark">Design No</label>
-                                                                <input type="text" class="form-control" placeholder="Design No" required id="cutt_designe_no" name="cutt_designe_no[]" value="<?= @$lowerdata->cutt_designe_no[$x] ?> ">
+                                                        <div class="ccol-lg-2 col-md-2 col-sm-4 col-xs-4 row m-0 p-0">
+                                                            <div class="col-11 m-0 p-0 pr-2">
+                                                                <label class=" font-weight-bold text-dark" for="cutt_product">Party Name</label>
+
+                                                                <select class="form-control " name="cutt_product[]">
+                                                                    <option value="">Party Name</option>
+                                                                    <?php
+
+                                                                    $result = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status = 1");
+                                                                    while ($row = mysqli_fetch_array($result)) {
+
+                                                                    ?>
+                                                                        <option <?= (@$lowerdata->cutt_product[$x] == $row["customer_id"]) ? 'selected' : ''; ?> value="<?= $row["customer_id"] ?>">
+                                                                            <?php echo  ucwords($row["customer_name"]) ?>
+                                                                            (<?= ucwords($row['customer_type']) ?>)
+                                                                        </option>
+
+                                                                    <?php   } ?>
+                                                                </select>
+
+                                                            </div>
+                                                            <div class="col-1 m-0 p-0 mt-1 ">
+                                                                <label class="invisible d-block">.</label>
+                                                                <button type="button" class="btn btn-danger btn-sm pt-1 pb-1" data-toggle="modal" data-target="#add_product_modal"> <i class="fa fa-plus"></i> </button>
                                                             </div>
                                                         </div>
 
 
 
+
                                                         <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
-                                                            <div class="form-group mb-0">
-                                                                <label class="font-weight-bold text-dark">Quantity</label>
-                                                                <input type="text" class="form-control" placeholder="Qty" required id="cutt_type" name="cutt_type[]" value="<?= @$lowerdata->cutt_type[$x] ?>">
-                                                            </div>
+                                                            <label>Thaan</label>
+                                                            <input type="text" class="form-control thaan" value="<?= @$lowerdata->cutt_thaan[$x] ?>" name="cutt_thaan[]" placeholder="Thaan">
                                                         </div>
-
-
                                                         <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
-                                                            <div class="form-group mb-0">
-                                                                <label class="font-weight-bold text-dark">Gzanah</label>
-                                                                <input type="text" class="form-control" placeholder="Gzanah" id="cutt_gzanah" name="cutt_gzanah[]" required value="<?= @$lowerdata->cutt_gzanah[$x] ?>">
-                                                            </div>
+                                                            <label>Gzanah</label>
+                                                            <input type="text" class="form-control gzanah" value="<?= @$lowerdata->cutt_gzanah[$x] ?>" name="cutt_gzanah[]" placeholder="Gzanah">
+                                                        </div>
+                                                        <div class="col-lg-1 col-md-2 col-sm-4 col-xs-4">
+                                                            <label>Quantity</label>
+                                                            <input type="text" class="form-control quantity" value="<?= @$lowerdata->cutt_quantity[$x] ?>" name="cutt_quantity[]" readonly value="0" placeholder="Quanitity">
                                                         </div>
 
                                                         <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
@@ -703,7 +718,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                                 <label class="font-weight-bold text-dark">Status</label>
                                                                 <select name="cutt_status[]" id="cutt_status" class="form-control">
                                                                     <option value="">Select</option>
-                                                                    <option <?= (@$lowerdata->cutt_status[$x] == 'Sent') ? 'selected' : ''; ?> value="Sent">Sent</option>
+                                                                    <option <?= (@$lowerdata->cutt_status[$x] == 'Receivable') ? 'selected' : ''; ?> value="Receivable">Receivable</option>
                                                                     <option <?= (@$lowerdata->cutt_status[$x] == 'Recieved') ? 'selected' : ''; ?> value="Recieved">Recieved</option>
                                                                 </select>
                                                             </div>
@@ -724,7 +739,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                             </div>
 
                                             <div class="row my-4 justify-content-end">
-                                                <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+                                                <div class="col-lg-1">
                                                     <div id="cutt_voucher_btn">
                                                         <button type="button" class="outline_none border-0 bg-white" onclick="cutt_voucher_duplicateRow()">
                                                             <img src="img/add.png" width="30px" alt="add sign">
@@ -734,9 +749,9 @@ $formattedDate = $currentDate->format('Y-m-d');
                                             </div>
 
                                             <div class="row  justify-content-end">
-                                                <div class="col-lg-2 d-inline text-left p-0">
+                                                <div class="col-lg-1 d-inline text-left p-0">
 
-                                                    <a target="_blank" href="print_production.php?print=<?= $ProductionID ?>&part=cutting" id="showData1">
+                                                    <a target="_blank" href="print_production.php?print=<?= $ProductionID ?>&type=cutting&part=production" id="showData1">
                                                         <div class="btn btn-primary">
                                                             <i class="fa fa-print"></i> Print
                                                         </div>
@@ -950,19 +965,11 @@ $formattedDate = $currentDate->format('Y-m-d');
                                         <form action="" method="post">
                                             <input type="hidden" id="hiddenInput3" value="<?= @$deyeingfetch['id'] ?>" name="deyeing_id">
                                             <div class="row pb-2">
-                                                <div class="col-lg-2">
+                                                <div class="col-lg-2 mt-3">
                                                     <label class="font-weight-bold text-dark" for="dyeing_date">Date</label>
                                                     <input type="date" class="form-control" name="dyeing_date" id="dyeing_date" value="<?= date('Y-m-d') ?>" placeholder="Select Date">
                                                 </div>
-                                                <div class="col-lg-2">
-                                                    <label class="font-weight-bold text-dark" for="gate_no">Gate Pass No.</label>
-                                                    <input type="text" class="form-control" name="dyeing_gate_no" id="dyeing_gate_no" value="<?= @$deyeingfetch['dey_gate_no'] ?>" placeholder="Gate pass no.">
-                                                </div>
-                                                <div class="col-lg-2">
-                                                    <label class="font-weight-bold text-dark" for="dyeing_lat_name">Lat no.</label>
-                                                    <input type="text" class="form-control" name="dyeing_lat_name" id="dyeing_lat_name" value="<?= @$deyeingfetch['dey_lat_no'] ?>" placeholder="Lat Number">
-                                                </div>
-                                                <div class="col-lg-2">
+                                                <div class="col-lg-2 mt-3">
                                                     <label class="font-weight-bold text-dark" for="Party Name">Party Name</label>
 
 
@@ -981,50 +988,266 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                         <?php   } ?>
                                                     </select>
                                                 </div>
-                                                <div class="col-lg-2">
+                                                <div class="col-lg-2 mt-3  row ">
+                                                    <div class="col-11 pr-3 m-0 p-0">
+                                                        <label class="font-weight-bold text-dark" for="dey_quality">Quality</label>
+                                                        <select class="form-control searchableSelect" name="dey_quality" value="<?= @$deyeingfetch['id'] ?>">
+                                                            <option value="">Select Product</option>
+                                                            <?php
+                                                            $result = mysqli_query($dbc, "SELECT * FROM product WHERE status=1 ");
+                                                            while ($row = mysqli_fetch_array($result)) {
+                                                                $getBrand = fetchRecord($dbc, "brands", "brand_id", $row['brand_id']);
+                                                                $getCat = fetchRecord($dbc, "categories", "categories_id", $row['category_id']);
+                                                            ?>
+                                                                <option <?= (@$deyeingfetch['dey_quality'] == $row["product_id"]) ? 'selected' : ''; ?> data-price="<?= $row["current_rate"] ?>" <?= empty($r['product_id']) ? "" : "selected" ?> value="<?= $row["product_id"] ?> ">
+                                                                    <?= ucwords($row["product_name"]) ?> | <?= ucwords(@$getBrand["brand_name"]) ?>(<?= ucwords(@$getCat["categories_name"]) ?>) </option>
+
+                                                            <?php   } ?>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-1 m-0 p-0 mt-1">
+                                                        <label class="invisible d-block">.</label>
+                                                        <button type="button" class="btn btn-danger btn-sm pt-1 pb-1" data-toggle="modal" data-target="#add_product_modal"> <i class="fa fa-plus"></i> </button>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-1 ml-lg-4 mt-3">
+                                                    <label class="font-weight-bold text-dark" for="Thaan">Thaan</label>
+                                                    <input type="number" min="0" class="form-control thaanCount" name="dey_thaan" id="thaan" value="<?= @$deyeingfetch['dey_thaan'] ?>" placeholder="Thaan">
+                                                </div>
+                                                <div class="col-lg-1 mt-3 ">
+                                                    <label class="font-weight-bold text-dark">Gzanah</label>
+                                                    <input type="number" min="0" placeholder="Gzanah Here" value="<?= @$deyeingfetch['dey_gzanah'] ?>" autocomplete="off" class="form-control gzanahCount" name="dey_gzanah" id="gzanah">
+                                                </div>
+                                                <div class="col-lg-1 mt-3 ">
+                                                    <label class="font-weight-bold text-dark">Quantity</label>
+                                                    <input type="number" readonly class="form-control quantityCount" id="quantity" value="<?= isset($deyeingfetch['dey_quantity']) ? @$deyeingfetch['dey_quantity'] : 0  ?>" min="0" name="dey_quantity">
+                                                </div>
+
+                                                <div class="col-lg-1 mt-3">
+                                                    <label class="font-weight-bold text-dark" for="gate_no">Gate Pass No.</label>
+                                                    <input type="text" class="form-control" name="dyeing_gate_no" id="dyeing_gate_no" value="<?= @$deyeingfetch['dey_gate_no'] ?>" placeholder="Gate pass no.">
+                                                </div>
+
+                                                <div class="col-lg-2 mt-3">
+                                                    <label class="font-weight-bold text-dark" for="dyeing_lat_name">Lat no.</label>
+                                                    <input type="text" class="form-control" name="dyeing_lat_name" id="dyeing_lat_name" value="<?= @$deyeingfetch['dey_lat_no'] ?>" placeholder="Lat Number">
+                                                </div>
+                                                <div class="col-lg-2 mt-3">
                                                     <label class="font-weight-bold text-dark" for="Party Voucher No.">Party Voucher No.</label>
                                                     <input type="text" class="form-control" name="dyeing_party_voucher" id="dyeing_party_voucher" value="<?= @$deyeingfetch['dey_voucher_no'] ?>" placeholder="Party Voucher No.">
                                                 </div>
-                                                <div class="col-lg-2">
+                                                <div class="col-lg-2 mt-3">
                                                     <label class="font-weight-bold text-dark" for="Qty">Qty</label>
                                                     <input type="text" class="form-control" name="dyeing_qty" id="dyeing_qty" value="<?= @$deyeingfetch['dey_qty'] ?>" placeholder="Qty">
                                                 </div>
-                                            </div>
-                                            <div class="row pb-2">
-                                                <div class="col-lg-2">
+                                                <div class="col-lg-2 mt-3">
                                                     <label class="font-weight-bold text-dark" for="Ready Qty">Ready Qty</label>
                                                     <input type="text" class="form-control" name="dyeing_readyqty" id="dyeing_readyqty" value="<?= @$deyeingfetch['dey_ready_qty'] ?>" placeholder="Ready Qty">
                                                 </div>
-                                                <div class="col-lg-2">
+                                                <div class="col-lg-2 mt-3">
                                                     <label class="font-weight-bold text-dark" for="C-P">C-P</label>
                                                     <input type="text" class="form-control" name="dyeing_cp" id="dyeing_cp" value="<?= @$deyeingfetch['dey_c_p'] ?>" placeholder="C-P">
                                                 </div>
-                                                <div class="col-lg-1 pr-1">
+                                                <div class="col-lg-1 mt-3 pr-1">
                                                     <label class="font-weight-bold text-dark" for="color">Color Name</label>
                                                     <input type="text" class="form-control" name="dyeing_color_name" id="dyeing_color_name" value="<?= @$deyeingfetch['dey_color_name'] ?>" placeholder="Name">
                                                 </div>
-                                                <div class="col-lg-1 pl-1">
+                                                <div class="col-lg-1 mt-3 pl-1">
                                                     <label class="font-weight-bold text-dark" for="color">Color</label>
                                                     <input type="color" class="form-control" name="dyeing_color" id="dyeing_color" value="<?= @$deyeingfetch['dey_color'] ?>" placeholder="Color">
                                                 </div>
-                                                <div class="col-lg-2">
-                                                    <label class="font-weight-bold text-dark" for="Thaan">Thaan</label>
-                                                    <input type="text" class="form-control" name="dyeing_thaan" id="dyeing_thaan" value="<?= @$deyeingfetch['dey_thaan'] ?>" placeholder="Thaan">
-                                                </div>
-                                                <div class="col-lg-2">
+
+                                                <div class="col-lg-2 mt-3">
                                                     <label class="font-weight-bold text-dark" for="Location">Location</label>
                                                     <input type="text" class="form-control" name="dyeing_location" id="dyeing_location" value="<?= @$deyeingfetch['dey_location'] ?>" placeholder="Location">
                                                 </div>
                                             </div>
-                                            <div class="row pb-2">
+
+                                            <div class="row pb-2 mt-3">
                                                 <div class="col-lg-12">
                                                     <label class="font-weight-bold text-dark" for="remarks">Remarks</label>
                                                     <textarea name="dyeing_remarks" id="dyeing_remarks" placeholder="Remarks" class="form-control"><?= @$deyeingfetch['dey_remarks'] ?></textarea>
                                                 </div>
                                             </div>
+                                            <div class="row mt-5">
+                                                <div class="col">
+                                                    <h4>
+                                                        List
+                                                    </h4>
+                                                </div>
+                                            </div>
+                                            <div id="deyingContainer">
+                                                <?php
+                                                // print_r($deyeingfetch['dey_vouc_list']);
+                                                if (@$deyeingfetch != 0) {
+                                                    $lowerdata10 = json_decode(@$deyeingfetch['dey_vouc_list']);
+                                                    for ($x = 0; $x < count(@$lowerdata10->deying_product); $x++) {
+
+                                                ?>
+
+                                                        <div class="row mt-3">
+
+                                                            <div class="ccol-lg-2 col-md-2 col-sm-4 col-xs-4 row m-0 p-0">
+                                                                <div class="col-11 m-0 p-0 pr-2">
+                                                                    <label class=" font-weight-bold text-dark" for="deying_product">Party Name</label>
+
+                                                                    <select class="form-control " name="deying_product[]">
+                                                                        <option value="">Party Name</option>
+                                                                        <?php
+
+                                                                        $result = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status = 1");
+                                                                        while ($row = mysqli_fetch_array($result)) {
+
+                                                                        ?>
+                                                                            <option <?= (@$lowerdata10->deying_product[$x] == $row["customer_id"]) ? 'selected' : ''; ?> value="<?= $row["customer_id"] ?>">
+                                                                                <?php echo  ucwords($row["customer_name"]) ?>
+                                                                                (<?= ucwords($row['customer_type']) ?>)
+                                                                            </option>
+
+                                                                        <?php   } ?>
+                                                                    </select>
+
+                                                                </div>
+                                                                <div class="col-1 m-0 p-0 mt-1 ">
+                                                                    <label class="invisible d-block">.</label>
+                                                                    <button type="button" class="btn btn-danger btn-sm pt-1 pb-1" data-toggle="modal" data-target="#add_product_modal"> <i class="fa fa-plus"></i> </button>
+                                                                </div>
+                                                            </div>
+
+
+
+                                                            <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                <label>Thaan</label>
+                                                                <input type="text" class="form-control thaan" value="<?= @$lowerdata10->deying_thaan[$x] ?>" name="deying_thaan[]" placeholder="Thaan">
+                                                            </div>
+                                                            <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                <label>Gzanah</label>
+                                                                <input type="text" class="form-control gzanah" value="<?= @$lowerdata10->deying_gzanah[$x] ?>" name="deying_gzanah[]" placeholder="Gzanah">
+                                                            </div>
+                                                            <div class="col-lg-1 col-md-2 col-sm-4 col-xs-4">
+                                                                <label>Quantity</label>
+                                                                <input type="text" class="form-control quantity" value="<?= @$lowerdata10->deying_quantity[$x] ?>" name="deying_quantity[]" readonly value="0" placeholder="Quanitity">
+                                                            </div>
+
+                                                            <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                <div class="form-group mb-0">
+                                                                    <label class="font-weight-bold text-dark">Type</label>
+                                                                    <input type="text" class="form-control" id="deying_gzanah_type" name="deying_gzanah_type[]" placeholder="Type" required value="<?= @$lowerdata10->deying_gzanah_type[$x] ?>">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                <div class="form-group mb-0">
+                                                                    <label class="font-weight-bold text-dark">Status</label>
+                                                                    <select name="deying_status[]" id="deying_status" class="form-control">
+                                                                        <option value="">Select</option>
+                                                                        <option <?= (@$lowerdata10->deying_status[$x] == 'Receivable') ? 'selected' : ''; ?> value="Receivable">Receivable</option>
+                                                                        <option <?= (@$lowerdata10->deying_status[$x] == 'Recieved') ? 'selected' : ''; ?> value="Recieved">Recieved</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+
+
+                                                            <div class=" align-items-end jus d-flex col-lg-1 col-md-2 col-sm-4 col-xs-4 add_remove">
+                                                                <button type="button" class=" outline_none border-0 bg-white" onclick="deying_voucher_remove(this)">
+                                                                    <img title="Remove Row" src="img/remove.png" width="30px" alt="remove sign">
+                                                                </button>
+                                                            </div>
+                                                        </div>
+
+                                                    <?php
+                                                    }
+                                                    // }
+
+                                                } else {
+                                                    ?>
+                                                    <div class="row">
+
+                                                        <div class="ccol-lg-2 col-md-2 col-sm-4 col-xs-4 row m-0 p-0">
+                                                            <div class="col-11 m-0 p-0 pr-2">
+                                                                <label class=" font-weight-bold text-dark" for="deying_product">Party Name</label>
+
+                                                                <select class="form-control " name="deying_product[]">
+                                                                    <option value="">Party Name</option>
+                                                                    <?php
+
+                                                                    $result = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status = 1");
+                                                                    while ($row = mysqli_fetch_array($result)) {
+
+                                                                    ?>
+                                                                        <option <?= (@$lowerdata10->deying_product[$x] == $row["customer_id"]) ? 'selected' : ''; ?> value="<?= $row["customer_id"] ?>">
+                                                                            <?php echo  ucwords($row["customer_name"]) ?>
+                                                                            (<?= ucwords($row['customer_type']) ?>)
+                                                                        </option>
+
+                                                                    <?php   } ?>
+                                                                </select>
+
+                                                            </div>
+                                                            <div class="col-1 m-0 p-0 mt-1 ">
+                                                                <label class="invisible d-block">.</label>
+                                                                <button type="button" class="btn btn-danger btn-sm pt-1 pb-1" data-toggle="modal" data-target="#add_product_modal"> <i class="fa fa-plus"></i> </button>
+                                                            </div>
+                                                        </div>
+
+
+
+
+                                                        <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                            <label>Thaan</label>
+                                                            <input type="text" class="form-control thaan" value="<?= @$lowerdata10->deying_thaan[$x] ?>" name="deying_thaan[]" placeholder="Thaan">
+                                                        </div>
+                                                        <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                            <label>Gzanah</label>
+                                                            <input type="text" class="form-control gzanah" value="<?= @$lowerdata10->deying_gzanah[$x] ?>" name="deying_gzanah[]" placeholder="Gzanah">
+                                                        </div>
+                                                        <div class="col-lg-1 col-md-2 col-sm-4 col-xs-4">
+                                                            <label>Quantity</label>
+                                                            <input type="text" class="form-control quantity" value="<?= @$lowerdata10->deying_quantity[$x] ?>" name="deying_quantity[]" readonly value="0" placeholder="Quanitity">
+                                                        </div>
+
+                                                        <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                            <div class="form-group mb-0">
+                                                                <label class="font-weight-bold text-dark">Type</label>
+                                                                <input type="text" class="form-control" id="deying_gzanah_type" name="deying_gzanah_type[]" placeholder="Type" required value="<?= @$lowerdata10->deying_gzanah_type[$x] ?>">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                            <div class="form-group mb-0">
+                                                                <label class="font-weight-bold text-dark">Status</label>
+                                                                <select name="deying_status[]" id="deying_status" class="form-control">
+                                                                    <option value="">Select</option>
+                                                                    <option <?= (@$lowerdata10->deying_status[$x] == 'Receivable') ? 'selected' : ''; ?> value="Receivable">Receivable</option>
+                                                                    <option <?= (@$lowerdata10->deying_status[$x] == 'Recieved') ? 'selected' : ''; ?> value="Recieved">Recieved</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class=" align-items-end jus d-flex col-lg-1 col-md-2 col-sm-4 col-xs-4 add_remove">
+                                                            <button type="button" class="d-none outline_none border-0 bg-white" onclick="deying_voucher_remove(this)">
+                                                                <img title="Remove Row" src="img/remove.png" width="30px" alt="remove sign">
+                                                            </button>
+                                                        </div>
+
+                                                    </div>
+                                                <?php
+                                                }
+                                                ?>
+
+
+
+                                            </div>
+
+                                            <div class="row my-4 justify-content-end">
+                                                <div class="col-lg-1">
+                                                    <div id="deying_voucher_btn">
+                                                        <button type="button" class="outline_none border-0 bg-white" onclick="deying_voucher_duplicateRow()">
+                                                            <img src="img/add.png" width="30px" alt="add sign">
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <div class="row justify-content-end">
-                                                <div class="col-lg-2 text-right">
-                                                    <a target="_blank" href="print_production.php?print=<?= $ProductionID ?>&part=deyeing" id="showData3">
+                                                <div class="col-lg-2  text-right">
+                                                    <a target="_blank" href="print_production.php?print=<?= $ProductionID ?>&type=deyeing&part=production" id="showData3">
                                                         <div class="btn btn-primary">
                                                             <i class="fa fa-print"></i> Print
                                                         </div>
@@ -1936,4 +2159,40 @@ $formattedDate = $currentDate->format('Y-m-d');
             document.getElementById('showData' + i).style.display = 'inline';
         }
     }
+    $(document).ready(function() {
+        // Function to calculate and update the quantity
+        function calculateQuantity() {
+            // Get the values from the thaan and gzanah inputs
+            var thaan = parseFloat($('#thaan').val()) || 0;
+            var gzanah = parseFloat($('#gzanah').val()) || 0;
+
+            // Calculate the quantity (thaan * gzanah)
+            var quantity = thaan * gzanah;
+
+            // Update the quantity input field with the result
+            $('#quantity').val(quantity);
+        }
+
+        // Attach event listeners to thaan and gzanah inputs
+        $('#thaan, #gzanah').on('input', function() {
+            calculateQuantity();
+        });
+    });
+    $(document).ready(function() {
+        // Function to calculate and update the quantity for a specific row
+        function calculateQuantity(row) {
+            var thaan = parseFloat($(row).find('.thaan').val()) || 0; // Get thaan value, default to 0 if invalid
+            var gzanah = parseFloat($(row).find('.gzanah').val()) || 0; // Get gzanah value, default to 0 if invalid
+
+            var quantity = thaan * gzanah; // Calculate quantity
+
+            $(row).find('.quantity').val(quantity); // Update the quantity field in the row
+        }
+
+        // Attach event listeners to thaan and gzanah inputs for each row
+        $('#container').on('input', '.thaan, .gzanah', function() {
+            var row = $(this).closest('.row'); // Find the closest row to the input that triggered the event
+            calculateQuantity(row); // Calculate quantity for the current row
+        });
+    });
 </script>

@@ -1,4 +1,17 @@
 $(document).ready(function () {
+  // Function to calculate and update the quantity
+  function calculateQuantity() {
+    var thaan = parseFloat($("#get_pur_thaan").val()) || 0;
+    var gzanah = parseFloat($("#get_pur_gzanah").val()) || 0;
+    var quantity = thaan * gzanah;
+    $("#get_product_quantity").val(quantity);
+  }
+
+  // Bind the calculate function to input changes
+  $("#get_pur_thaan, #get_pur_gzanah").on("input", calculateQuantity);
+});
+
+$(document).ready(function () {
   document.onkeyup = function (e) {
     if (e.altKey && e.which == 13) {
       //enter press
@@ -572,8 +585,10 @@ $("#addProductPurchase").on("click", function () {
 
   var name = $("#get_product_name :selected").text();
   var price = $("#get_product_price").val();
+  var thaan = $("#get_pur_thaan").val();
+  var gzanah = $("#get_pur_gzanah").val();
+  var unit = $("#get_pur_unit").val();
   var id = $("#get_product_name :selected").val();
-  var code = $("#get_product_code").val();
   var product_quantity = $("#get_product_quantity").val();
   product_quantity = parseInt(product_quantity);
   var pro_type = $("#add_pro_type").val();
@@ -585,177 +600,106 @@ $("#addProductPurchase").on("click", function () {
   console.log(max_qty);
   var GrandTotalAva = $("#remaining_ammount").val();
   var ThisTotal = price * product_quantity + Number(GrandTotalAva);
-  //alert(ThisTotal);
   var RThisPersonLIMIT = $("#R_LimitInput").val();
 
-  //if (id!='' && product_quantity!='' && max_qty>=product_quantity && code!='') {
   if (id != "") {
-    $("#get_product_name ").prop("selectedIndex", 0);
+    $("#get_product_name").val(null).trigger("change");
     $("#add_pro_type").val("add");
-    $("#get_product_code").val("");
     $("#get_product_price").val("");
-    // $('#get_product_code').trigger('keyup');
+    $("#get_pur_thaan").val("");
+    $("#get_pur_gzanah").val("");
+    $("#get_pur_unit").val("");
     $("#get_product_quantity").val("1");
     $("#get_product_code").focus();
-    if ($("#product_idN_" + id).length) {
-      var jsonObj = [];
-      $(".product_ids").each(function (index) {
-        var quantity = $(this).data("quantity");
-        total_price = 0;
-        var val = $(this).val();
-        if (val == id) {
-          if (pro_type == "add") {
-            var Currentquantity =
-              parseInt(quantity) + parseInt(product_quantity);
-          } else {
-            var Currentquantity = parseInt(product_quantity);
-          }
-          total_price = parseFloat(price) * parseFloat(Currentquantity);
-          //if (Currentquantity<=max_qty) {
-          if (quantity) {
-            $("#product_idN_" + id).replaceWith(
-              '<tr id="product_idN_' +
-                id +
-                '">\
-			          <input type="hidden" data-price="' +
-                price +
-                '" data-quantity="' +
-                Currentquantity +
-                '" id="product_ids_' +
-                id +
-                '" class="product_ids" name="product_ids[]" value="' +
-                id +
-                '">\
-			          <input type="hidden" id="product_quantites_' +
-                id +
-                '" name="product_quantites[]" value="' +
-                product_quantity +
-                '">\
-			          <input type="hidden" id="product_rate_' +
-                id +
-                '" name="product_rates[]" value="' +
-                price +
-                '">\
-			          <input type="hidden" id="product_totalrate_' +
-                id +
-                '" name="product_totalrates[]" value="' +
-                total_price +
-                '">\
-			          <td>' +
-                code +
-                "</td>\
-			          <td>" +
-                name +
-                " </td>\
-			          <td>" +
-                price +
-                "</td>\
-			          <td>" +
-                Currentquantity +
-                "</td>\
-			          <td>" +
-                total_price +
-                '</td>\
-			          <td>\
-			            <button type="button" onclick="removeByid(`#product_idN_' +
-                id +
-                '`)" class="fa fa-trash text-danger" ></button>\
-			            <button type="button" onclick="editByid(' +
-                id +
-                ",`" +
-                code +
-                "`,`" +
-                price +
-                "`,`" +
-                product_quantity +
-                '`)" class="fa fa-edit text-success"  ></button>\
-			            </td>\
-			          </tr>'
-            );
-          } else {
-            sweeetalert("Cannot Add Quantity more then  stock", "error", 1500);
-          }
-        }
-        getOrderTotal();
-      });
-    } else {
-      total_price = parseFloat(price) * parseFloat(product_quantity);
 
-      $("#purchase_product_tb").append(
-        '<tr id="product_idN_' +
-          id +
-          '">\
-			          <input type="hidden" data-price="' +
-          price +
-          '"  data-quantity="' +
-          product_quantity +
-          '" id="product_ids_' +
-          id +
-          '" class="product_ids" name="product_ids[]" value="' +
-          id +
-          '">\
-			          <input type="hidden" id="product_quantites_' +
-          id +
-          '" name="product_quantites[]" value="' +
-          product_quantity +
-          '">\
-			          <input type="hidden" id="product_rate_' +
-          id +
-          '" name="product_rates[]" value="' +
-          price +
-          '">\
-			          <input type="hidden" id="product_totalrate_' +
-          id +
-          '" name="product_totalrates[]" value="' +
-          total_price +
-          '">\
-			          <td>' +
-          code +
-          "</td>\
-			          <td>" +
-          name +
-          " </td>\
-			           <td>" +
-          price +
-          "</td>\
-			           <td>" +
-          product_quantity +
-          "</td>\
-			          <td>" +
-          total_price +
-          '</td>\
-			          <td>\
-			            <button type="button" onclick="removeByid(`#product_idN_' +
-          id +
-          '`)" class="fa fa-trash text-danger" href="#" ></button>\
-			            <button type="button" onclick="editByid(' +
-          id +
-          ",`" +
-          code +
-          "`,`" +
-          price +
-          "`,`" +
-          product_quantity +
-          '`)" class="fa fa-edit text-success"  ></button>\
-			            </td>\
-			          </tr>'
-      );
+    total_price = parseFloat(price) * parseFloat(product_quantity);
 
-      getOrderTotal();
-    }
+    $("#purchase_product_tb").append(
+      '<tr id="product_idN_' +
+        id +
+        '">\
+        <input type="hidden" data-price="' +
+        price +
+        '" data-quantity="' +
+        product_quantity +
+        '" id="product_ids_' +
+        id +
+        '" class="product_ids" name="product_ids[]" value="' +
+        id +
+        '">\
+        <input type="hidden" id="product_quantites_' +
+        id +
+        '" name="product_quantites[]" value="' +
+        product_quantity +
+        '">\
+        <input type="hidden" id="product_rate_' +
+        id +
+        '" name="product_rates[]" value="' +
+        price +
+        '">\
+        <input type="hidden" id="pur_thaan_' +
+        id +
+        '" name="pur_thaan[]" value="' +
+        thaan +
+        '">\
+        <input type="hidden" id="pur_gzanah_' +
+        id +
+        '" name="pur_gzanah[]" value="' +
+        gzanah +
+        '">\
+        <input type="hidden" id="pur_unit_' +
+        id +
+        '" name="pur_unit[]" value="' +
+        unit +
+        '">\
+        <input type="hidden" id="product_totalrate_' +
+        id +
+        '" name="product_totalrates[]" value="' +
+        total_price +
+        '">\
+        <td>' +
+        name +
+        "</td>\
+        <td>" +
+        thaan +
+        " </td>\
+        <td>" +
+        gzanah +
+        " </td>\
+        <td>" +
+        unit +
+        " </td>\
+        <td>" +
+        price +
+        "</td>\
+        <td>" +
+        product_quantity +
+        "</td>\
+        <td>" +
+        total_price +
+        '</td>\
+        <td>\
+        <button type="button" class="delete-btn fa fa-trash text-danger"></button>\
+        \
+        </td>\
+        </tr>'
+    );
+
+    getOrderTotal();
   } else {
     if (max_qty < product_quantity) {
-      sweeetalert("Cannot Add Quantity more then  stock", "error", 1500);
+      sweeetalert("Cannot Add Quantity more than stock", "error", 1500);
     } else if (code == "") {
       sweeetalert("Select The Product first", "error", 1500);
     }
   }
 });
 
-function removeByid(id) {
-  $(id).remove();
-  getOrderTotal();
-}
+// Event delegation for delete buttons
+$(document).on("click", ".delete-btn", function () {
+  $(this).closest("tr").remove(); // Remove the row
+  getOrderTotal(); // Recalculate total
+});
 
 function getOrderTotal() {
   var payment_type = $("#payment_type").val();
@@ -769,7 +713,12 @@ function getOrderTotal() {
   var discount = $("#ordered_discount").val();
   var freight = $("#freight").val();
   discount = discount == "" ? (discount = 0) : parseFloat(discount);
-  if (payment_type == "cash_in_hand" || payment_type == "credit_sale") {
+  if (
+    payment_type == "cash_in_hand" ||
+    payment_type == "credit_sale" ||
+    payment_type == "cash_puchase" ||
+    payment_type == "credit_purchase"
+  ) {
     freight = freight == "" ? (freight = 0) : parseFloat(freight);
   } else {
     freight = 0;
@@ -799,11 +748,13 @@ function getOrderTotal() {
   getRemaingAmount();
 }
 
-function editByid(id, code, price, qty) {
+function editByid(id, thaan, gzanah, unit, price, product_quantity) {
   $(".searchableSelect").val(id);
 
-  $("#get_product_code").val(code);
-  // $('#get_product_quantity').val(qty);
+  $("#get_pur_thaan").val(thaan);
+  $("#get_pur_gzanah").val(gzanah);
+  $("#get_pur_unit").val(unit);
+  $("#get_product_quantity").val(product_quantity);
   $("#add_pro_type").val("update");
 
   var effect = function () {
@@ -1160,42 +1111,42 @@ function readonlyIt(value, read_it_id) {
   }
 }
 
-$("#product_mm,#product_inch,#product_meter").on("keyup", function () {
-  getTotal_price();
-});
+// $("#product_mm,#product_inch,#product_meter").on("keyup", function () {
+//   getTotal_price();
+// });
 
-$("#tableData1").on("change", function () {
-  getTotal_price();
-});
+// $("#tableData1").on("change", function () {
+//   getTotal_price();
+// });
 
-function getTotal_price() {
-  var total = (total1 = total2 = fif_rate = current_cat = thir_rate = 0);
-  var cat = $("#tableData1 :selected").data("price");
-  var product_mm = $("#product_mm").val();
-  var product_inch = $("#product_inch").val();
-  var product_meter = $("#product_meter").val();
-  var product_mm = product_mm == "" ? (product_mm = 0) : parseFloat(product_mm);
-  var product_inch =
-    product_inch == "" ? (product_inch = 0) : parseFloat(product_inch);
-  var product_meter =
-    product_meter == "" ? (product_meter = 0) : parseFloat(product_meter);
-  total = product_mm * product_inch * product_meter;
-  total1 = (total * parseFloat(cat)) / 54;
-  total2 = Math.round(total1);
-  $("#current_rate").val(total2);
+// function getTotal_price() {
+//   var total = (total1 = total2 = fif_rate = current_cat = thir_rate = 0);
+//   var cat = $("#tableData1 :selected").data("price");
+//   var product_mm = $("#product_mm").val();
+//   var product_inch = $("#product_inch").val();
+//   var product_meter = $("#product_meter").val();
+//   var product_mm = product_mm == "" ? (product_mm = 0) : parseFloat(product_mm);
+//   var product_inch =
+//     product_inch == "" ? (product_inch = 0) : parseFloat(product_inch);
+//   var product_meter =
+//     product_meter == "" ? (product_meter = 0) : parseFloat(product_meter);
+//   total = product_mm * product_inch * product_meter;
+//   total1 = (total * parseFloat(cat)) / 54;
+//   total2 = Math.round(total1);
+//   $("#current_rate").val(total2);
 
-  current_cat = parseFloat(cat) + 0.05;
-  fif_rate = (total * current_cat) / 54;
-  fif_rate = Math.round(fif_rate);
-  $("#f_days").val(fif_rate);
+//   current_cat = parseFloat(cat) + 0.05;
+//   fif_rate = (total * current_cat) / 54;
+//   fif_rate = Math.round(fif_rate);
+//   $("#f_days").val(fif_rate);
 
-  current_cat = parseFloat(cat) + 0.1;
-  thir_rate = (total * current_cat) / 54;
-  thir_rate = Math.round(thir_rate);
-  $("#t_days").val(thir_rate);
+//   current_cat = parseFloat(cat) + 0.1;
+//   thir_rate = (total * current_cat) / 54;
+//   thir_rate = Math.round(thir_rate);
+//   $("#t_days").val(thir_rate);
 
-  console.log(total);
-}
+//   console.log(total);
+// }
 
 function getVoucherPrint(voucher_id) {
   Swal.fire({
@@ -1320,13 +1271,113 @@ function cutt_voucher_duplicateRow() {
 
   container.append(lastRow);
 }
-
 function cutt_voucher_remove(button) {
   var container = $("#container");
   var rowToRemove = $(button).closest(".row");
   rowToRemove.remove();
   if (container.children(".row").length === 0) {
     $("#cutt_voucher_btn").show();
+    location.reload();
+  }
+}
+
+// Function to calculate Thaan * Gzanah = Quantity for each row
+function calculateQuantity(row) {
+  var thaan = row.find(".thaan").val();
+  var gzanah = row.find(".gzanah").val();
+  var quantity = thaan * gzanah; // Multiply Thaan and Gzanah
+  row.find(".quantity").val(quantity); // Set the result in the Quantity field
+}
+
+// Attach the event listeners to existing rows
+$(document).ready(function () {
+  // For any existing rows on page load
+  $("#deyingContainer")
+    .find(".row")
+    .each(function () {
+      attachCalculation($(this));
+    });
+
+  // Bind the "Add" button event
+});
+
+// Function to attach calculation logic to Thaan and Gzanah fields for a row
+function attachCalculation(row) {
+  row.find(".thaan, .gzanah").on("input", function () {
+    calculateQuantity(row); // Call the function to update Quantity
+  });
+}
+
+function deying_voucher_duplicateRow() {
+  var container = $("#deyingContainer");
+
+  // Clone the last row without copying event handlers
+  var lastRow = container.children(".row:last").clone();
+
+  // Remove the remove button from the first row
+  container.find(".row:first .add_remove  button").remove();
+
+  var newRowId = "row" + (container.children(".row").length + 1);
+  lastRow.attr("id", newRowId);
+
+  // Generate unique ids for the inputs in the cloned row
+  var deying_product =
+    "deying_product" + (container.children(".row").length + 1);
+  var deying_thaan = "deying_thaan" + (container.children(".row").length + 1);
+  var deying_gzanah = "deying_gzanah" + (container.children(".row").length + 1);
+  var deying_gzanah_type =
+    "deying_gzanah_type" + (container.children(".row").length + 1);
+  var deying_status = "deying_status" + (container.children(".row").length + 1);
+
+  // Update the ids in the cloned row
+  lastRow.find('[name="deying_product[]"]').attr("id", deying_product);
+  lastRow.find('[name="deying_thaan[]"]').attr("id", deying_thaan);
+  lastRow.find('[name="deying_gzanah[]"]').attr("id", deying_gzanah);
+  lastRow.find('[name="deying_gzanah_type[]"]').attr("id", deying_gzanah_type);
+  lastRow.find('[name="deying_status[]"]').attr("id", deying_status);
+
+  // Clear the input values in the cloned row
+  lastRow.find("input, select").val("");
+
+  // Remove existing "Plus" button from the last row
+  lastRow.find(".add_remove button").remove();
+
+  // Add "Remove" button to the new row
+  lastRow.find(".add_remove").append(`
+    <button type="button" class="outline_none border-0 bg-white" onclick="deying_voucher_remove(this)">
+        <img title="Remove Row" src="img/remove.png" width="30px" alt="remove sign">
+    </button>`);
+
+  // Append the cloned row to the container
+  container.append(lastRow);
+
+  // Attach calculation to the new row
+  attachCalculation(lastRow);
+}
+$(document).ready(function () {
+  // Function to calculate quantity
+  function calculateQuantity() {
+    var thaanCount = parseFloat($(".thaanCount").val()) || 0;
+    var gzanahCount = parseFloat($(".gzanahCount").val()) || 0;
+    var quantityCount = thaanCount * gzanahCount;
+
+    // Set the calculated quantityCount
+    $(".quantityCount").val(quantityCount);
+  }
+
+  // Attach event listeners to inputs for real-time calculation
+  $(".thaanCount, .gzanahCount").on("input", function () {
+    calculateQuantity();
+  });
+});
+
+// Deying Voucher List Remove Closest Row
+function deying_voucher_remove(button) {
+  var container = $("#deyingContainer");
+  var rowToRemove = $(button).closest(".row");
+  rowToRemove.remove();
+  if (container.children(".row").length === 0) {
+    $("#deying_voucher_btn").show();
     location.reload();
   }
 }

@@ -5,17 +5,7 @@
 include_once 'includes/head.php';
 // print_r($_REQUEST);
 
-function generateRandomCode($length = 11)
-{
-    $characters = '0123456789';
-    $code = '';
-    for ($i = 0; $i < $length; $i++) {
-        $code .= $characters[rand(0, strlen($characters) - 1)];
-    }
-    return $code;
-}
 
-$randomCode = generateRandomCode();
 // echo "Random 11-digit code: " . $randomCode;
 // exit;
 
@@ -23,6 +13,8 @@ if (@$_REQUEST['update-production']) {
     $upd_id = $_REQUEST['update-production'];
     $updateProduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `production` WHERE production_id =  $upd_id"));
 }
+
+
 ?>
 
 <body class="horizontal light  ">
@@ -30,7 +22,7 @@ if (@$_REQUEST['update-production']) {
         <?php include_once 'includes/header.php'; ?>
         <main role="main" class="main-content">
             <div class="container-fluid">
-                <div class="card my-5">
+                <div class="card my-5 d-none">
                     <div class="card-header card-bg" align="center">
                         <div class="row">
                             <div class="col-12 mx-auto h4">
@@ -42,19 +34,19 @@ if (@$_REQUEST['update-production']) {
                         <form id="add_production_fm">
                             <input type="hidden" name="prod_upd_id" value="<?= @$updateProduction['production_id'] ?>">
                             <div class="form-group row">
-                                <div class="col-lg-2 col-md-3 col-sm-4 col-xs-2 mb-3 mb-sm-0">
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-2 mb-3 mb-sm-0">
                                     <label for="" class="font-weight-bold text-dark">Date</label>
                                     <input type="date" class="form-control" id="production_add_date" name="production_add_date" <?php if (@$_REQUEST['update-production']) { ?> value="<?= @$updateProduction['production_date'] ?>" <?php } else { ?> value="<?= date('Y-m-d') ?>" <?php } ?>>
                                 </div>
-                                <div class="col-lg-2 col-md-3 col-sm-4 col-xs-2 mb-3 mb-sm-0">
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-2 mb-3 mb-sm-0">
                                     <label for="" class="font-weight-bold text-dark">Lat No</label>
                                     <input type="text" readonly class="form-control" id="production_lat_no" name="production_lat_no" required <?php if (@$_REQUEST['update-production']) { ?> value="<?= @$updateProduction['production_lat_no'] ?>" <?php } else { ?> value="<?= @$randomCode ?>" <?php } ?>>
                                 </div>
-                                <div class="col-lg-2 col-md-3 col-sm-4 col-xs-2 mb-3 mb-sm-0">
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-2 mb-3 mb-sm-0">
                                     <label for="" class="font-weight-bold text-dark">Production Name</label>
                                     <input type="text" class="form-control" id="production_name" placeholder="Production Name" name="production_name" value="<?= ucwords(@$updateProduction['production_name']) ?>">
                                 </div>
-                                <div class="col-lg-2 col-md-3 col-sm-4 col-xs-2 mb-3 mb-sm-0">
+                                <!-- <div class="col-lg-2 col-md-3 col-sm-4 col-xs-2 mb-3 mb-sm-0">
                                     <label for="" class="font-weight-bold text-dark">Production Cost</label>
                                     <input type="number" min="0" class="form-control" id="production_cost" placeholder="Enter Production Cost " oninput="onlyNumberInput(event)" name="production_cost" value="<?= @$updateProduction['production_cost'] ?>">
                                 </div>
@@ -65,7 +57,7 @@ if (@$_REQUEST['update-production']) {
                                 <div class="col-lg-2 col-md-3 col-sm-4 col-xs-2 mb-3 mb-sm-0">
                                     <label for="" class="font-weight-bold text-dark">Customer Address</label>
                                     <input type="text" class="form-control" id="cust_address" placeholder="Enter Address" name="cust_address" required value="<?= @$updateProduction['customer_address'] ?>">
-                                </div>
+                                </div> -->
                             </div>
                             <button type="submit" id="inv_btn" class="btn btn-admin float-right">
                                 <span id="loader_code" class="spinner-border d-none" style="width: 1.5rem !important;height: 1.5rem !important;"></span>
@@ -96,13 +88,13 @@ if (@$_REQUEST['update-production']) {
                                     <th width="5%">
                                         Production
                                     </th>
-                                    <th width="3%">
+                                    <!-- <th width="3%">
                                         Customer
                                     </th>
                                     <th width="5%">
                                         Address
-                                    </th>
-                                    <th width="2%">Total Amount</th>
+                                    </th> -->
+                                    <!-- <th width="2%">Total Amount</th> -->
                                     <!-- <th width="5%">By</th> -->
                                     <th width="6%">Action</th>
                                 </tr>
@@ -121,9 +113,9 @@ if (@$_REQUEST['update-production']) {
                                             <td><?= $a['production_lat_no'] ?></td>
                                             <td><?= @$created_date ?></td>
                                             <td><?= ucwords($a['production_name']) ?></td>
-                                            <td><?= ucwords($a['customer']) ?></td>
-                                            <td><?= ucwords($a['customer_address']) ?></td>
-                                            <td><?= number_format($a['production_cost']) ?></td>
+                                            <!-- <td><?= ucwords($a['customer']) ?></td>
+                                            <td><?= ucwords($a['customer_address']) ?></td> -->
+                                            <!-- <td><?= number_format($a['production_cost']) ?></td> -->
                                             <!-- <td></td> -->
                                             <td>
                                                 <a class="btn btn-secondary py-1 px-2 m-1" href="addproduction.php?update-production=<?= $a['production_id'] ?>">
@@ -179,6 +171,7 @@ if (@$_REQUEST['update-production']) {
 
 </html>
 <?php include_once 'includes/foot.php'; ?>
+
 <script>
     $(document).ready(function() {
 

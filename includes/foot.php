@@ -104,7 +104,7 @@
                     $result = mysqli_query($dbc, "select * from categories");
                     while ($row = mysqli_fetch_array($result)) {
                     ?>
-                     <option data-price="<?= $row["category_price"] ?>" <?= @($fetchproduct['category_id'] != $row["categories_id"]) ? "" : "selected" ?> value="<?= $row["categories_id"] ?>"><?= $row["categories_name"] ?>-<?= $row["category_price"] ?></option>
+                     <option <?= @($fetchproduct['category_id'] != $row["categories_id"]) ? "" : "selected" ?> value="<?= $row["categories_id"] ?>"><?= $row["categories_name"] ?></option>
                    <?php   } ?>
                  </select>
                </div>
@@ -175,6 +175,7 @@
            </button>
          </div>
 
+
          <div class="modal-body">
 
            <form action="php_action/panel.php" method="POST" role="form" id="formData">
@@ -229,21 +230,13 @@
            <form action="php_action/panel.php" method="POST" role="form" id="formData1">
              <div class="msg"></div>
              <div class="form-group row">
-               <div class="col-sm-3">
+               <div class="col-sm-6">
                  <label for="">Name</label>
                  <input type="text" class="form-control" value="<?= @$categories['categories_name'] ?>" id="categories_name" name="add_category_name">
                  <input type="hidden" class="form-control " value="<?= @$categories['categories_id'] ?>" id="categories_id" name="categories_id">
 
                </div>
-               <div class="col-sm-3">
-                 <label for="">Sale Price</label>
-                 <input type="text" class="form-control" value="<?= @$categories['category_price'] ?>" id="category_price" name="category_price" required min="1">
-               </div>
-               <div class="col-sm-3">
-                 <label for="">Purchase Price</label>
-                 <input type="text" class="form-control" value="<?= @$categories['category_purchase'] ?>" id="category_price" name="category_purchase" required min="1">
-               </div>
-               <div class="col-sm-3">
+               <div class="col-sm-6">
                  <label for=""> Status</label>
                  <select class="form-control" id="categories_status" name="categories_status">
 
@@ -267,6 +260,53 @@
        </div>
      </div>
    </div>
+
+
+   <!-- Add Production Modal -->
+
+   <!-- Modal -->
+   <div class="modal fade" id="addProductionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+     <div class="modal-dialog modal-dialog-centered" role="document">
+       <div class="modal-content">
+         <div class="modal-header bg-dark">
+           <h5 class="modal-title  text-white" id="exampleModalLongTitle">Add Production</h5>
+           <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+             <span aria-hidden="true">&times;</span>
+           </button>
+         </div>
+
+         <div class="modal-body">
+           <form id="add_production_fm">
+             <input type="hidden" name="prod_upd_id" value="<?= @$updateProduction['production_id'] ?>">
+             <input type="hidden" name="purchase_id" id="purchase_id" value="">
+             <div class="form-group row">
+               <div class="col-lg-12  col-md-12 col-sm-12 col-xs-2 mb-3 mb-sm-0">
+                 <label for="" class="font-weight-bold text-dark">Date</label>
+                 <input type="date" class="form-control" id="production_add_date" name="production_add_date" <?php if (@$_REQUEST['update-production']) { ?> value="<?= @$updateProduction['production_date'] ?>" <?php } else { ?> value="<?= date('Y-m-d') ?>" <?php } ?>>
+               </div>
+               <div class="col-lg-12 mt-3 col-md-12 col-sm-12 col-xs-2 mb-3 mb-sm-0">
+                 <label for="" class="font-weight-bold text-dark">Lat No</label>
+                 <input type="text" readonly class="form-control" id="production_lat_no" name="production_lat_no" required value="">
+               </div>
+               <div class="col-lg-12 mt-3 col-md-12 col-sm-12 col-xs-2 mb-3 mb-sm-0">
+                 <label for="" class="font-weight-bold text-dark">Production Name</label>
+                 <input type="text" class="form-control" id="production_name" placeholder="Production Name" name="production_name" value="<?= ucwords(@$updateProduction['production_name']) ?>">
+               </div>
+             </div>
+
+         </div>
+         <div class="modal-footer">
+           <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeProductionModal">Close</button>
+           <button type="submit" id="inv_btn" class="btn btn-admin float-right">
+             <span id="loader_code" class="spinner-border d-none" style="width: 1.5rem !important;height: 1.5rem !important;"></span>
+             <span id="text_code" class="">Save</span>
+           </button>
+         </div>
+         </form>
+       </div>
+     </div>
+   </div>
+
 
 
    <script src="js/jquery.min.js"></script>
@@ -309,6 +349,17 @@
    <script src="js/custom.js"></script>
    <script src="js/panel.js"></script>
    <script>
+     $(document).ready(function() {
+       // When the rate field value changes
+       $('#current_rate').on('input', function() {
+         var rateValue = $(this).val();
+
+         // Set the same value for f_days and t_days
+         $('#f_days').val(rateValue);
+         $('#t_days').val(rateValue);
+       });
+     });
+
      function onlyNumberInput(event) {
        // Get the value of the input field
        let input = event.target.value;
@@ -319,4 +370,74 @@
        // Update the input field value with only numeric characters
        event.target.value = cleanInput;
      }
+
+
+     function getPurId(id) {
+       document.getElementById('purchase_id').value = id;
+
+       function generateRandomCode(length = 11) {
+         var characters = '0123456789';
+         var code = '';
+         for (var i = 0; i < length; i++) {
+           code += characters.charAt(Math.floor(Math.random() * characters.length));
+         }
+         return code;
+       }
+       var randomCode = generateRandomCode();
+       $('#production_lat_no').val(randomCode);
+     }
+     $(document).ready(function() {
+       $('#voucherModalButton').hide();
+       $("#add_production_fm").on('submit', function(e) {
+
+         e.preventDefault();
+         // alert("ascas");
+
+         var formdata = new FormData(this);
+
+         $.ajax({
+           type: 'POST',
+           url: 'php_action/custom_action.php',
+           data: formdata,
+           contentType: false,
+           cache: false,
+           processData: false,
+           beforeSend: function() {
+             $('#loader_code').removeClass('d-none');
+             $('#text_code').addClass('d-none');
+           },
+           success: function(response) {
+
+             $('#loader_code').addClass('d-none');
+             $('#text_code').removeClass('d-none');
+             var responseData = JSON.parse(response).sts;
+             var responsemsg = JSON.parse(response).msg;
+
+             if (responseData == 'success') {
+               Swal.fire({
+                 position: 'center',
+                 icon: 'success',
+                 title: responsemsg,
+                 showConfirmButton: false,
+                 timer: 3000
+               }).then((result) => {
+                 if (responseData == 'success') {
+                   $('#add_production_fm').trigger('reset');
+                   $('#closeProductionModal').click();
+                   location.reload();
+                 }
+               });
+             } else {
+               Swal.fire({
+                 position: 'center',
+                 icon: 'warning',
+                 title: responsemsg,
+                 showConfirmButton: false,
+                 timer: 3000
+               });
+             }
+           }
+         }); //ajax call
+       }); //main
+     });
    </script>
