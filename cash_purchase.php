@@ -92,43 +92,43 @@ if (!empty($_REQUEST['edit_purchase_id'])) {
 
                 <select class="form-control" name="purchase_for" id="purchase_for">
                   <option disabled>Select Type</option>
-                  <option value="shafoon">Shafoon</option>
-                  <option value="others">Others</option>
+                  <option value="shafoon" <?= @($fetchPurchase['purchase_for'] == 'shafoon') ? "selected" : "" ?>>Shafoon</option>
+                  <option value="others" <?= @($fetchPurchase['purchase_for'] == 'others') ? "selected" : "" ?>>Others</option>
                 </select>
               </div>
               <div class="col-md-2 mt-3">
                 <label>Bill No.</label>
-                <input type="number" min="0" placeholder="Bil No." value="" autocomplete="off" class="form-control" name="bill_no">
+                <input type="number" min="0" placeholder="Bil No." value="<?= @$fetchPurchase['bill_no'] ?>" autocomplete="off" class="form-control" name="bill_no">
               </div>
               <div class="col-md-2 mt-3">
                 <label>Gate Pass</label>
-                <input type="text" placeholder="Gate Pass" value="" autocomplete="off" class="form-control " name="gate_pass">
+                <input type="text" placeholder="Gate Pass" value="<?= @$fetchPurchase['gate_pass'] ?>" autocomplete="off" class="form-control " name="gate_pass">
               </div>
               <div class="col-md-2 mt-3">
                 <label>Bilty No.</label>
-                <input type="number" min="0" placeholder="Bilty No." value="" autocomplete="off" class="form-control" name="bilty_no">
+                <input type="number" min="0" placeholder="Bilty No." value="<?= @$fetchPurchase['bilty_no'] ?>" autocomplete="off" class="form-control" name="bilty_no">
               </div>
               <div class="col-md-2 mt-3">
                 <label>Location</label>
-                <input type="text" placeholder="Location Here" value="" autocomplete="off" class="form-control" name="pur_location">
+                <input type="text" placeholder="Location Here" value="<?= @$fetchPurchase['pur_location'] ?>" autocomplete="off" class="form-control" name="pur_location">
               </div>
               <div class="col-md-2 mt-3">
                 <label>Cargo</label>
-                <input type="text" placeholder="Cargo Here" value="" autocomplete="off" class="form-control" name="pur_cargo">
+                <input type="text" placeholder="Cargo Here" value="<?= @$fetchPurchase['pur_cargo'] ?>" autocomplete="off" class="form-control" name="pur_cargo">
               </div>
               <div class="col-md-2 mt-3">
                 <label>Type</label>
-                <input type="text" placeholder="Type Here" value="" autocomplete="off" class="form-control " name="pur_type">
+                <input type="text" placeholder="Type Here" value="<?= @$fetchPurchase['pur_type'] ?>" autocomplete="off" class="form-control " name="pur_type">
               </div>
               <div class="col-12 mt-3">
                 <label>Remarks</label>
-                <textarea placeholder="Remarks Here" value="<?= @$fetchPurchase['purchase_narration'] ?>" autocomplete="off" class="form-control" name="purchase_narration" id="" cols="30" rows="3"></textarea>
+                <textarea placeholder="Remarks Here" autocomplete="off" class="form-control" name="purchase_narration" id="" cols="30" rows="3"><?= @$fetchPurchase['purchase_narration'] ?></textarea>
               </div>
             </div> <!-- end of form-group -->
             <div class="form-group row ">
               <div class="col-md-2 d-flex">
                 <div>
-                  <label>Products ( <span class="text-center w-100" id="instockQty">instock: 0</span> )</label>
+                  <label>Products ( <span class="text-center w-100">instock: <span id="instockQty">0</span></span> )</label>
                   <input type="hidden" id="add_pro_type" value="add">
                   <select class="form-control searchableSelect" id="get_product_name" name="product_id">
                     <option value="" id="no">Select Product</option>
@@ -206,17 +206,21 @@ if (!empty($_REQUEST['edit_purchase_id'])) {
                           <input type="hidden" id="product_quantites_<?= $r['product_id'] ?>" name="product_quantites[]" value="<?= $r['quantity'] ?>">
                           <input type="hidden" id="product_rate_<?= $r['product_id'] ?>" name="product_rates[]" value="<?= $r['rate'] ?>">
                           <input type="hidden" id="product_totalrate_<?= $r['product_id'] ?>" name="product_totalrates[]" value="<?= $r['rate'] ?>">
+                          <input type="hidden" id="pur_thaan_<?= $r['product_id'] ?>'" name="pur_thaan[]" value="<?= $r['pur_thaan'] ?>">
+                          <!-- <input type="hidden" id="pur_thaan_<?= $r['product_id'] ?>" name="pur_thaan[]" value="<?= $r['pur_thaan'] ?>"> -->
+                          <input type="hidden" id="pur_gzanah_<?= $r['product_id'] ?>" name="pur_gzanah[]" value="<?= $r['pur_gzanah'] ?>">
+                          <input type="hidden" id="pur_unit_<?= $r['product_id'] ?>" name="pur_unit[]" value="<?= $r['pur_unit'] ?>">
                           <td><?= $r['product_name'] ?></td>
                           <td><?= $r['pur_thaan'] ?></td>
+                          <td><?= $r['pur_gzanah'] ?></td>
+                          <td><?= $r['pur_unit'] ?></td>
                           <td><?= $r['rate'] ?></td>
                           <td><?= $r['quantity'] ?></td>
                           <td><?= (float)$r['rate'] * (float)$r['quantity'] ?></?>
                           </td>
                           <td>
-
-                            <button type="button" onclick="removeByid(`#product_idN_<?= $r['product_id'] ?>`)" class="fa fa-trash text-danger" href="#"></button>
-                            <button type="button" onclick="editByid(<?= $r['product_id'] ?>,`<?= $r['product_code'] ?>`,<?= $r['rate'] ?>,<?= $r['quantity'] ?>)" class="fa fa-edit text-success ml-2 "></button>
-
+                            <button type="button" class="delete-btn fa fa-trash text-danger" href="#"></button>
+                            <button type="button" onclick="editByid(<?= $r['product_id'] ?>,`<?= $r['pur_thaan'] ?>`,`<?= $r['pur_gzanah'] ?>`,`<?= $r['pur_unit'] ?>`,<?= $r['rate'] ?>,<?= $r['quantity'] ?>)" class=" delete-btn fa fa-edit text-success ml-2 "></button>
                           </td>
                         </tr>
                     <?php }

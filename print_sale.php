@@ -146,30 +146,49 @@
                                 <th class="border pr-5 font-weight-bold">Customer Name</th>
                                 <th class="border pr-5"><?= ucwords($order['client_name']) ?></th>
                             </tr>
-                            <tr>
-                                <th class="border pr-5 font-weight-bold">Purchase</th>
-                                <th class="border pr-5"><?= ucwords($order['purchase_for']) ?></th>
-                            </tr>
-                            <tr>
-                                <th class="border pr-5 font-weight-bold">Gate Pass</th>
-                                <th class="border pr-5"><?= ucwords($order['gate_pass']) ?></th>
-                            </tr>
+                            <?php
+                            if ($_REQUEST['type'] == "purchase") {
+                            ?>
+                                <tr>
+                                    <th class="border pr-5 font-weight-bold">Purchase</th>
+                                    <th class="border pr-5"><?= ucwords(@$order['purchase_for']) ?></th>
+                                </tr>
+                                <tr>
+                                    <th class="border pr-5 font-weight-bold">Gate Pass</th>
+                                    <th class="border pr-5"><?= ucwords(@$order['gate_pass']) ?></th>
+                                </tr>
+                            <?php } else { ?>
+                                <tr>
+                                    <th class="border pr-5 font-weight-bold">Order Date</th>
+                                    <th class="border pr-5"><?= ucwords(@$order['order_date']) ?></th>
+                                </tr>
+                            <?php } ?>
                         </table>
                     </div>
                     <div class="m-0 p-0">
                         <table class="table" align="left">
+
                             <tr>
                                 <th class="border pr-5 font-weight-bold">Customer Contact</th>
-                                <th class="border pr-5"><?= ucwords($order['client_contact']) ?></th>
+                                <th class="border pr-5"><?= ucwords(@$order['client_contact']) ?></th>
                             </tr>
-                            <tr>
-                                <th class="border pr-5 font-weight-bold">Bill No</th>
-                                <th class="border pr-5"><?= ucwords($order['bill_no']) ?></th>
-                            </tr>
-                            <tr>
-                                <th class="border pr-5 font-weight-bold">Bilty No</th>
-                                <th class="border pr-5"><?= ucwords($order['bilty_no']) ?></th>
-                            </tr>
+                            <?php
+                            if ($_REQUEST['type'] == "purchase") {
+                            ?>
+                                <tr>
+                                    <th class="border pr-5 font-weight-bold">Bill No</th>
+                                    <th class="border pr-5"><?= ucwords(@$order['bill_no']) ?></th>
+                                </tr>
+                                <tr>
+                                    <th class="border pr-5 font-weight-bold">Bilty No</th>
+                                    <th class="border pr-5"><?= ucwords(@$order['bilty_no']) ?></th>
+                                </tr>
+                            <?php } else { ?>
+                                <tr>
+                                    <th class="border pr-5 font-weight-bold">Vehicle No</th>
+                                    <th class="border pr-5"><?= ucwords(@$order['vehicle_no']) ?></th>
+                                </tr>
+                            <?php } ?>
                         </table>
                     </div>
                 </div>
@@ -298,7 +317,7 @@
 
                                 <td class="border"><b><?= number_format($order['grand_total'], 2) ?></b></td>
                             </tr>
-                            <?php if ($order['payment_type'] == "credit_purchase") : ?>
+                            <?php if ($order['payment_type'] == "credit_purchase" || $order['payment_type'] == "credit_sale") : ?>
 
                                 <tr>
                                     <td colspan="6"></td>
@@ -325,7 +344,14 @@
             <div class="row" style="font-size: 18px">
                 <div class="col-sm-12" style="border-bottom: 1px solid black">
                     <p class="" style="color: black ; ">
-                        <b>Details</b> : <?= $order['purchase_narration'] ?>
+                        <?php
+                        if ($_REQUEST['type'] == "purchase") {
+                        ?>
+                            <b>Details</b> : <?= $order['purchase_narration'] ?>
+                        <?php } else { ?>
+                            <b>Details</b> : <?= $order['order_narration'] ?>
+
+                        <?php } ?>
                     </p>
 
                 </div>
@@ -357,7 +383,7 @@
                                 <b class="name">
                                     <?= $get_company['name'] ?>
                                 </b></strong></h4>
-                        <p class="notice"> Software Developed By : <b class="name">Samz Creation (0345-7573667)</b></p>
+                        <p class="notice"> Software Developed By : <b class="name">The Web Concept (0345-7573667)</b></p>
 
                     </div>
                 </div>

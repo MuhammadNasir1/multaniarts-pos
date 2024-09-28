@@ -114,7 +114,7 @@
             <div class="form-group row">
               <div class="col-sm-2 d-flex">
                 <div>
-                  <label>Products ( <span class="text-center w-100" id="instockQty">instock: 0</span> )</label>
+                  <label>Products ( <span class="text-center w-100">instock: <span id="instockQty">0</span></span> )</label>
                   <input type="hidden" id="add_pro_type" value="add">
                   <select class="form-control searchableSelect" id="get_product_name" name="product_id">
                     <option value="">Select Product</option>
@@ -159,7 +159,7 @@
                   <input type="text" placeholder="Unit Here" value="" autocomplete="off" class="form-control " name="pur_unit" id="get_pur_unit">
                 </div>
                 <div class="ml-3 mt-3">
-                  <button type="button" class="btn btn-success btn-sm mt-2 " id="addProductPurchase"><i class="fa fa-plus"></i> <b>Add</b></button>
+                  <button type="button" class="btn btn-success btn-sm mt-2 addProductPurchase" id="addProductPurchase"><i class="fa fa-plus"></i> <b>Add</b></button>
                 </div>
               </div>
             </div>
@@ -205,8 +205,8 @@
                           </td>
                           <td>
 
-                            <button type="button" onclick="removeByid(`#product_idN_<?= $r['product_id'] ?>`)" class="fa fa-trash text-danger" href="#"></button>
-                            <button type="button" onclick="editByid(<?= $r['product_id'] ?>,`<?= $r['pur_thaan'] ?>`,`<?= $r['pur_gzanah'] ?>`,`<?= $r['pur_unit'] ?>`,<?= $r['rate'] ?>,<?= $r['quantity'] ?>)" class="fa fa-edit text-success ml-2 "></button>
+                            <button type="button" class="delete-btn fa fa-trash text-danger" href="#"></button>
+                            <button type="button" onclick="editByid(<?= $r['product_id'] ?>,`<?= $r['pur_thaan'] ?>`,`<?= $r['pur_gzanah'] ?>`,`<?= $r['pur_unit'] ?>`,<?= $r['rate'] ?>,<?= $r['quantity'] ?>)" class=" delete-btn fa fa-edit text-success ml-2 "></button>
 
                           </td>
                         </tr>

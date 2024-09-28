@@ -513,7 +513,7 @@ if (isset($_REQUEST['sale_order_client_name'])) {
 			'payment_account' => @$_REQUEST['payment_account'],
 			'payment_type' => 'cash_in_hand',
 			'vehicle_no' => @$_REQUEST['vehicle_no'],
-			'freight' => @$_REQUEST['freight'],
+			'pur_freight' => @$_REQUEST['freight'],
 		];
 
 		if ($_REQUEST['product_order_id'] == "") {
@@ -548,6 +548,9 @@ if (isset($_REQUEST['sale_order_client_name'])) {
 						'total' => $total,
 						'order_id' => $last_id,
 						'quantity' => $product_quantites,
+						'pur_thaan' => $_REQUEST['pur_thaan'][$x],
+						'pur_gzanah' => $_REQUEST['pur_gzanah'][$x],
+						'pur_unit' => $_REQUEST['pur_unit'][$x],
 						'order_item_status' => 1,
 					];
 					if ($get_company['stock_manage'] == 1) {
@@ -620,6 +623,9 @@ if (isset($_REQUEST['sale_order_client_name'])) {
 						'rate' => $product_rates,
 						'total' => $total,
 						'order_id' => $_REQUEST['product_order_id'],
+						'pur_thaan' => $_REQUEST['pur_thaan'][$x],
+						'pur_gzanah' => $_REQUEST['pur_gzanah'][$x],
+						'pur_unit' => $_REQUEST['pur_unit'][$x],
 						'quantity' => $product_quantites,
 						'order_item_status' => 1,
 					];
@@ -700,7 +706,7 @@ if (isset($_REQUEST['credit_order_client_name'])) {
 			'payment_type' => 'credit_sale',
 			'credit_sale_type' => @$_REQUEST['credit_sale_type'],
 			'vehicle_no' => @$_REQUEST['vehicle_no'],
-			'freight' => @$_REQUEST['freight'],
+			'pur_freight' => @$_REQUEST['freight'],
 			'voucher_no' => @$_REQUEST['voucher_no'],
 		];
 		//'payment_status'=>1,
@@ -718,6 +724,9 @@ if (isset($_REQUEST['credit_order_client_name'])) {
 					$order_items = [
 						'product_id' => $_REQUEST['product_ids'][$x],
 						'rate' => $product_rates,
+						'pur_thaan' => $_REQUEST['pur_thaan'][$x],
+						'pur_gzanah' => $_REQUEST['pur_gzanah'][$x],
+						'pur_unit' => $_REQUEST['pur_unit'][$x],
 						'total' => $total,
 						'order_id' => $last_id,
 						'quantity' => $product_quantites,
