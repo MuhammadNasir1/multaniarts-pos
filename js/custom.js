@@ -411,18 +411,20 @@ $(document).ready(function () {
       dataType: "json",
       success: function (response) {
         $("#get_product_price").val(response.price);
-        $("#instockQty").html("instock :" + response.qty);
+        $("#instockQty").text(response.qty);
         console.log(response.qty);
-        if (payment_type == "cash_in_hand" || payment_type == "credit_sale") {
-          //$("#get_product_quantity").attr("max",response.qty);
-          // if (response.qty>0) {
-          //      $('#addProductPurchase').prop("disabled",false);
-          //  }else{
-          //      $('#addProductPurchase').prop("disabled",true);
-          //  }
+
+        // $("#get_product_quantity").attr("max", response.qty);
+
+        // Disable the button if the quantity is 0 or less
+        if (response.qty <= 0) {
+          $("#addProductPurchase").prop("disabled", true);
+        } else {
+          $("#addProductPurchase").prop("disabled", false);
         }
       },
-    }); //ajax call }
+    });
+    //ajax call }
   });
 }); /*--------------end of-------------------------------------------------------*/
 function pending_bills(value) {
@@ -513,15 +515,19 @@ $("#get_product_name").on("change", function () {
     dataType: "json",
     success: function (response) {
       $("#get_product_price").val(response.price);
-      $("#instockQty").html("instock :" + response.qty);
+      $("#instockQty").html(response.qty);
       console.log(response.qty);
-      if (payment_type == "cash_in_hand" || payment_type == "credit_sale") {
-        //$("#get_product_quantity").attr("max",response.qty);
-        //   if (response.qty>0) {
-        //     $('#addProductPurchase').prop("disabled",false);
-        // }else{
-        //     $('#addProductPurchase').prop("disabled",true);
-        // }
+      if (
+        payment_type == "cash_in_hand" ||
+        payment_type == "credit_sale" ||
+        payment_type == "cash_sale"
+      ) {
+        $("#get_product_quantity").attr("max", response.qty);
+        if (response.qty <= 0) {
+          $("#addProductPurchase").prop("disabled", true);
+        } else {
+          $("#addProductPurchase").prop("disabled", false);
+        }
       }
     },
   }); //ajax call }
@@ -594,15 +600,35 @@ $("#addProductPurchase").on("click", function () {
   var pro_type = $("#add_pro_type").val();
   var max_qty = $("#get_product_quantity").attr("max");
   max_qty = parseInt(max_qty);
+
+  if (!id) {
+    Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "Please select a product first!",
+    });
+    return;
+  }
+
+  if (!price || !thaan || !gzanah || !unit || !product_quantity) {
+    Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "Please fill out all fields!",
+    });
+    return;
+  }
+
   if (payment_type == "cash_purchase" || payment_type == "credit_purchase") {
     max_qty = getRandomInt(99999999999);
   }
-  console.log(max_qty);
+
   var GrandTotalAva = $("#remaining_ammount").val();
   var ThisTotal = price * product_quantity + Number(GrandTotalAva);
   var RThisPersonLIMIT = $("#R_LimitInput").val();
 
   if (id != "") {
+    // Reset the input fields
     $("#get_product_name").val(null).trigger("change");
     $("#add_pro_type").val("add");
     $("#get_product_price").val("");
@@ -611,14 +637,16 @@ $("#addProductPurchase").on("click", function () {
     $("#get_pur_unit").val("");
     $("#get_product_quantity").val("1");
     $("#get_product_code").focus();
+    $("#instockQty").text("0");
 
     total_price = parseFloat(price) * parseFloat(product_quantity);
 
+    // Append the product details to the table
     $("#purchase_product_tb").append(
       '<tr id="product_idN_' +
         id +
         '">\
-        <input type="hidden" data-price="' +
+      <input type="hidden" data-price="' +
         price +
         '" data-quantity="' +
         product_quantity +
@@ -627,70 +655,85 @@ $("#addProductPurchase").on("click", function () {
         '" class="product_ids" name="product_ids[]" value="' +
         id +
         '">\
-        <input type="hidden" id="product_quantites_' +
+      <input type="hidden" id="product_quantites_' +
         id +
         '" name="product_quantites[]" value="' +
         product_quantity +
         '">\
-        <input type="hidden" id="product_rate_' +
+      <input type="hidden" id="product_rate_' +
         id +
         '" name="product_rates[]" value="' +
         price +
         '">\
-        <input type="hidden" id="pur_thaan_' +
+      <input type="hidden" id="pur_thaan_' +
         id +
         '" name="pur_thaan[]" value="' +
         thaan +
         '">\
-        <input type="hidden" id="pur_gzanah_' +
+      <input type="hidden" id="pur_gzanah_' +
         id +
         '" name="pur_gzanah[]" value="' +
         gzanah +
         '">\
-        <input type="hidden" id="pur_unit_' +
+      <input type="hidden" id="pur_unit_' +
         id +
         '" name="pur_unit[]" value="' +
         unit +
         '">\
-        <input type="hidden" id="product_totalrate_' +
+      <input type="hidden" id="product_totalrate_' +
         id +
         '" name="product_totalrates[]" value="' +
         total_price +
         '">\
-        <td>' +
+      <td>' +
         name +
         "</td>\
-        <td>" +
+      <td>" +
         thaan +
         " </td>\
-        <td>" +
+      <td>" +
         gzanah +
         " </td>\
-        <td>" +
+      <td>" +
         unit +
         " </td>\
-        <td>" +
+      <td>" +
         price +
         "</td>\
-        <td>" +
+      <td>" +
         product_quantity +
         "</td>\
-        <td>" +
+      <td>" +
         total_price +
         '</td>\
-        <td>\
+      <td>\
         <button type="button" class="delete-btn fa fa-trash text-danger"></button>\
-        \
-        </td>\
-        </tr>'
+        <button type="button" onclick="editByid(' +
+        id +
+        ",'" +
+        thaan +
+        "','" +
+        gzanah +
+        "','" +
+        unit +
+        "','" +
+        price +
+        "','" +
+        product_quantity +
+        '\')" class="delete-btn fa fa-edit text-success"></button>\
+      </td>\
+    </tr>'
     );
 
     getOrderTotal();
   } else {
     if (max_qty < product_quantity) {
-      sweeetalert("Cannot Add Quantity more than stock", "error", 1500);
-    } else if (code == "") {
-      sweeetalert("Select The Product first", "error", 1500);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Cannot add quantity more than stock",
+        timer: 1500,
+      });
     }
   }
 });

@@ -1189,9 +1189,6 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                             </div>
                                                         </div>
 
-
-
-
                                                         <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
                                                             <label>Thaan</label>
                                                             <input type="text" class="form-control thaan" value="<?= @$lowerdata10->deying_thaan[$x] ?>" name="deying_thaan[]" placeholder="Thaan">

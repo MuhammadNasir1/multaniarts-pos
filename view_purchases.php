@@ -34,7 +34,7 @@
                 </tr>
               </thead>
               <tbody>
-                <?php $q = mysqli_query($dbc, "SELECT * FROM purchase ");
+                <?php $q = mysqli_query($dbc, "SELECT * FROM purchase");
                 $c = 0;
                 while ($r = mysqli_fetch_assoc($q)) {
                   $c++;
@@ -52,7 +52,7 @@
 
 
                     <td>
-                      <?php if (@$userPrivileges['nav_edit'] == 1 || $fetchedUserRole == "admin" and $r['payment_type'] == "cash_purchase"): ?>
+                      <?php if (@$userPrivileges['nav_edit'] == 1 || $fetchedUserRole == "admin" and $r['payment_type'] == "cash_puchase"): ?>
                         <form action="cash_purchase.php" method="POST">
                           <input type="hidden" name="edit_purchase_id" value="<?= base64_encode($r['purchase_id']) ?>">
                           <button type="submit" class="btn btn-admin btn-sm m-1">Edit</button>
@@ -60,7 +60,7 @@
 
 
                       <?php endif; ?>
-                      <?php if (@$userPrivileges['nav_edit'] == 1 || $fetchedUserRole == "admin" and $r['payment_type'] == "credit_purchase"): ?>
+                      <?php if (@$userPrivileges['nav_edit'] == 1 || $fetchedUserRole == "admin" and $r['payment_type'] == "credit_purchase") : ?>
                         <form action="credit_purchase.php" method="POST">
                           <input type="hidden" name="edit_purchase_id" value="<?= base64_encode($r['purchase_id']) ?>">
                           <button type="submit" class="btn btn-admin btn-sm m-1">Edit</button>

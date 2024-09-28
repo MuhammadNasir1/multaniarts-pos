@@ -49,7 +49,7 @@ if (isset($_REQUEST['delete_bymanually'])) {
 		}
 		deleteFromTable($dbc, "transactions", 'transaction_id', $orders['transaction_paid_id']);
 		deleteFromTable($dbc, "transactions", 'transaction_id', $orders['transaction_id']);
-		if (mysqli_query($dbc, "DELETE FROM orders WHERE $row='$id'")) {
+		if (mysqli_query($dbc, "DELETE FROM orders WHERE $row='$id'") and mysqli_query($dbc, "DELETE FROM order_item WHERE order_id='$id'")) {
 			$msg = "Data Has been deleted...";
 			$sts = "success";
 		} else {
