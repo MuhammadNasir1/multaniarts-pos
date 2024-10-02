@@ -2,6 +2,7 @@
 <html lang="en">
 <?php include_once 'includes/head.php'; ?>
 
+
 <body class="horizontal light  ">
   <div class="wrapper">
     <?php include_once 'includes/header.php'; ?>
@@ -100,6 +101,8 @@
                           </div>
                         </div>
                       <?php } ?>
+
+
 
                     </td>
 

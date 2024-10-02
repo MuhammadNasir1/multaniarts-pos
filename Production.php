@@ -7,7 +7,7 @@ include_once 'includes/head.php';
 
 if (!empty($_REQUEST['ProductionID']) && isset($_REQUEST['ProductionID'])) {
 
-    $ProductionID = base64_decode($_REQUEST['ProductionID']);
+    $ProductionID = $_REQUEST['ProductionID'];
 
     $dataproduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `production` WHERE `production_id` = '$ProductionID'"));
 

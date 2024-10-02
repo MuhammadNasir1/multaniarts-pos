@@ -133,32 +133,46 @@ $(document).ready(function () {
           $("#purchase_product_tb").html("");
           $("#product_grand_total_amount").html("");
           $("#product_total_amount").html("");
+          $("#productionModalButton").click();
+          function generateRandomCode(length = 11) {
+            var characters = "0123456789";
+            var code = "";
+            for (var i = 0; i < length; i++) {
+              code += characters.charAt(
+                Math.floor(Math.random() * characters.length)
+              );
+            }
+            return code;
+          }
+          var randomCode = generateRandomCode();
+          $("#production_lat_no").val(randomCode);
+          $("#purchase_id").val(response.order_id);
 
           // 	window.location.assign('print_order.php?order_id='+response.order_id);
 
           //$("#tableData").load(location.href+" #tableData");
-          Swal.fire({
-            title: response.msg,
-            showDenyButton: true,
-            showCancelButton: true,
-            confirmButtonText: `Print`,
-            denyButtonText: `Add New`,
-          }).then((result) => {
-            /* Read more about isConfirmed, isDenied below */
-            if (result.isConfirmed) {
-              location.reload();
+          // Swal.fire({
+          //   title: response.msg,
+          //   showDenyButton: true,
+          //   showCancelButton: true,
+          //   confirmButtonText: `Print`,
+          //   denyButtonText: `Add New`,
+          // }).then((result) => {
+          /* Read more about isConfirmed, isDenied below */
+          // if (result.isConfirmed) {
+          //   location.reload();
 
-              window.open(
-                "print_sale.php?id=" +
-                  response.order_id +
-                  "&type=" +
-                  response.type,
-                "_blank"
-              );
-            } else if (result.isDenied) {
-              location.reload();
-            }
-          });
+          //   window.open(
+          //     "print_sale.php?id=" +
+          //       response.order_id +
+          //       "&type=" +
+          //       response.type,
+          //     "_blank"
+          //   );
+          // } else if (result.isDenied) {
+          //   location.reload();
+          // }
+          // });
         }
         if (response.sts == "error") {
           sweeetalert(response.msg, response.sts, 1500);
@@ -168,6 +182,115 @@ $(document).ready(function () {
       },
     }); //ajax call
   }); //main
+  $(document).ready(function () {
+    $("#voucherModalButton").hide();
+    $("#voucherData").hide();
+    $(".formData").show();
+    $("#add_production_fm").on("submit", function (e) {
+      e.preventDefault();
+      // alert("ascas");
+
+      var formdata = new FormData(this);
+
+      $.ajax({
+        type: "POST",
+        url: "php_action/custom_action.php",
+        data: formdata,
+        contentType: false,
+        cache: false,
+        processData: false,
+        beforeSend: function () {
+          $("#loader_code").removeClass("d-none");
+          $("#text_code").addClass("d-none");
+        },
+        success: function (response) {
+          $("#loader_code").addClass("d-none");
+          $("#text_code").removeClass("d-none");
+          var responseData = JSON.parse(response).sts;
+          var responsemsg = JSON.parse(response).msg;
+          var responseID = JSON.parse(response).purchase_id;
+
+          if (responseData == "success") {
+            $("#add_production_fm").trigger("reset");
+            // $("#closeProductionModal").click();
+            $(".formData").hide();
+            $("#voucherData").show();
+            $("#voucherData").html(
+              '<div class="voucher-container row">' +
+                '<div class="col-6">' +
+                '<a class="dropdown-item" target="_blank" href="./Production.php?ProductionID=' +
+                responseID +
+                '">' +
+                '<button class="voucher-div">Cutting Voucher</button>' +
+                "</a>" +
+                "</div>" +
+                '<div class="col-6">' +
+                '<a class="dropdown-item" target="_blank" href="./Production.php?ProductionID=' +
+                responseID +
+                '#contact">' +
+                '<button class="voucher-div">Print Voucher</button>' +
+                "</a>" +
+                "</div>" +
+                '<div class="col-6">' +
+                '<a class="dropdown-item" target="_blank" href="./Production.php?ProductionID=' +
+                responseID +
+                '#Dyeing_content">' +
+                '<button class="voucher-div">Dyeing</button>' +
+                "</a>" +
+                "</div>" +
+                '<div class="col-6">' +
+                '<a class="dropdown-item" target="_blank" href="./Production.php?ProductionID=' +
+                responseID +
+                '#print_content">' +
+                '<button class="voucher-div">Print</button>' +
+                "</a>" +
+                "</div>" +
+                '<div class="col-6">' +
+                '<a class="dropdown-item" target="_blank" href="./Production.php?ProductionID=' +
+                responseID +
+                '#embroidery_content">' +
+                '<button class="voucher-div">Insuance Embroidery</button>' +
+                "</a>" +
+                "</div>" +
+                '<div class="col-6">' +
+                '<a class="dropdown-item" target="_blank" href="./Production.php?ProductionID=' +
+                responseID +
+                '#collect_emb_content">' +
+                '<button class="voucher-div">Recieving Embroidery</button>' +
+                "</a>" +
+                "</div>" +
+                '<div class="col-6">' +
+                '<a class="dropdown-item" target="_blank" href="./Production.php?ProductionID=' +
+                responseID +
+                '#stitch_pack_content">' +
+                '<button class="voucher-div">Stitching & Packing</button>' +
+                "</a>" +
+                "</div>" +
+                '<div class="col-6">' +
+                '<a class="dropdown-item" target="_blank" href="./Production.php?ProductionID=' +
+                responseID +
+                '#calander_satander_content">' +
+                '<button class="voucher-div">Calander & Stander</button>' +
+                "</a>" +
+                "</div>" +
+                "</div>"
+            );
+
+            // $("#voucherModal").click();
+            // $("#exampleModalCenter").click();
+          } else {
+            Swal.fire({
+              position: "center",
+              icon: "warning",
+              title: responsemsg,
+              showConfirmButton: false,
+              timer: 3000,
+            });
+          }
+        },
+      }); //ajax call
+    }); //main
+  });
   $("#credit_order_client_name").on("change", function () {
     var value = $("#credit_order_client_name :selected").data("id");
     var contact = $("#credit_order_client_name :selected").data("contact");

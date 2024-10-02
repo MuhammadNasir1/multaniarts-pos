@@ -1596,7 +1596,8 @@ if (@$_REQUEST['production_add_date'] && @$_REQUEST['production_lat_no']) {
 
 			$response = [
 				'sts' => 'success',
-				'msg' => 'Production Added Successfully'
+				'msg' => 'Data saved successfully',
+				'purchase_id' => $_REQUEST['purchase_id'], // Include purchase_id
 			];
 		} else {
 			$response = [
@@ -1605,5 +1606,6 @@ if (@$_REQUEST['production_add_date'] && @$_REQUEST['production_lat_no']) {
 			];
 		}
 	}
+
 	echo json_encode($response);
 }

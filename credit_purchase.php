@@ -223,10 +223,10 @@
                       <td class="table-bordered"> Discount :</td>
                       <td class="table-bordered row m-0 " id="getDiscount">
                         <div class="col-sm-6 pl-0 m-0 p-0">
-                          <input onkeyup="getOrderTotal()" type="number" id="ordered_discount" class="form-control form-control-sm" value="<?= $fetchPurchase['discount'] ?>" min="0" max="100" name="ordered_discount">
+                          <input onkeyup="getOrderTotal()" type="number" id="ordered_discount" class="form-control form-control-sm" value="<?= isset($fetchPurchase['discount']) ? @$fetchPurchase['discount'] : 0 ?>" min="0" max="100" name="ordered_discount">
                         </div>
                         <div class="col-sm-6 pl-2">
-                          <input onkeyup="getOrderTotal()" type="number" id="freight" class="form-control form-control-sm " placeholder="Freight" value="<?= @$fetchPurchase['pur_freight'] ?>" min="0" name="freight">
+                          <input onkeyup="getOrderTotal()" type="number" id="freight" class="form-control form-control-sm " placeholder="Freight" value="<?= isset($fetchPurchase['freight']) ? @$fetchPurchase['freight'] : 0 ?>" min="0" name="freight">
                       </td>
                     </tr>
                     <tr>
@@ -293,9 +293,11 @@
           </div>
         </div> <!-- .row -->
       </div> <!-- .container-fluid -->
+      <button type="button" class="btn btn-danger d-none btn-sm m-1" id="productionModalButton" data-toggle="modal" data-target="#addProductionModal" onclick="getPurId(<?= $r['purchase_id'] ?>) , getRandomCode()">Production</button>
+      <!-- Button trigger modal -->
 
 
-    </div> <!-- .wrapper -->
+
 
   </body>
 
