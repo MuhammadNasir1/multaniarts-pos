@@ -174,11 +174,12 @@ if (isset($_POST['dyeing_btn'])) {
         'dey_sending_quantity' => $_POST['dey_sending_quantity'],
     ];
     $deyData2 = [
+        'dey_recieving_product' => $_POST['dey_recieving_product'],
         'dey_recieving_thaan' => $_POST['dey_recieving_thaan'],
         'dey_recieving_gzanah' => $_POST['dey_recieving_gzanah'],
         'dey_recieving_quantity' => $_POST['dey_recieving_quantity'],
         'dyeing_cp' => $_POST['dyeing_cp'],
-        'deying_gzanah_type' => $_POST['deying_gzanah_type'],
+        'deying_Shortage' => $_POST['deying_Shortage'],
     ];
     $deyJson1 = json_encode($deyData1);
     $deyJson2 = json_encode($deyData2);
@@ -1434,13 +1435,33 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                                     // print_r($deyeingfetch['dey_vouc_list']);
                                                                     if (@$deyeingfetch != 0) {
                                                                         $lowerdata12 = json_decode(@$deyeingfetch['dey_recieving_list']);
-                                                                        for ($x = 0; $x < count(@$lowerdata12->dey_recieving_thaan); $x++) {
+                                                                        for ($x = 0; $x < count(@$lowerdata12->dey_recieving_product); $x++) {
 
                                                                     ?>
 
                                                                             <div id="dey4">
                                                                                 <div class="row mt-3 m-0 p-0">
+                                                                                    <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4 row m-0 p-0">
+                                                                                        <div class="col-12 m-0 p-0 pr-2">
+                                                                                            <label class=" font-weight-bold text-dark" for="dey_recieving_product">Quality</label>
 
+                                                                                            <select class="form-control searchableSelect" name="dey_recieving_product[]">
+                                                                                                <option value="">Select Product</option>
+                                                                                                <?php
+                                                                                                $result = mysqli_query($dbc, "SELECT * FROM product WHERE status=1 ");
+                                                                                                while ($row = mysqli_fetch_array($result)) {
+                                                                                                    $getBrand = fetchRecord($dbc, "brands", "brand_id", $row['brand_id']);
+                                                                                                    $getCat = fetchRecord($dbc, "categories", "categories_id", $row['category_id']);
+                                                                                                ?>
+                                                                                                    <option <?= (@$lowerdata12->dey_recieving_product[$x] == $row["product_id"]) ? 'selected' : ''; ?> data-price="<?= $row["current_rate"] ?>" <?= empty($r['product_id']) ? "" : "selected" ?> value="<?= $row["product_id"] ?>">
+                                                                                                        <?= ucwords($row["product_name"]) ?> | <?= ucwords(@$getBrand["brand_name"]) ?>(<?= ucwords(@$getCat["categories_name"]) ?>)
+                                                                                                    </option>
+
+                                                                                                <?php   } ?>
+                                                                                            </select>
+
+                                                                                        </div>
+                                                                                    </div>
                                                                                     <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
                                                                                         <label>Thaan</label>
                                                                                         <input type="text" class="form-control thaan2" value="<?= @$lowerdata12->dey_recieving_thaan[$x] ?>" name="dey_recieving_thaan[]" placeholder="Thaan">
@@ -1459,20 +1480,21 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                                                     </div>
 
 
-                                                                                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4">
+                                                                                    <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4 d-flex align-items-end">
                                                                                         <div class="form-group mb-0">
-                                                                                            <label class="font-weight-bold text-dark">Type</label>
-                                                                                            <input type="text" class="form-control" id="deying_gzanah_type" name="deying_gzanah_type[]" placeholder="Type" required value="<?= @$lowerdata12->deying_gzanah_type[$x] ?>">
+                                                                                            <label class="font-weight-bold text-dark">Shortage</label>
+                                                                                            <input type="text" class="form-control" id="deying_Shortage" name="deying_Shortage[]" placeholder="Shortage" required value="<?= @$lowerdata12->deying_Shortage[$x] ?>">
+                                                                                        </div>
+                                                                                        <div class="add_remove">
+                                                                                            <button type="button" class=" outline_none border-0 bg-white" onclick="deying_voucher_remove4(this)">
+                                                                                                <img title="Remove Row" src="img/remove.png" width="30px" alt="remove sign">
+                                                                                            </button>
                                                                                         </div>
                                                                                     </div>
 
-                                                                                    <div class=" align-items-end jus d-flex col-lg-1 col-md-2 col-sm-4 col-xs-4 add_remove">
-                                                                                        <button type="button" class=" outline_none border-0 bg-white" onclick="deying_voucher_remove4(this)">
-                                                                                            <img title="Remove Row" src="img/remove.png" width="30px" alt="remove sign">
-                                                                                        </button>
-                                                                                    </div>
                                                                                 </div>
                                                                             </div>
+
 
 
                                                                         <?php
@@ -1484,7 +1506,27 @@ $formattedDate = $currentDate->format('Y-m-d');
 
                                                                         <div id="dey4">
                                                                             <div class="row mt-3 m-0 p-0">
+                                                                                <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4 row m-0 p-0">
+                                                                                    <div class="col-12 m-0 p-0 pr-2">
+                                                                                        <label class=" font-weight-bold text-dark" for="dey_recieving_product">Quality</label>
 
+                                                                                        <select class="form-control searchableSelect" name="dey_recieving_product[]">
+                                                                                            <option value="">Select Product</option>
+                                                                                            <?php
+                                                                                            $result = mysqli_query($dbc, "SELECT * FROM product WHERE status=1 ");
+                                                                                            while ($row = mysqli_fetch_array($result)) {
+                                                                                                $getBrand = fetchRecord($dbc, "brands", "brand_id", $row['brand_id']);
+                                                                                                $getCat = fetchRecord($dbc, "categories", "categories_id", $row['category_id']);
+                                                                                            ?>
+                                                                                                <option <?= (@$lowerdata12->dey_recieving_product[$x] == $row["product_id"]) ? 'selected' : ''; ?> data-price="<?= $row["current_rate"] ?>" <?= empty($r['product_id']) ? "" : "selected" ?> value="<?= $row["product_id"] ?>">
+                                                                                                    <?= ucwords($row["product_name"]) ?> | <?= ucwords(@$getBrand["brand_name"]) ?>(<?= ucwords(@$getCat["categories_name"]) ?>)
+                                                                                                </option>
+
+                                                                                            <?php   } ?>
+                                                                                        </select>
+
+                                                                                    </div>
+                                                                                </div>
                                                                                 <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
                                                                                     <label>Thaan</label>
                                                                                     <input type="text" class="form-control thaan2" value="<?= @$lowerdata12->dey_recieving_thaan[$x] ?>" name="dey_recieving_thaan[]" placeholder="Thaan">
@@ -1503,18 +1545,18 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                                                 </div>
 
 
-                                                                                <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4">
+                                                                                <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4 d-flex align-items-end">
                                                                                     <div class="form-group mb-0">
-                                                                                        <label class="font-weight-bold text-dark">Type</label>
-                                                                                        <input type="text" class="form-control" id="deying_gzanah_type" name="deying_gzanah_type[]" placeholder="Type" required value="<?= @$lowerdata12->deying_gzanah_type[$x] ?>">
+                                                                                        <label class="font-weight-bold text-dark">Shortage</label>
+                                                                                        <input type="text" class="form-control" id="deying_Shortage" name="deying_Shortage[]" placeholder="Shortage" required value="<?= @$lowerdata12->deying_Shortage[$x] ?>">
+                                                                                    </div>
+                                                                                    <div class="add_remove">
+                                                                                        <button type="button" class=" outline_none border-0 bg-white" onclick="deying_voucher_remove4(this)">
+                                                                                            <img title="Remove Row" src="img/remove.png" width="30px" alt="remove sign">
+                                                                                        </button>
                                                                                     </div>
                                                                                 </div>
 
-                                                                                <div class=" align-items-end jus d-flex col-lg-1 col-md-2 col-sm-4 col-xs-4 add_remove">
-                                                                                    <button type="button" class=" outline_none border-0 bg-white" onclick="deying_voucher_remove4(this)">
-                                                                                        <img title="Remove Row" src="img/remove.png" width="30px" alt="remove sign">
-                                                                                    </button>
-                                                                                </div>
                                                                             </div>
                                                                         </div>
 
