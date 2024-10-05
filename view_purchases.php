@@ -77,8 +77,13 @@
 
 
                       <a target="_blank" href="print_sale.php?id=<?= $r['purchase_id'] ?>&type=purchase" class="btn btn-admin2 btn-sm m-1">Print</a>
-
-                      <button type="button" class="btn btn-danger btn-sm m-1" id="productionModalButton" data-toggle="modal" data-target="#addProductionModal" onclick="getPurId(<?= $r['purchase_id'] ?>) , getRandomCode()">Production</button>
+                      <?php
+                      $id = $r['purchase_id'];
+                      $pro_id = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `production` WHERE purchase_id = '$id'"));
+                      if (!$pro_id) {
+                      ?>
+                        <button type="button" class="btn btn-danger btn-sm m-1" id="productionModalButton" data-toggle="modal" data-target="#addProductionModal" onclick="getPurId(<?= $r['purchase_id'] ?>) , getRandomCode()">Production</button>
+                      <?php } ?>
                       <?php
                       $id = $r['purchase_id'];
                       $pro_id = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `production` WHERE purchase_id = '$id'"));
