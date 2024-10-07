@@ -392,7 +392,7 @@ if ($type == 'dyeing') {
             <div class="col-sm-6 ">
 
             </div>
-            <div class="col-sm-3 h4">
+            <div class="col-sm-3 pt-3 h4">
                 Recevied By : _________________
             </div>
 
