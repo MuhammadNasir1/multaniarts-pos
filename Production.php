@@ -632,7 +632,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                                                     <div class="col-12 m-0 p-0 pr-2">
                                                                                         <label class=" font-weight-bold text-dark" for="cutting_from_product">Quality</label>
 
-                                                                                        <select class="form-control searchableSelect" name="cutting_from_product[]">
+                                                                                        <select class="form-control " name="cutting_from_product[]">
                                                                                             <option value="">Select Product</option>
                                                                                             <?php
                                                                                             $purchase_data2 = mysqli_query($dbc, "SELECT * FROM `purchase_item` WHERE `purchase_id` = '$request_id'");
@@ -713,7 +713,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                                                 <div class="col-12 m-0 p-0 pr-2">
                                                                                     <label class=" font-weight-bold text-dark" for="cutting_from_product">Quality</label>
 
-                                                                                    <select class="form-control searchableSelect" name="cutting_from_product[]">
+                                                                                    <select class="form-control" name="cutting_from_product[]">
                                                                                         <option value="">Select Product</option>
                                                                                         <?php
                                                                                         $purchase_data2 = mysqli_query($dbc, "SELECT * FROM `purchase_item` WHERE `purchase_id` = '$request_id'");
@@ -819,7 +819,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                                                     <div class="col-11 m-0 p-0 pr-2">
                                                                                         <label class=" font-weight-bold text-dark" for="cutting_to_product">Quality</label>
 
-                                                                                        <select class="form-control searchableSelect" name="cutting_to_product[]">
+                                                                                        <select class="form-control " name="cutting_to_product[]">
                                                                                             <option value="">Select Product</option>
                                                                                             <?php
                                                                                             $result = mysqli_query($dbc, "SELECT * FROM product WHERE status=1 ");
@@ -888,7 +888,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                                             <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 row m-0 p-0">
                                                                                 <div class="col-11 m-0 p-0 pr-2">
                                                                                     <label class="font-weight-bold text-dark" for="cutting_to_product">Quality</label>
-                                                                                    <select class="form-control searchableSelect" name="cutting_to_product[]">
+                                                                                    <select class="form-control " name="cutting_to_product[]">
                                                                                         <option value="">Select Product</option>
                                                                                         <?php
                                                                                         $result = mysqli_query($dbc, "SELECT * FROM product WHERE status=1 ");
@@ -1278,7 +1278,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                                                         <div class="col-12 m-0 p-0 pr-2">
                                                                                             <label class=" font-weight-bold text-dark" for="deying_product">Quality</label>
 
-                                                                                            <select class="form-control searchableSelect" name="deying_product[]">
+                                                                                            <select class="form-control " name="deying_product[]">
                                                                                                 <option value="">Select Product</option>
                                                                                                 <?php
                                                                                                 $purchase_data = mysqli_query($dbc, "SELECT * FROM `purchase_item` WHERE `purchase_id` = '$request_id'");
@@ -1346,7 +1346,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                                                     <div class="col-12 m-0 p-0 pr-2">
                                                                                         <label class=" font-weight-bold text-dark" for="deying_product">Quality</label>
 
-                                                                                        <select class="form-control searchableSelect" name="deying_product[]">
+                                                                                        <select class="form-control" name="deying_product[]">
                                                                                             <option value="">Select Product</option>
                                                                                             <?php
                                                                                             $purchase_data = mysqli_query($dbc, "SELECT * FROM `purchase_item` WHERE `purchase_id` = '$request_id'");
@@ -1445,7 +1445,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                                                         <div class="col-12 m-0 p-0 pr-2">
                                                                                             <label class=" font-weight-bold text-dark" for="dey_recieving_product">Quality</label>
 
-                                                                                            <select class="form-control searchableSelect" name="dey_recieving_product[]">
+                                                                                            <select class="form-control" name="dey_recieving_product[]">
                                                                                                 <option value="">Select Product</option>
                                                                                                 <?php
                                                                                                 $purchase_data2 = mysqli_query($dbc, "SELECT * FROM `purchase_item` WHERE `purchase_id` = '$request_id'");
@@ -1521,7 +1521,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                                                     <div class="col-12 m-0 p-0 pr-2">
                                                                                         <label class=" font-weight-bold text-dark" for="dey_recieving_product">Quality</label>
 
-                                                                                        <select class="form-control searchableSelect" name="dey_recieving_product[]">
+                                                                                        <select class="form-control" name="dey_recieving_product[]">
                                                                                             <option value="">Select Product</option>
                                                                                             <?php
                                                                                             $purchase_data2 = mysqli_query($dbc, "SELECT * FROM `purchase_item` WHERE `purchase_id` = '$request_id'");
@@ -1609,7 +1609,7 @@ $formattedDate = $currentDate->format('Y-m-d');
 
                                             <div class="row justify-content-end">
                                                 <div class="col-lg-2  text-right">
-                                                    <a target="_blank" href="print_production.php?print=<?= $ProductionID ?>&type=deyeing&part=production" id="showData3">
+                                                    <a target="_blank" href="print.php?production=<?= $ProductionID ?>&type=dyeing" id="showData3">
                                                         <div class="btn btn-primary">
                                                             <i class="fa fa-print"></i> Print
                                                         </div>
