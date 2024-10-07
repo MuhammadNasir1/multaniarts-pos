@@ -1527,9 +1527,6 @@ function deying_voucher_duplicateRow5() {
   // Clone the last row without copying event handlers
   var lastRow = container.children(".row:last").clone();
 
-  // Remove the remove button from the first row
-  container.find(".row:first .add_remove button").remove();
-
   // Generate new row ID based on the number of rows
   var rowCount = container.children(".row").length + 1;
   var newRowId = "row" + rowCount;
@@ -1574,9 +1571,6 @@ function deying_voucher_duplicateRow4() {
 
   // Clone the last row without copying event handlers
   var lastRow = container.children(".row:last").clone();
-
-  // Remove the remove button from the first row
-  container.find(".row:first .add_remove button").remove();
 
   // Get the new row index for unique IDs
   var newRowIndex = container.children(".row").length + 1;

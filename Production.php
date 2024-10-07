@@ -1448,16 +1448,27 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                                                             <select class="form-control searchableSelect" name="dey_recieving_product[]">
                                                                                                 <option value="">Select Product</option>
                                                                                                 <?php
-                                                                                                $result = mysqli_query($dbc, "SELECT * FROM product WHERE status=1 ");
-                                                                                                while ($row = mysqli_fetch_array($result)) {
-                                                                                                    $getBrand = fetchRecord($dbc, "brands", "brand_id", $row['brand_id']);
-                                                                                                    $getCat = fetchRecord($dbc, "categories", "categories_id", $row['category_id']);
-                                                                                                ?>
-                                                                                                    <option <?= (@$lowerdata12->dey_recieving_product[$x] == $row["product_id"]) ? 'selected' : ''; ?> data-price="<?= $row["current_rate"] ?>" <?= empty($r['product_id']) ? "" : "selected" ?> value="<?= $row["product_id"] ?>">
-                                                                                                        <?= ucwords($row["product_name"]) ?> | <?= ucwords(@$getBrand["brand_name"]) ?>(<?= ucwords(@$getCat["categories_name"]) ?>)
-                                                                                                    </option>
+                                                                                                $purchase_data2 = mysqli_query($dbc, "SELECT * FROM `purchase_item` WHERE `purchase_id` = '$request_id'");
+                                                                                                $product_ids2 = array();
 
-                                                                                                <?php   } ?>
+                                                                                                while ($rowdata2 = mysqli_fetch_array($purchase_data2)) {
+                                                                                                    $product_id2 = $rowdata2['product_id'];
+                                                                                                    $product_ids2[] = $product_id;
+
+                                                                                                    $purchase_data3 = mysqli_query($dbc, "SELECT * FROM `product` WHERE `product_id` = $product_id2");
+
+                                                                                                    while ($rowdata3 = mysqli_fetch_array($purchase_data3)) {
+                                                                                                        $getBrand = fetchRecord($dbc, "brands", "brand_id", $rowdata3['brand_id']);
+                                                                                                        $getCat = fetchRecord($dbc, "categories", "categories_id", $rowdata3['category_id']);
+                                                                                                ?>
+
+
+                                                                                                        <option <?= (@$lowerdata12->dey_recieving_product[$x] == $rowdata3["product_id"]) ? 'selected' : ''; ?> data-price="<?= $rowdata3["current_rate"] ?>" <?= empty($r['product_id']) ? "" : "selected" ?> value="<?= $rowdata3["product_id"] ?>">
+                                                                                                            <?= ucwords($rowdata3["product_name"]) ?> | <?= ucwords(@$getBrand["brand_name"]) ?>(<?= ucwords(@$getCat["categories_name"]) ?>)
+                                                                                                        </option>
+
+                                                                                                <?php   }
+                                                                                                } ?>
                                                                                             </select>
 
                                                                                         </div>
@@ -1513,16 +1524,27 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                                                         <select class="form-control searchableSelect" name="dey_recieving_product[]">
                                                                                             <option value="">Select Product</option>
                                                                                             <?php
-                                                                                            $result = mysqli_query($dbc, "SELECT * FROM product WHERE status=1 ");
-                                                                                            while ($row = mysqli_fetch_array($result)) {
-                                                                                                $getBrand = fetchRecord($dbc, "brands", "brand_id", $row['brand_id']);
-                                                                                                $getCat = fetchRecord($dbc, "categories", "categories_id", $row['category_id']);
-                                                                                            ?>
-                                                                                                <option <?= (@$lowerdata12->dey_recieving_product[$x] == $row["product_id"]) ? 'selected' : ''; ?> data-price="<?= $row["current_rate"] ?>" <?= empty($r['product_id']) ? "" : "selected" ?> value="<?= $row["product_id"] ?>">
-                                                                                                    <?= ucwords($row["product_name"]) ?> | <?= ucwords(@$getBrand["brand_name"]) ?>(<?= ucwords(@$getCat["categories_name"]) ?>)
-                                                                                                </option>
+                                                                                            $purchase_data2 = mysqli_query($dbc, "SELECT * FROM `purchase_item` WHERE `purchase_id` = '$request_id'");
+                                                                                            $product_ids2 = array();
 
-                                                                                            <?php   } ?>
+                                                                                            while ($rowdata2 = mysqli_fetch_array($purchase_data2)) {
+                                                                                                $product_id2 = $rowdata2['product_id'];
+                                                                                                $product_ids2[] = $product_id;
+
+                                                                                                $purchase_data3 = mysqli_query($dbc, "SELECT * FROM `product` WHERE `product_id` = $product_id2");
+
+                                                                                                while ($rowdata3 = mysqli_fetch_array($purchase_data3)) {
+                                                                                                    $getBrand = fetchRecord($dbc, "brands", "brand_id", $rowdata3['brand_id']);
+                                                                                                    $getCat = fetchRecord($dbc, "categories", "categories_id", $rowdata3['category_id']);
+                                                                                            ?>
+
+
+                                                                                                    <option <?= (@$lowerdata12->dey_recieving_product[$x] == $rowdata3["product_id"]) ? 'selected' : ''; ?> data-price="<?= $rowdata3["current_rate"] ?>" <?= empty($r['product_id']) ? "" : "selected" ?> value="<?= $rowdata3["product_id"] ?>">
+                                                                                                        <?= ucwords($rowdata3["product_name"]) ?> | <?= ucwords(@$getBrand["brand_name"]) ?>(<?= ucwords(@$getCat["categories_name"]) ?>)
+                                                                                                    </option>
+
+                                                                                            <?php   }
+                                                                                            } ?>
                                                                                         </select>
 
                                                                                     </div>
