@@ -1494,7 +1494,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                                                     <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4 d-flex align-items-end">
                                                                                         <div class="form-group mb-0">
                                                                                             <label class="font-weight-bold text-dark">Shortage</label>
-                                                                                            <input type="text" class="form-control" id="deying_Shortage" name="deying_Shortage[]" placeholder="Shortage" required value="<?= @$lowerdata12->deying_Shortage[$x] ?>">
+                                                                                            <input type="text" class="form-control" id="deying_Shortage" name="deying_Shortage[]" placeholder="Shortage" value="<?= @$lowerdata12->deying_Shortage[$x] ?>">
                                                                                         </div>
                                                                                         <div class="add_remove">
                                                                                             <button type="button" class=" outline_none border-0 bg-white" onclick="deying_voucher_remove4(this)">
@@ -1570,7 +1570,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                                                 <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4 d-flex align-items-end">
                                                                                     <div class="form-group mb-0">
                                                                                         <label class="font-weight-bold text-dark">Shortage</label>
-                                                                                        <input type="text" class="form-control" id="deying_Shortage" name="deying_Shortage[]" placeholder="Shortage" required value="<?= @$lowerdata12->deying_Shortage[$x] ?>">
+                                                                                        <input type="text" class="form-control" id="deying_Shortage" name="deying_Shortage[]" placeholder="Shortage" value="<?= @$lowerdata12->deying_Shortage[$x] ?>">
                                                                                     </div>
                                                                                     <div class="add_remove">
                                                                                         <button type="button" class=" outline_none border-0 bg-white" onclick="deying_voucher_remove4(this)">
