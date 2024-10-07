@@ -960,7 +960,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                             <div class="row  justify-content-end">
                                                 <div class="col-lg-1 d-inline text-left p-0">
 
-                                                    <a target="_blank" href="print_production.php?print=<?= $ProductionID ?>&type=cutting&part=production" id="showData1">
+                                                    <a target="_blank" href="print.php?production=<?= $ProductionID ?>&type=cutting" id="showData1">
                                                         <div class="btn btn-primary">
                                                             <i class="fa fa-print"></i> Print
                                                         </div>

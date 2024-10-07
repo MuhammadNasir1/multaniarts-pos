@@ -4,10 +4,12 @@
 
 $get_company = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM company"));
 $type = $_REQUEST['type'];
+$production_id = $_REQUEST['production'];
 
 if ($type == 'dyeing') {
-    $production_id = $_REQUEST['production'];
     $all_data = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM deyeing WHERE dey_production_id = $production_id"));
+} else if ($type == 'cutting') {
+    $all_data = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM cutting_voucher WHERE cutt_production_id = $production_id"));
 }
 
 
@@ -91,6 +93,8 @@ if ($type == 'dyeing') {
                     <b>
                         <?php if ($type == 'dyeing') {
                             echo $all_data['dey_date'];
+                        } else if ($type = 'cutting') {
+                            echo $all_data['cutt_voucher_date'];
                         } ?>
                     </b>
                 </p>
@@ -243,6 +247,129 @@ if ($type == 'dyeing') {
                 ?>
             </div>
 
+        <?php } else if ($type == 'cutting') { ?>
+            <table class="table">
+                <tr>
+                    <th class="border font-weight-bold">Party Name</th>
+                    <th class="border">
+                        <?php
+                        $id = $all_data['cutt_party_name'];
+                        $result = mysqli_query($dbc, "SELECT * FROM customers WHERE  customer_id = $id");
+                        while ($row = mysqli_fetch_array($result)) {
+
+                        ?>
+                            <?php echo  ucwords($row["customer_name"]) ?>
+                            (<?= ucwords($row['customer_type']) ?>)
+                        <?php   } ?>
+                    </th>
+                    <th class="border font-weight-bold">Dyeing Lat No</th>
+                    <th class="border"><?= $all_data['cutt_dyeing_lat_no'] ?></th>
+                    <th class="border font-weight-bold">Volume No</th>
+                    <th class="border"><?= $all_data['cutt_volume_no'] ?></th>
+                </tr>
+                <tr>
+                    <th class="border font-weight-bold">Location</th>
+                    <th class="border"><?= $all_data['cutt_voucher_location'] ?></th>
+                    <th class="border font-weight-bold">Delivery Date</th>
+                    <th class="border"><?= $all_data['cutting_delivery_date'] ?></th>
+                </tr>
+            </table>
+            <div class="d-flex">
+                <?php if (isset($all_data['cutting_from_list'])) { ?>
+                    <div class="px-3 w-100">
+                        <h3 class="text-center">From</h3>
+                        <div class="row table_row mt-4">
+                            <div class="col-sm-12 p-0">
+                                <table class="w-100">
+                                    <thead class="thead_row">
+                                        <th>Sr</th>
+                                        <th>Quality</th>
+                                        <th>Thaan</th>
+                                        <th>Gzanah</th>
+                                        <th>Quantity</th>
+                                        <th>Type</th>
+                                    </thead>
+                                    <tbody class="tbody_row">
+                                        <?php
+                                        if (@$all_data != 0) {
+                                            $lowerdata = json_decode(@$all_data['cutting_from_list']);
+                                            for ($x = 0; $x < count(@$lowerdata->cutting_from_product); $x++) {
+                                        ?>
+                                                <tr>
+                                                    <td><?= $x + 1 ?></td>
+                                                    <td>
+                                                        <?php
+                                                        $id = $lowerdata->cutting_from_product[$x];
+                                                        $result = mysqli_query($dbc, "SELECT * FROM product WHERE product_id = $id ");
+                                                        while ($row = mysqli_fetch_array($result)) {
+                                                            $getBrand = fetchRecord($dbc, "brands", "brand_id", $row['brand_id']);
+                                                            $getCat = fetchRecord($dbc, "categories", "categories_id", $row['category_id']);
+                                                        ?>
+                                                            <?= ucwords($row["product_name"]) ?> | <?= ucwords(@$getBrand["brand_name"]) ?>(<?= ucwords(@$getCat["categories_name"]) ?>)
+                                                        <?php   } ?>
+                                                    </td>
+                                                    <td> <?= @$lowerdata->cutt_from_thaan[$x] ?> </td>
+                                                    <td> <?= @$lowerdata->cutt_form_gzanah[$x] ?> </td>
+                                                    <td> <?= @$lowerdata->cutt_from_quantity[$x] ?> </td>
+                                                    <td> <?= @$lowerdata->cutt_from_gzanah_type[$x] ?> </td>
+                                                </tr>
+                                        <?php }
+                                        } ?>
+                                    </tbody>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                <?php } ?>
+                <?php if (isset($all_data['cutting_to_list'])) { ?>
+                    <div class="px-3 ml-3 w-100">
+                        <h3 class="text-center">To</h3>
+                        <div class="row table_row mt-4">
+                            <div class="col-sm-12 p-0">
+                                <table class="w-100">
+                                    <thead class="thead_row">
+                                        <th>Sr</th>
+                                        <th>Quality</th>
+                                        <th>Thaan</th>
+                                        <th>Gzanah</th>
+                                        <th>Quantity</th>
+                                        <th>Type</th>
+                                    </thead>
+                                    <tbody class="tbody_row">
+                                        <?php
+                                        if (@$all_data != 0) {
+                                            $lowerdata = json_decode(@$all_data['cutting_to_list']);
+                                            for ($x = 0; $x < count(@$lowerdata->cutting_to_product); $x++) {
+                                        ?>
+                                                <tr>
+                                                    <td><?= $x + 1 ?></td>
+                                                    <td>
+                                                        <?php
+                                                        $id = $lowerdata->cutting_to_product[$x];
+                                                        $result = mysqli_query($dbc, "SELECT * FROM product WHERE product_id = $id ");
+                                                        while ($row = mysqli_fetch_array($result)) {
+                                                            $getBrand = fetchRecord($dbc, "brands", "brand_id", $row['brand_id']);
+                                                            $getCat = fetchRecord($dbc, "categories", "categories_id", $row['category_id']);
+                                                        ?>
+                                                            <?= ucwords($row["product_name"]) ?> | <?= ucwords(@$getBrand["brand_name"]) ?>(<?= ucwords(@$getCat["categories_name"]) ?>)
+                                                        <?php   } ?>
+                                                    </td>
+                                                    <td> <?= @$lowerdata->cutt_to_thaan[$x] ?> </td>
+                                                    <td> <?= @$lowerdata->cutt_to_gzanah[$x] ?> </td>
+                                                    <td> <?= @$lowerdata->cutt_to_quantity[$x] ?> </td>
+                                                    <td> <?= @$lowerdata->cutt_to_gzanah_type[$x] ?> </td>
+                                                </tr>
+                                        <?php }
+                                        } ?>
+                                    </tbody>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                <?php } ?>
+            </div>
         <?php } ?>
 
         <div class="row" style="font-size: 18px">
@@ -252,8 +379,8 @@ if ($type == 'dyeing') {
                     if ($_REQUEST['type'] == "dyeing") {
                     ?>
                         <b>Details</b> : <?= $all_data['dey_remarks'] ?>
-                    <?php } else { ?>
-                        <b>Details</b> : <?= @$order['order_narration'] ?>
+                    <?php } else if ($type == 'cutting') { ?>
+                        <b>Details</b> : <?= @$all_data['cutt_voucher_remarks'] ?>
                     <?php } ?>
                 </p>
 
@@ -286,3 +413,7 @@ if ($type == 'dyeing') {
 </body>
 
 </html>
+
+<script type="text/javascript">
+    window.print();
+</script>
