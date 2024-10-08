@@ -1,3 +1,15 @@
+   <style>
+     .voucher-div {
+       background-color: #343a40;
+       color: white;
+       border: none;
+       outline: none;
+       font-weight: bold;
+       padding: 10px 0px 10px;
+       width: 100%;
+       border-radius: 4px;
+     }
+   </style>
    <div class="modal fade modal-notif modal-slide" tabindex="-1" role="dialog" aria-labelledby="defaultModalLabel" aria-hidden="true">
      <div class="modal-dialog modal-sm" role="document">
        <div class="modal-content">
@@ -275,10 +287,10 @@
          </div>
 
          <div class="modal-body">
-           <form id="add_production_fm">
+           <form id="add_production_fm" class="formData">
              <input type="hidden" name="prod_upd_id" value="<?= @$updateProduction['production_id'] ?>">
              <input type="hidden" name="purchase_id" id="purchase_id" value="">
-             <div class="form-group row">
+             <div class="form-group row ">
                <div class="col-lg-12  col-md-12 col-sm-12 col-xs-2 mb-3 mb-sm-0">
                  <label for="" class="font-weight-bold text-dark">Date</label>
                  <input type="date" class="form-control" id="production_add_date" name="production_add_date" <?php if (@$_REQUEST['update-production']) { ?> value="<?= @$updateProduction['production_date'] ?>" <?php } else { ?> value="<?= date('Y-m-d') ?>" <?php } ?>>
@@ -294,7 +306,7 @@
              </div>
 
          </div>
-         <div class="modal-footer">
+         <div class="modal-footer formData">
            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeProductionModal">Close</button>
            <button type="submit" id="inv_btn" class="btn btn-admin float-right">
              <span id="loader_code" class="spinner-border d-none" style="width: 1.5rem !important;height: 1.5rem !important;"></span>
@@ -302,9 +314,32 @@
            </button>
          </div>
          </form>
+         <div id="voucherData" class="pb-5">
+
+         </div>
        </div>
      </div>
    </div>
+
+   <div class="modal fade" id="newVoucherModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+     <div class="modal-dialog modal-dialog-centered" role="document">
+       <div class="modal-content">
+         <div class="modal-header bg-dark">
+           <h5 class="modal-title  text-white" id="exampleModalLongTitle">View Vouchers</h5>
+           <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+             <span aria-hidden="true">&times;</span>
+           </button>
+         </div>
+
+         <div class="modal-body">
+
+         </div>
+       </div>
+     </div>
+   </div>
+
+
+
 
 
 
@@ -385,58 +420,4 @@
        var randomCode = generateRandomCode();
        $('#production_lat_no').val(randomCode);
      }
-     $(document).ready(function() {
-       $('#voucherModalButton').hide();
-       $("#add_production_fm").on('submit', function(e) {
-
-         e.preventDefault();
-         // alert("ascas");
-
-         var formdata = new FormData(this);
-
-         $.ajax({
-           type: 'POST',
-           url: 'php_action/custom_action.php',
-           data: formdata,
-           contentType: false,
-           cache: false,
-           processData: false,
-           beforeSend: function() {
-             $('#loader_code').removeClass('d-none');
-             $('#text_code').addClass('d-none');
-           },
-           success: function(response) {
-
-             $('#loader_code').addClass('d-none');
-             $('#text_code').removeClass('d-none');
-             var responseData = JSON.parse(response).sts;
-             var responsemsg = JSON.parse(response).msg;
-
-             if (responseData == 'success') {
-               Swal.fire({
-                 position: 'center',
-                 icon: 'success',
-                 title: responsemsg,
-                 showConfirmButton: false,
-                 timer: 3000
-               }).then((result) => {
-                 if (responseData == 'success') {
-                   $('#add_production_fm').trigger('reset');
-                   $('#closeProductionModal').click();
-                   location.reload();
-                 }
-               });
-             } else {
-               Swal.fire({
-                 position: 'center',
-                 icon: 'warning',
-                 title: responsemsg,
-                 showConfirmButton: false,
-                 timer: 3000
-               });
-             }
-           }
-         }); //ajax call
-       }); //main
-     });
    </script>

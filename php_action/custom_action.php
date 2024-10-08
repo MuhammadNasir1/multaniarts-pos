@@ -1568,7 +1568,6 @@ if (!empty($_REQUEST['Quotation_delete_id']) && isset($_REQUEST['Quotation_delet
 	echo json_encode($response);
 }
 if (@$_REQUEST['production_add_date'] && @$_REQUEST['production_lat_no']) {
-
 	$data = [
 		'purchase_id' => $_REQUEST['purchase_id'],
 		'production_date' => $_REQUEST['production_add_date'],
@@ -1577,12 +1576,10 @@ if (@$_REQUEST['production_add_date'] && @$_REQUEST['production_lat_no']) {
 	];
 
 	if (!empty($_REQUEST['prod_upd_id'])) {
-
 		if (update_data($dbc, "production", $data, "production_id ", $_REQUEST['prod_upd_id'])) {
 			$response = [
 				'sts' => 'success',
 				'msg' => 'Production Update Successfully'
-
 			];
 		} else {
 			$response = [
@@ -1591,12 +1588,16 @@ if (@$_REQUEST['production_add_date'] && @$_REQUEST['production_lat_no']) {
 			];
 		}
 	} else {
-
 		if (insert_data($dbc, "production", $data)) {
+			// Fetch the production_id of the newly inserted record
+			$p_id = $_REQUEST['purchase_id'];
+			$production_id_result = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT production_id FROM `production` WHERE purchase_id ='$p_id' ORDER BY production_id DESC LIMIT 1"));
 
 			$response = [
 				'sts' => 'success',
-				'msg' => 'Production Added Successfully'
+				'msg' => 'Data saved successfully',
+				'purchase_id' => $_REQUEST['purchase_id'], // Include purchase_id
+				'production_id' => $production_id_result['production_id'] // Include production_id
 			];
 		} else {
 			$response = [
@@ -1605,5 +1606,6 @@ if (@$_REQUEST['production_add_date'] && @$_REQUEST['production_lat_no']) {
 			];
 		}
 	}
+
 	echo json_encode($response);
 }

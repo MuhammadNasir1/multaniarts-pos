@@ -236,10 +236,10 @@ if (!empty($_REQUEST['edit_purchase_id'])) {
                       <td class="table-bordered"> Discount :</td>
                       <td class="table-bordered row m-0 " id="getDiscount">
                         <div class="col-sm-6 pl-0 m-0 p-0">
-                          <input onkeyup="getOrderTotal()" type="number" id="ordered_discount" class="form-control form-control-sm" value="<?= @$fetchPurchase['discount'] ?>" min="0" max="100" name="ordered_discount">
+                          <input onkeyup="getOrderTotal()" type="number" id="ordered_discount" class="form-control form-control-sm" value="<?= isset($fetchPurchase['discount']) ? @$fetchPurchase['discount'] : 0 ?>" min="0" max="100" name="ordered_discount">
                         </div>
                         <div class="col-sm-6 pl-2 m-0 p-0">
-                          <input onkeyup="getOrderTotal()" type="number" id="freight" class="form-control form-control-sm " placeholder="Freight" value="<?= @$fetchPurchase['freight'] ?>" min="0" name="freight">
+                          <input onkeyup="getOrderTotal()" type="number" id="freight" class="form-control form-control-sm " placeholder="Freight" value="<?= isset($fetchPurchase['freight']) ? @$fetchPurchase['freight'] : 0 ?>" min="0" name="freight">
 
                       </td>
                     </tr>
@@ -248,7 +248,20 @@ if (!empty($_REQUEST['edit_purchase_id'])) {
                       <td class="table-bordered"> <strong>Grand Total :</strong> </td>
                       <td class="table-bordered" id="product_grand_total_amount"><?= @$fetchPurchase['grand_total'] ?></td>
                       <td class="table-bordered">Paid :</td>
-                      <td class="table-bordered"><input type="number" max="" class="form-control form-control-sm" id="paid_ammount" onkeyup="getRemaingAmount()" required name="paid_ammount" value="<?= @$fetchPurchase['paid'] ?>">
+                      <td class="table-bordered">
+                        <div class="form-group row">
+                          <div class="col-sm-6">
+                            <input type="number" min="0" class="form-control form-control-sm" id="paid_ammount" required onkeyup="getRemaingAmount()" name="paid_ammount" value="<?= @$fetchPurchase['paid'] ?>">
+
+
+                          </div>
+                          <div class="col-sm-6">
+                            <div class="custom-control custom-switch">
+                              <input type="checkbox" class="custom-control-input" id="full_payment_check">
+                              <label class="custom-control-label" for="full_payment_check">Full Payment</label>
+                            </div>
+                          </div>
+                        </div>
 
                       </td>
                     </tr>
@@ -298,7 +311,7 @@ if (!empty($_REQUEST['edit_purchase_id'])) {
       </div> <!-- .row -->
     </div> <!-- .container-fluid -->
 
-
+    <button type="button" class="btn btn-danger d-none btn-sm m-1" id="productionModalButton" data-toggle="modal" data-target="#addProductionModal" onclick="getPurId(<?= $r['purchase_id'] ?>) , getRandomCode()">Production</button>
   </div> <!-- .wrapper -->
 
 </body>

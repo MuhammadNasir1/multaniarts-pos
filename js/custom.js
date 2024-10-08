@@ -133,32 +133,46 @@ $(document).ready(function () {
           $("#purchase_product_tb").html("");
           $("#product_grand_total_amount").html("");
           $("#product_total_amount").html("");
+          $("#productionModalButton").click();
+          function generateRandomCode(length = 11) {
+            var characters = "0123456789";
+            var code = "";
+            for (var i = 0; i < length; i++) {
+              code += characters.charAt(
+                Math.floor(Math.random() * characters.length)
+              );
+            }
+            return code;
+          }
+          var randomCode = generateRandomCode();
+          $("#production_lat_no").val(randomCode);
+          $("#purchase_id").val(response.order_id);
 
           // 	window.location.assign('print_order.php?order_id='+response.order_id);
 
           //$("#tableData").load(location.href+" #tableData");
-          Swal.fire({
-            title: response.msg,
-            showDenyButton: true,
-            showCancelButton: true,
-            confirmButtonText: `Print`,
-            denyButtonText: `Add New`,
-          }).then((result) => {
-            /* Read more about isConfirmed, isDenied below */
-            if (result.isConfirmed) {
-              location.reload();
+          // Swal.fire({
+          //   title: response.msg,
+          //   showDenyButton: true,
+          //   showCancelButton: true,
+          //   confirmButtonText: `Print`,
+          //   denyButtonText: `Add New`,
+          // }).then((result) => {
+          /* Read more about isConfirmed, isDenied below */
+          // if (result.isConfirmed) {
+          //   location.reload();
 
-              window.open(
-                "print_sale.php?id=" +
-                  response.order_id +
-                  "&type=" +
-                  response.type,
-                "_blank"
-              );
-            } else if (result.isDenied) {
-              location.reload();
-            }
-          });
+          //   window.open(
+          //     "print_sale.php?id=" +
+          //       response.order_id +
+          //       "&type=" +
+          //       response.type,
+          //     "_blank"
+          //   );
+          // } else if (result.isDenied) {
+          //   location.reload();
+          // }
+          // });
         }
         if (response.sts == "error") {
           sweeetalert(response.msg, response.sts, 1500);
@@ -168,6 +182,116 @@ $(document).ready(function () {
       },
     }); //ajax call
   }); //main
+  $(document).ready(function () {
+    $("#voucherModalButton").hide();
+    $("#voucherData").hide();
+    $(".formData").show();
+    $("#add_production_fm").on("submit", function (e) {
+      e.preventDefault();
+      // alert("ascas");
+
+      var formdata = new FormData(this);
+
+      $.ajax({
+        type: "POST",
+        url: "php_action/custom_action.php",
+        data: formdata,
+        contentType: false,
+        cache: false,
+        processData: false,
+        beforeSend: function () {
+          $("#loader_code").removeClass("d-none");
+          $("#text_code").addClass("d-none");
+        },
+        success: function (response) {
+          $("#loader_code").addClass("d-none");
+          $("#text_code").removeClass("d-none");
+          var responseData = JSON.parse(response).sts;
+          var responsemsg = JSON.parse(response).msg;
+          var responseID = JSON.parse(response).purchase_id;
+          var productionID = JSON.parse(response).production_id;
+
+          if (responseData == "success") {
+            $("#add_production_fm").trigger("reset");
+            // $("#closeProductionModal").click();
+            $(".formData").hide();
+            $("#voucherData").show();
+            $("#voucherData").html(
+              '<div class="voucher-container row">' +
+                '<div class="col-6">' +
+                '<a class="dropdown-item" target="_blank" href="./Production.php?ProductionID=' +
+                productionID +
+                '">' +
+                '<button class="voucher-div">Cutting Voucher</button>' +
+                "</a>" +
+                "</div>" +
+                '<div class="col-6">' +
+                '<a class="dropdown-item" target="_blank" href="./Production.php?ProductionID=' +
+                productionID +
+                '#contact">' +
+                '<button class="voucher-div">Print Voucher</button>' +
+                "</a>" +
+                "</div>" +
+                '<div class="col-6">' +
+                '<a class="dropdown-item" target="_blank" href="./Production.php?ProductionID=' +
+                productionID +
+                '#Dyeing_content">' +
+                '<button class="voucher-div">Dyeing</button>' +
+                "</a>" +
+                "</div>" +
+                '<div class="col-6">' +
+                '<a class="dropdown-item" target="_blank" href="./Production.php?ProductionID=' +
+                productionID +
+                '#print_content">' +
+                '<button class="voucher-div">Print</button>' +
+                "</a>" +
+                "</div>" +
+                '<div class="col-6">' +
+                '<a class="dropdown-item" target="_blank" href="./Production.php?ProductionID=' +
+                productionID +
+                '#embroidery_content">' +
+                '<button class="voucher-div">Insuance Embroidery</button>' +
+                "</a>" +
+                "</div>" +
+                '<div class="col-6">' +
+                '<a class="dropdown-item" target="_blank" href="./Production.php?ProductionID=' +
+                productionID +
+                '#collect_emb_content">' +
+                '<button class="voucher-div">Recieving Embroidery</button>' +
+                "</a>" +
+                "</div>" +
+                '<div class="col-6">' +
+                '<a class="dropdown-item" target="_blank" href="./Production.php?ProductionID=' +
+                productionID +
+                '#stitch_pack_content">' +
+                '<button class="voucher-div">Stitching & Packing</button>' +
+                "</a>" +
+                "</div>" +
+                '<div class="col-6">' +
+                '<a class="dropdown-item" target="_blank" href="./Production.php?ProductionID=' +
+                productionID +
+                '#calander_satander_content">' +
+                '<button class="voucher-div">Calander & Stander</button>' +
+                "</a>" +
+                "</div>" +
+                "</div>"
+            );
+
+            // $("#voucherModal").click();
+            // $("#exampleModalCenter").click();
+          } else {
+            Swal.fire({
+              position: "center",
+              icon: "warning",
+              title: responsemsg,
+              showConfirmButton: false,
+              timer: 3000,
+            });
+          }
+        },
+      }); //ajax call
+    }); //main
+  });
   $("#credit_order_client_name").on("change", function () {
     var value = $("#credit_order_client_name :selected").data("id");
     var contact = $("#credit_order_client_name :selected").data("contact");
@@ -1277,52 +1401,52 @@ function deleteQuotationData(id) {
   });
 }
 // ============ Cutting Voucher script
-function cutt_voucher_duplicateRow() {
-  var container = $("#container");
-  var lastRow = container.children(".row:last").clone(true);
-  // Remove the remove button from the first row
-  container.find(".row:first .add_remove button").remove();
-  var newRowId = "row" + (container.children(".row").length + 1);
-  lastRow.attr("id", newRowId);
-  // Generate unique ids for the inputs in the cloned row
-  var cutt_type = "cutt_type" + (container.children(".row").length + 1);
-  var cutt_type_name =
-    "cutt_type_name" + (container.children(".row").length + 1);
-  var cutt_gzanah = "cutt_gzanah" + (container.children(".row").length + 1);
-  var cutt_gzanah_type =
-    "cutt_gzanah_type" + (container.children(".row").length + 1);
-  var cutt_status = "cutt_status" + (container.children(".row").length + 1);
+// function cutt_voucher_duplicateRow() {
+//   var container = $("#containerFirstRow");
+//   var lastRow = container.children(".row:last").clone(true);
+//   // Remove the remove button from the first row
+//   container.find(".row:first .add_remove button").remove();
+//   var newRowId = "row" + (container.children(".row").length + 1);
+//   lastRow.attr("id", newRowId);
+//   // Generate unique ids for the inputs in the cloned row
+//   var cutt_type = "cutt_type" + (container.children(".row").length + 1);
+//   var cutt_type_name =
+//     "cutt_type_name" + (container.children(".row").length + 1);
+//   var cutt_gzanah = "cutt_gzanah" + (container.children(".row").length + 1);
+//   var cutt_gzanah_type =
+//     "cutt_gzanah_type" + (container.children(".row").length + 1);
+//   var cutt_status = "cutt_status" + (container.children(".row").length + 1);
 
-  // Update the ids in the cloned row
-  lastRow.find('[name="cutt_type[]"]').attr("id", cutt_type);
-  lastRow.find('[name="cutt_type_name[]"]').attr("id", cutt_type_name);
-  lastRow.find('[name="cutt_gzanah[]"]').attr("id", cutt_gzanah);
-  lastRow.find('[name="cutt_gzanah_type[]"]').attr("id", cutt_gzanah_type);
-  lastRow.find('[name="cutt_status[]"]').attr("id", cutt_status);
+//   // Update the ids in the cloned row
+//   lastRow.find('[name="cutt_type[]"]').attr("id", cutt_type);
+//   lastRow.find('[name="cutt_type_name[]"]').attr("id", cutt_type_name);
+//   lastRow.find('[name="cutt_gzanah[]"]').attr("id", cutt_gzanah);
+//   lastRow.find('[name="cutt_gzanah_type[]"]').attr("id", cutt_gzanah_type);
+//   lastRow.find('[name="cutt_status[]"]').attr("id", cutt_status);
 
-  // Clear the input values in the cloned row
-  lastRow.find("input, select").val("");
+//   // Clear the input values in the cloned row
+//   lastRow.find("input, select").val("");
 
-  // Remove existing "Plus" button from the last row
-  lastRow.find(".add_remove button").remove();
+//   // Remove existing "Plus" button from the last row
+//   lastRow.find(".add_remove button").remove();
 
-  // Add "Plus" button to the new row
-  lastRow.find(".add_remove").append(`
-            <button type="button" class="outline_none border-0 bg-white" onclick="cutt_voucher_remove(this)">
-                <img title="Remove Row" src="img/remove.png" width="30px" alt="remove sign">
-            </button>`);
+//   // Add "Plus" button to the new row
+//   lastRow.find(".add_remove").append(`
+//             <button type="button" class="outline_none border-0 bg-white" onclick="cutt_voucher_remove(this)">
+//                 <img title="Remove Row" src="img/remove.png" width="30px" alt="remove sign">
+//             </button>`);
 
-  container.append(lastRow);
-}
-function cutt_voucher_remove(button) {
-  var container = $("#container");
-  var rowToRemove = $(button).closest(".row");
-  rowToRemove.remove();
-  if (container.children(".row").length === 0) {
-    $("#cutt_voucher_btn").show();
-    location.reload();
-  }
-}
+//   container.append(lastRow);
+// }
+// function cutt_voucher_remove(button) {
+//   var container = $("#containerFirstRow");
+//   var rowToRemove = $(button).closest(".row");
+//   rowToRemove.remove();
+//   if (container.children(".row").length === 0) {
+//     $("#cutt_voucher_btn").show();
+//     location.reload();
+//   }
+// }
 
 // Function to calculate Thaan * Gzanah = Quantity for each row
 function calculateQuantity(row) {
@@ -1351,52 +1475,140 @@ function attachCalculation(row) {
   });
 }
 
-function deying_voucher_duplicateRow() {
-  var container = $("#deyingContainer");
+function cutt_voucher_duplicateRow() {
+  // Clone the first row
+  let newRow = $(".voucher_row2:first").clone();
+
+  // Clear input values in the cloned row
+  newRow.find("input").val("");
+  newRow.find("select").prop("selectedIndex", 0);
+
+  // Append the new row to the container
+  $("#voucher_rows_container2").append(newRow);
+}
+
+function cutt_voucher_duplicateRow2() {
+  // Clone the last row instead of the first row to keep any changes to the last row intact
+  let newRow = $(".voucher_row:last").clone();
+
+  // Clear input values in the cloned row
+  newRow.find("input").val("");
+  newRow.find("select").prop("selectedIndex", 0);
+
+  // Append the new row at the end of the container
+  $("#voucher_rows_container").append(newRow);
+
+  // After appending, update the visibility of delete buttons
+  updateDeleteButtonVisibility();
+}
+
+function cutt_voucher_remove2(el) {
+  // Remove the row that the user clicked on
+  $(el).closest(".voucher_row").remove();
+}
+
+function deying_voucher_remove3(el) {
+  // Remove the row that the user clicked on
+  $(el).closest(".row").remove();
+}
+
+function deying_voucher_remove4(el) {
+  // Remove the row that the user clicked on
+  $(el).closest(".row").remove();
+}
+function cutt_voucher_remove(el) {
+  // Remove the row that the user clicked on
+  $(el).closest(".voucher_row2").remove();
+}
+
+function deying_voucher_duplicateRow5() {
+  var container = $("#dey3");
 
   // Clone the last row without copying event handlers
   var lastRow = container.children(".row:last").clone();
 
-  // Remove the remove button from the first row
-  container.find(".row:first .add_remove  button").remove();
-
-  var newRowId = "row" + (container.children(".row").length + 1);
+  // Generate new row ID based on the number of rows
+  var rowCount = container.children(".row").length + 1;
+  var newRowId = "row" + rowCount;
   lastRow.attr("id", newRowId);
 
-  // Generate unique ids for the inputs in the cloned row
-  var deying_product =
-    "deying_product" + (container.children(".row").length + 1);
-  var deying_thaan = "deying_thaan" + (container.children(".row").length + 1);
-  var deying_gzanah = "deying_gzanah" + (container.children(".row").length + 1);
-  var deying_gzanah_type =
-    "deying_gzanah_type" + (container.children(".row").length + 1);
-  var deying_status = "deying_status" + (container.children(".row").length + 1);
+  // Update the IDs and names for the input elements in the cloned row
+  lastRow.find('[name="deying_product[]"]').attr({
+    id: "deying_product" + rowCount,
+    name: "deying_product[]",
+  });
+  lastRow.find('[name="dey_sending_thaan[]"]').attr({
+    id: "deying_thaan" + rowCount,
+    name: "dey_sending_thaan[]",
+  });
+  lastRow.find('[name="dey_sending_gzanah[]"]').attr({
+    id: "deying_gzanah" + rowCount,
+    name: "dey_sending_gzanah[]",
+  });
+  lastRow.find('[name="dey_sending_quantity[]"]').attr({
+    id: "deying_quantity" + rowCount,
+    name: "dey_sending_quantity[]",
+  });
 
-  // Update the ids in the cloned row
-  lastRow.find('[name="deying_product[]"]').attr("id", deying_product);
-  lastRow.find('[name="deying_thaan[]"]').attr("id", deying_thaan);
-  lastRow.find('[name="deying_gzanah[]"]').attr("id", deying_gzanah);
-  lastRow.find('[name="deying_gzanah_type[]"]').attr("id", deying_gzanah_type);
-  lastRow.find('[name="deying_status[]"]').attr("id", deying_status);
-
-  // Clear the input values in the cloned row
+  // Clear the values of the input fields in the cloned row
   lastRow.find("input, select").val("");
 
-  // Remove existing "Plus" button from the last row
+  // Remove the "Plus" button from the cloned row and add a "Remove" button
   lastRow.find(".add_remove button").remove();
-
-  // Add "Remove" button to the new row
   lastRow.find(".add_remove").append(`
-    <button type="button" class="outline_none border-0 bg-white" onclick="deying_voucher_remove(this)">
-        <img title="Remove Row" src="img/remove.png" width="30px" alt="remove sign">
-    </button>`);
+        <button type="button" class="outline_none border-0 bg-white" onclick="deying_voucher_remove3(this)">
+            <img title="Remove Row" src="img/remove.png" width="30px" alt="remove sign">
+        </button>`);
 
   // Append the cloned row to the container
   container.append(lastRow);
 
-  // Attach calculation to the new row
+  // Attach any additional calculation or event handlers (if needed)
   attachCalculation(lastRow);
 }
+function deying_voucher_duplicateRow4() {
+  var container = $("#dey4");
+
+  // Clone the last row without copying event handlers
+  var lastRow = container.children(".row:last").clone();
+
+  // Get the new row index for unique IDs
+  var newRowIndex = container.children(".row").length + 1;
+
+  // Assign unique IDs for the new row inputs
+  var thaanId = "dey_recieving_thaan" + newRowIndex;
+  var gzanahId = "dey_recieving_gzanah" + newRowIndex;
+  var quantityId = "dey_recieving_quantity" + newRowIndex;
+  var dyeingCpId = "dyeing_cp" + newRowIndex;
+  var typeId = "deying_gzanah_type" + newRowIndex;
+
+  // Update the IDs in the cloned row
+  lastRow.find('[name="dey_recieving_thaan[]"]').attr("id", thaanId);
+  lastRow.find('[name="dey_recieving_gzanah[]"]').attr("id", gzanahId);
+  lastRow.find('[name="dey_recieving_quantity[]"]').attr("id", quantityId);
+  lastRow.find('[name="dyeing_cp[]"]').attr("id", dyeingCpId);
+  lastRow.find('[name="deying_gzanah_type[]"]').attr("id", typeId);
+
+  // Clear the input values in the cloned row
+  lastRow.find("input").val("");
+
+  // Remove the "Plus" button from the last row
+  lastRow.find(".add_remove button").remove();
+
+  // Add the "Remove" button for the new row
+  lastRow.find(".add_remove").append(`
+        <button type="button" class="outline_none border-0 bg-white" onclick="deying_voucher_remove4(this)">
+            <img title="Remove Row" src="img/remove.png" width="30px" alt="remove sign">
+        </button>
+    `);
+
+  // Append the new row to the container
+  container.append(lastRow);
+
+  // Attach calculation logic to the new row if needed
+  attachCalculation(lastRow);
+}
+
 $(document).ready(function () {
   // Function to calculate quantity
   function calculateQuantity() {
@@ -1413,17 +1625,6 @@ $(document).ready(function () {
     calculateQuantity();
   });
 });
-
-// Deying Voucher List Remove Closest Row
-function deying_voucher_remove(button) {
-  var container = $("#deyingContainer");
-  var rowToRemove = $(button).closest(".row");
-  rowToRemove.remove();
-  if (container.children(".row").length === 0) {
-    $("#deying_voucher_btn").show();
-    location.reload();
-  }
-}
 
 // ============ Print Voucher script
 function print_duplicateRow() {

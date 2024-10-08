@@ -7,11 +7,12 @@ include_once 'includes/head.php';
 
 if (!empty($_REQUEST['ProductionID']) && isset($_REQUEST['ProductionID'])) {
 
-    $ProductionID = base64_decode($_REQUEST['ProductionID']);
+    $ProductionID = $_REQUEST['ProductionID'];
 
     $dataproduction = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `production` WHERE `production_id` = '$ProductionID'"));
-
-    // print_r($dataproduction);
+    $request_id = $dataproduction['purchase_id'];
+    $purchase_data = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `purchase` WHERE `purchase_id` = '$request_id'"));
+    $user_id = $_SESSION['userId'];
 }
 
 //Cutting Data
@@ -48,43 +49,60 @@ $cal_salFetch = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `calander_s
 if (isset($_POST['cutting_btn'])) {
     $cutt_id = $_POST['cutt_id'];
     $cutting_date = $_POST['cutting_date'];
-    $cutt_qty = $_POST['cutt_qty'];
-    $quantity = $_POST['quantity'];
     $cutt_party_name = $_POST['cutt_party_name'];
-    $cutt_thaan = $_POST['thaan'];
-    $gzanah = $_POST['gzanah'];
-    $unit = $_POST['unit'];
-    $cutt_location = $_POST['cutt_location'];
     $cutt_dyeing_lat_no = $_POST['cutt_dyeing_lat_no'];
     $cutt_volume_no = $_POST['cutt_volume_no'];
+    $cutt_location = $_POST['cutt_location'];
+    $cutting_delivery_date = $_POST['cutting_delivery_date'];
     $cutt_remarks = $_POST['cutt_remarks'];
 
 
-    $formData = [
-        'cutt_product' => $_POST['cutt_product'],
-        'cutt_quantity' => $_POST['cutt_quantity'],
-        'cutt_gzanah' => $_POST['cutt_gzanah'],
-        'cutt_thaan' => $_POST['cutt_thaan'],
-        'cutt_gzanah_type' => $_POST['cutt_gzanah_type'],
-        'cutt_status' => $_POST['cutt_status']
+    $formData1 = [
+        'cutting_from_product' => $_POST['cutting_from_product'],
+        'cutt_from_thaan' => $_POST['cutt_from_thaan'],
+        'cutt_form_gzanah' => $_POST['cutt_form_gzanah'],
+        'cutt_from_quantity' => $_POST['cutt_from_quantity'],
+        'cutt_from_gzanah_type' => $_POST['cutt_from_gzanah_type'],
+    ];
+    $formData2 = [
+        'cutting_to_product' => $_POST['cutting_to_product'],
+        'cutt_to_thaan' => $_POST['cutt_to_thaan'],
+        'cutt_to_gzanah' => $_POST['cutt_to_gzanah'],
+        'cutt_to_quantity' => $_POST['cutt_to_quantity'],
+        'cutt_to_gzanah_type' => $_POST['cutt_to_gzanah_type'],
     ];
 
 
     // Convert the array to JSON
-    $jsonData = json_encode($formData);
+    $jsonData1 = json_encode($formData1);
+    $jsonData2 = json_encode($formData2);
 
 
 
 
 
     if (empty($cutt_id)) {
-        $cuttingDataInsert = "INSERT INTO `cutting_voucher`(`cutt_production_id`, `cutt_voucher_date`, `cutt_voucher_quality`, `cutt_party_name`, `quantity`, `cutt_thaan`,`gzanah`,`unit`, `cutt_voucher_location`, `cutt_dyeing_lat_no`, `cutt_volume_no`, `cutt_voucher_remarks`, `cutting_vouc_list`) VALUES ('$ProductionID','$cutting_date','$cutt_qty','$cutt_party_name','$quantity','$cutt_thaan','$gzanah','$unit','$cutt_location','$cutt_dyeing_lat_no','$cutt_volume_no','$cutt_remarks','$jsonData')";
+        $cuttingDataInsert = "INSERT INTO `cutting_voucher`(`user_id`, `updated_user_id`, `cutt_production_id`, `cutt_voucher_date`, `cutt_party_name`, `cutt_voucher_location`, `cutt_dyeing_lat_no`, `cutt_volume_no`, `cutting_delivery_date`, `cutt_voucher_remarks`,  `cutting_from_list`, `cutting_to_list`) VALUES ('$user_id','$user_id','$ProductionID','$cutting_date','$cutt_party_name','$cutt_location','$cutt_dyeing_lat_no','$cutt_volume_no','$cutting_delivery_date','$cutt_remarks','$jsonData1','$jsonData2')";
         $cuttingQuery = mysqli_query($dbc, $cuttingDataInsert);
+
         if ($cuttingQuery) {
             header('Location: ' . $_SERVER['REQUEST_URI']);
         }
     } else {
-        $updateCuttVoucher = mysqli_query($dbc, "UPDATE `cutting_voucher` SET `cutt_voucher_quality`='$cutt_qty',`cutt_party_name`='$cutt_party_name',`quantity`='$quantity',`cutt_thaan`='$cutt_thaan',`gzanah`='$gzanah',`unit`='$unit',`cutt_voucher_location`='$cutt_location',`cutt_dyeing_lat_no`='$cutt_dyeing_lat_no',`cutt_volume_no`='$cutt_volume_no',`cutt_voucher_remarks`='$cutt_remarks',`cutting_vouc_list`='$jsonData' WHERE id = $cutt_id");
+        $updateCuttVoucher = mysqli_query($dbc, "UPDATE `cutting_voucher` SET 
+        `updated_user_id` = '$user_id', 
+        `cutt_production_id` = '$ProductionID', 
+        `cutt_voucher_date` = '$cutting_date', 
+        `cutt_party_name` = '$cutt_party_name', 
+        `cutt_voucher_location` = '$cutt_location', 
+        `cutt_dyeing_lat_no` = '$cutt_dyeing_lat_no', 
+        `cutt_volume_no` = '$cutt_volume_no', 
+        `cutting_delivery_date` = '$cutting_delivery_date', 
+        `cutt_voucher_remarks` = '$cutt_remarks', 
+        `cutting_from_list`='$jsonData1',
+        `cutting_to_list`='$jsonData2' 
+        WHERE id = $cutt_id");
+
         if ($updateCuttVoucher) {
             header('Location: ' . $_SERVER['REQUEST_URI']);
         }
@@ -142,40 +160,57 @@ if (isset($_POST['dyeing_btn'])) {
     $dyeing_lat_name = $_POST['dyeing_lat_name'];
     $dyeing_party_name = $_POST['dyeing_party_name'];
     $dyeing_party_voucher = $_POST['dyeing_party_voucher'];
-    $dyeing_qty = $_POST['dyeing_qty'];
-    $dyeing_readyqty = $_POST['dyeing_readyqty'];
-    $dyeing_cp = $_POST['dyeing_cp'];
     $dyeing_color_name = $_POST['dyeing_color_name'];
-    $dyeing_color = $_POST['dyeing_color'];
-    $dyeing_thaan = $_POST['dey_thaan'];
     $dyeing_location = $_POST['dyeing_location'];
     $dyeing_remarks = $_POST['dyeing_remarks'];
-    $dey_quantity = $_POST['dey_quantity'];
-    $dey_gzanah = $_POST['dey_gzanah'];
-    $dey_quantity = $_POST['dey_quantity'];
-    $dey_quality = $_POST['dey_quality'];
+    $dey_bill_no = $_POST['dey_bill_no'];
+    $dey_bilty_no = $_POST['dey_bilty_no'];
+    $dyeing_delivery_date = $_POST['dyeing_delivery_date'];
 
-    $deyData = [
+    $deyData1 = [
         'deying_product' => $_POST['deying_product'],
-        'deying_thaan' => $_POST['deying_thaan'],
-        'deying_gzanah' => $_POST['deying_gzanah'],
-        'deying_quantity' => $_POST['deying_quantity'],
-        'deying_gzanah_type' => $_POST['deying_gzanah_type'],
-        'deying_status' => $_POST['deying_status'],
+        'dey_sending_thaan' => $_POST['dey_sending_thaan'],
+        'dey_sending_gzanah' => $_POST['dey_sending_gzanah'],
+        'dey_sending_quantity' => $_POST['dey_sending_quantity'],
     ];
-    $deyJson = json_encode($deyData);
+    $deyData2 = [
+        'dey_recieving_product' => $_POST['dey_recieving_product'],
+        'dey_recieving_thaan' => $_POST['dey_recieving_thaan'],
+        'dey_recieving_gzanah' => $_POST['dey_recieving_gzanah'],
+        'dey_recieving_quantity' => $_POST['dey_recieving_quantity'],
+        'dyeing_cp' => $_POST['dyeing_cp'],
+        'deying_Shortage' => $_POST['deying_Shortage'],
+    ];
+    $deyJson1 = json_encode($deyData1);
+    $deyJson2 = json_encode($deyData2);
 
 
 
     if (empty($deyeing_id)) {
-        $deyeingDataInsert = "INSERT INTO `deyeing`(`dey_production_id`, `dey_date`, `dey_gate_no`, `dey_lat_no`, `dey_party_name`, `dey_voucher_no`, `dey_qty`, `dey_ready_qty`, `dey_c_p`, `dey_color_name`, `dey_color`, `dey_thaan`, `dey_gzanah`, `dey_quantity`, `dey_quality`, `dey_location`, `dey_remarks`,`dey_vouc_list`) VALUES ('$ProductionID','$dyeing_date','$dyeing_gate_no','$dyeing_lat_name','$dyeing_party_name',' $dyeing_party_voucher','$dyeing_qty','$dyeing_readyqty','$dyeing_cp','$dyeing_color_name','$dyeing_color','$dyeing_thaan','$dey_gzanah','$dey_quantity','$dey_quality','$dyeing_location','$dyeing_remarks','$deyJson')";
+        $deyeingDataInsert = "INSERT INTO `deyeing`(`user_id`,`updated_user_id`,`dey_production_id`, `dey_date`, `dey_gate_no`, `dey_lat_no`, `dey_party_name`, `dey_voucher_no`, `dey_color_name`, `dey_location`, `dey_bill_no`, `dey_bilty_no`, `dey_delivery_date`, `dey_remarks`, `dey_sending_list`,`dey_recieving_list`) VALUES ('$user_id','$user_id','$ProductionID','$dyeing_date','$dyeing_gate_no','$dyeing_lat_name','$dyeing_party_name','$dyeing_party_voucher','$dyeing_color_name','$dyeing_location','$dey_bill_no','$dey_bilty_no','$dyeing_delivery_date','$dyeing_remarks','$deyJson1','$deyJson2')";
         $deyeingQuery = mysqli_query($dbc, $deyeingDataInsert);
 
         if ($deyeingQuery) {
             header('Location: ' . $_SERVER['REQUEST_URI']);
         }
     } else {
-        $deyeingUpdate = mysqli_query($dbc, "UPDATE `deyeing` SET `dey_gate_no`='$dyeing_gate_no',`dey_lat_no`='$dyeing_lat_name',`dey_party_name`='$dyeing_party_name',`dey_voucher_no`='$dyeing_party_voucher',`dey_qty`='$dyeing_qty',`dey_ready_qty`='$dyeing_readyqty',`dey_c_p`='$dyeing_cp',`dey_color_name`='$dyeing_color_name',`dey_color`='$dyeing_color',`dey_thaan`='$dyeing_thaan',`dey_gzanah`='$dey_gzanah',`dey_quantity`='$dey_quantity',`dey_quality`='$dey_quality',`dey_location`='$dyeing_location',`dey_remarks`='$dyeing_remarks',`dey_vouc_list`='$$deyJson' WHERE id = $deyeing_id");
+        $deyeingUpdate = mysqli_query($dbc, "UPDATE `deyeing` SET 
+        `updated_user_id`='$user_id',
+        `dey_date` = '$dyeing_date', 
+        `dey_gate_no` = '$dyeing_gate_no', 
+        `dey_lat_no` = '$dyeing_lat_name', 
+        `dey_party_name` = '$dyeing_party_name', 
+        `dey_voucher_no` = '$dyeing_party_voucher', 
+        `dey_color_name` = '$dyeing_color_name', 
+        `dey_location` = '$dyeing_location', 
+        `dey_bill_no` = '$dey_bill_no', 
+        `dey_bilty_no` = '$dey_bilty_no', 
+        `dey_delivery_date` = '$dyeing_delivery_date', 
+        `dey_remarks` = '$dyeing_remarks', 
+        `dey_sending_list` = '$deyJson1',
+        `dey_recieving_list` = '$deyJson2'
+        WHERE id = $deyeing_id");
+
         if ($deyeingUpdate) {
             header('Location: ' . $_SERVER['REQUEST_URI']);
         }
@@ -426,6 +461,27 @@ $formattedDate = $currentDate->format('Y-m-d');
     .nav-pills {
         background-color: #e1e1e1 !important;
     }
+
+    .list-container {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .list-1 {
+        width: 100%;
+        min-height: 200px;
+        background-color: #fff;
+        box-shadow: 10px 10px 0px 0px black;
+        box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.1);
+    }
+
+    .list-2 {
+        width: 100%;
+        min-height: 200px;
+        box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.1);
+        border-radius: 3px;
+    }
 </style>
 
 <body class="horizontal light  ">
@@ -503,7 +559,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                         <option value="">Party Name</option>
                                                         <?php
 
-                                                        $result = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status = 1");
+                                                        $result = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status = 1 ");
                                                         while ($row = mysqli_fetch_array($result)) {
 
                                                         ?>
@@ -515,48 +571,6 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                         <?php   } ?>
                                                     </select>
                                                 </div>
-                                                <div class="col-lg-2 mt-3 row ">
-                                                    <div class="col-11 pr-3 m-0 p-0">
-                                                        <label class="font-weight-bold text-dark" for="cutt_qty">Quality</label>
-                                                        <select class="form-control searchableSelect" name="cutt_qty" id="cutt_qty" value="<?= @$cuttingDatafetch['id'] ?>">
-                                                            <option value="">Select Product</option>
-                                                            <?php
-                                                            $result = mysqli_query($dbc, "SELECT * FROM product WHERE status=1 ");
-                                                            while ($row = mysqli_fetch_array($result)) {
-                                                                $getBrand = fetchRecord($dbc, "brands", "brand_id", $row['brand_id']);
-                                                                $getCat = fetchRecord($dbc, "categories", "categories_id", $row['category_id']);
-                                                            ?>
-                                                                <option <?= (@$cuttingDatafetch['cutt_voucher_quality'] == $row["product_id"]) ? 'selected' : ''; ?> data-price="<?= $row["current_rate"] ?>" <?= empty($r['product_id']) ? "" : "selected" ?> value="<?= $row["product_id"] ?> ">
-                                                                    <?= ucwords($row["product_name"]) ?> | <?= ucwords(@$getBrand["brand_name"]) ?>(<?= ucwords(@$getCat["categories_name"]) ?>) </option>
-
-                                                            <?php   } ?>
-                                                        </select>
-                                                    </div>
-                                                    <div class="col-1 m-0 p-0 mt-1">
-                                                        <label class="invisible d-block">.</label>
-                                                        <button type="button" class="btn btn-danger btn-sm pt-1 pb-1" data-toggle="modal" data-target="#add_product_modal"> <i class="fa fa-plus"></i> </button>
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-1 mt-3">
-                                                    <label class="font-weight-bold text-dark" for="cutt_thaan">Thaan</label>
-                                                    <input type="number" min="0" class="form-control" name="thaan" id="thaan" value="<?= @$cuttingDatafetch['cutt_thaan'] ?>" placeholder="Thaan">
-                                                </div>
-                                                <div class="col-lg-1 mt-3">
-                                                    <label class="font-weight-bold text-dark">Gzanah</label>
-                                                    <input type="number" min="0" placeholder="Gzanah Here" value="<?= @$cuttingDatafetch['gzanah'] ?>" autocomplete="off" class="form-control" name="gzanah" id="gzanah">
-                                                </div>
-                                                <div class="col-lg-1 mt-3">
-                                                    <label class="font-weight-bold text-dark">Quantity</label>
-                                                    <input type="number" readonly class="form-control" id="quantity" value="<?= isset($cuttingDatafetch['quantity']) ? $cuttingDatafetch['quantity'] : 0 ?>" min="0" name="quantity">
-                                                </div>
-                                                <div class="col-lg-1 mt-3">
-                                                    <label class="font-weight-bold text-dark">Unit</label>
-                                                    <input type="text" placeholder="Unit Here" value="<?= @$cuttingDatafetch['unit'] ?>" autocomplete="off" class="form-control " name="unit" id="get_pur_unit">
-                                                </div>
-                                                <div class="col-lg-2 mt-3">
-                                                    <label class="font-weight-bold text-dark" for="Location">Location</label>
-                                                    <input type="text" class="form-control" name="cutt_location" id="cutt_location" value="<?= @$cuttingDatafetch['cutt_voucher_location'] ?>" placeholder="Location">
-                                                </div>
                                                 <div class="col-lg-2 mt-3">
                                                     <label class="font-weight-bold text-dark" for="Dyeing Lat No">Dyeing Lat No</label>
                                                     <input type="text" class="form-control" name="cutt_dyeing_lat_no" id="cutt_dyeing_lat_no" value="<?= @$cuttingDatafetch['cutt_dyeing_lat_no'] ?>" placeholder="Dyeing Lat No">
@@ -565,7 +579,16 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                     <label class="font-weight-bold text-dark" for="Volume No">Volume No</label>
                                                     <input type="text" class="form-control" name="cutt_volume_no" id="cutt_volume_no" value="<?= @$cuttingDatafetch['cutt_volume_no'] ?>" placeholder="Volume No">
                                                 </div>
-                                                <div class="col-lg-8 mt-3">
+                                                <div class="col-lg-2 mt-3">
+                                                    <label class="font-weight-bold text-dark" for="Location">Location</label>
+                                                    <input type="text" class="form-control" name="cutt_location" id="cutt_location" value="<?= isset($cuttingDatafetch['cutt_voucher_location']) ? @$cuttingDatafetch['cutt_voucher_location'] : $purchase_data['pur_location'] ?>" placeholder="Location">
+                                                </div>
+                                                <div class="col-lg-2 mt-3">
+                                                    <label class="font-weight-bold text-dark" for="Location">Delivery Date</label>
+                                                    <input type="Date" class="form-control" name="cutting_delivery_date" id="cutting_delivery_date" value="<?= @$cuttingDatafetch['cutting_delivery_date'] ?>" placeholder="Location">
+                                                </div>
+
+                                                <div class="col-lg-12 mt-3">
                                                     <label class="font-weight-bold text-dark" for="remarks">Remarks</label>
                                                     <textarea name="cutt_remarks" id="cutt_remarks" placeholder="Remarks" class="form-control"><?= @$cuttingDatafetch['cutt_voucher_remarks'] ?></textarea>
                                                 </div>
@@ -578,180 +601,366 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                     </h4>
                                                 </div>
                                             </div>
+
                                             <div id="container">
-                                                <?php
-                                                // print_r($cuttingDatafetch['cutting_vouc_list']);
-                                                if (@$cuttingDatafetch != 0) {
-                                                    $lowerdata = json_decode(@$cuttingDatafetch['cutting_vouc_list']);
-                                                    for ($x = 0; $x < count(@$lowerdata->cutt_product); $x++) {
+                                                <div class="list-container">
 
-                                                ?>
-
-                                                        <div class="row">
-
-                                                            <div class="ccol-lg-2 col-md-2 col-sm-4 col-xs-4 row m-0 p-0">
-                                                                <div class="col-11 m-0 p-0 pr-2">
-                                                                    <label class=" font-weight-bold text-dark" for="cutt_product">Party Name</label>
-
-                                                                    <select class="form-control " name="cutt_product[]">
-                                                                        <option value="">Party Name</option>
-                                                                        <?php
-
-                                                                        $result = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status = 1");
-                                                                        while ($row = mysqli_fetch_array($result)) {
-
-                                                                        ?>
-                                                                            <option <?= (@$lowerdata->cutt_product[$x] == $row["customer_id"]) ? 'selected' : ''; ?> value="<?= $row["customer_id"] ?>">
-                                                                                <?php echo  ucwords($row["customer_name"]) ?>
-                                                                                (<?= ucwords($row['customer_type']) ?>)
-                                                                            </option>
-
-                                                                        <?php   } ?>
-                                                                    </select>
-
-                                                                </div>
-                                                                <div class="col-1 m-0 p-0 mt-1 ">
-                                                                    <label class="invisible d-block">.</label>
-                                                                    <button type="button" class="btn btn-danger btn-sm pt-1 pb-1" data-toggle="modal" data-target="#add_product_modal"> <i class="fa fa-plus"></i> </button>
+                                                    <div class="list-1 card">
+                                                        <div class="card-header card-bg" align="center">
+                                                            <div class="row">
+                                                                <div class="col-12 mx-auto h4">
+                                                                    <b class="text-center card-text">From</b>
                                                                 </div>
                                                             </div>
+                                                        </div>
+                                                        <?php
+                                                        // print_r($cuttingDatafetch['cutting_from_list']);
+                                                        if (@$cuttingDatafetch != 0) {
+                                                            $lowerdata = json_decode(@$cuttingDatafetch['cutting_from_list']);
+                                                            for ($x = 0; $x < count(@$lowerdata->cutting_from_product); $x++) {
+
+                                                        ?>
+
+
+                                                                <div class="row m-0 px-3">
+                                                                    <div id="voucher_rows_container2">
+                                                                        <div class="voucher_row2">
+
+                                                                            <div class="row mt-3 m-0 p-0">
+
+                                                                                <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 row m-0 p-0">
+                                                                                    <div class="col-12 m-0 p-0 pr-2">
+                                                                                        <label class=" font-weight-bold text-dark" for="cutting_from_product">Quality</label>
+
+                                                                                        <select class="form-control " name="cutting_from_product[]">
+                                                                                            <option value="">Select Product</option>
+                                                                                            <?php
+                                                                                            $purchase_data2 = mysqli_query($dbc, "SELECT * FROM `purchase_item` WHERE `purchase_id` = '$request_id'");
+                                                                                            $product_ids2 = array();
+
+                                                                                            while ($rowdata = mysqli_fetch_array($purchase_data2)) {
+                                                                                                $product_id2 = $rowdata['product_id'];
+                                                                                                $product_ids2[] = $product_id2;
+
+                                                                                                $purchase_data3 = mysqli_query($dbc, "SELECT * FROM `product` WHERE `product_id` = $product_id2");
+
+                                                                                                while ($rowdata3 = mysqli_fetch_array($purchase_data3)) {
+                                                                                                    $getBrand = fetchRecord($dbc, "brands", "brand_id", $rowdata3['brand_id']);
+                                                                                                    $getCat = fetchRecord($dbc, "categories", "categories_id", $rowdata3['category_id']);
+                                                                                            ?>
+
+
+                                                                                                    <option <?= (@$lowerdata->cutting_from_product[$x] == $rowdata3["product_id"]) ? 'selected' : ''; ?> data-price="<?= $rowdata3["current_rate"] ?>" <?= empty($r['product_id']) ? "" : "selected" ?> value="<?= $rowdata3["product_id"] ?>">
+                                                                                                        <?= ucwords($rowdata3["product_name"]) ?> | <?= ucwords(@$getBrand["brand_name"]) ?>(<?= ucwords(@$getCat["categories_name"]) ?>)
+                                                                                                    </option>
+
+                                                                                            <?php   }
+                                                                                            } ?>
+                                                                                        </select>
+
+                                                                                    </div>
+                                                                                </div>
 
 
 
-                                                            <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
-                                                                <label>Thaan</label>
-                                                                <input type="text" class="form-control thaan" value="<?= @$lowerdata->cutt_thaan[$x] ?>" name="cutt_thaan[]" placeholder="Thaan">
-                                                            </div>
-                                                            <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
-                                                                <label>Gzanah</label>
-                                                                <input type="text" class="form-control gzanah" value="<?= @$lowerdata->cutt_gzanah[$x] ?>" name="cutt_gzanah[]" placeholder="Gzanah">
-                                                            </div>
-                                                            <div class="col-lg-1 col-md-2 col-sm-4 col-xs-4">
-                                                                <label>Quantity</label>
-                                                                <input type="text" class="form-control quantity" value="<?= @$lowerdata->cutt_quantity[$x] ?>" name="cutt_quantity[]" readonly value="0" placeholder="Quanitity">
-                                                            </div>
 
-                                                            <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
-                                                                <div class="form-group mb-0">
-                                                                    <label class="font-weight-bold text-dark">Type</label>
-                                                                    <input type="text" class="form-control" id="cutt_gzanah_type" name="cutt_gzanah_type[]" placeholder="Type" required value="<?= @$lowerdata->cutt_gzanah_type[$x] ?>">
+                                                                                <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                                    <label>Thaan</label>
+                                                                                    <input type="text" class="form-control thaan" value="<?= @$lowerdata->cutt_from_thaan[$x] ?>" name="cutt_from_thaan[]" placeholder="Thaan">
+                                                                                </div>
+                                                                                <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                                    <label>Gzanah</label>
+                                                                                    <input type="text" class="form-control gzanah" value="<?= @$lowerdata->cutt_form_gzanah[$x] ?>" name="cutt_form_gzanah[]" placeholder="Gzanah">
+                                                                                </div>
+                                                                                <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                                    <label>Quantity</label>
+                                                                                    <input type="text" class="form-control quantity" value="<?= @$lowerdata->cutt_from_quantity[$x] ?>" name="cutt_from_quantity[]" value="0" placeholder="Quanitity">
+                                                                                </div>
+
+                                                                                <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                                    <div class="form-group mb-0">
+                                                                                        <label class="font-weight-bold text-dark">Type</label>
+                                                                                        <input type="text" class="form-control" id="cutt_gzanah_type" name="cutt_from_gzanah_type[]" placeholder="Type" required value="<?= @$lowerdata->cutt_from_gzanah_type[$x] ?>">
+                                                                                    </div>
+                                                                                </div>
+
+                                                                                <div class="col-lg-1 col-md-2 col-sm-4 col-xs-4 add_remove">
+                                                                                    <button type="button" class="outline_none mt-4 border-0 bg-white" onclick="cutt_voucher_remove(this)">
+                                                                                        <img title="Remove Row" src="img/remove.png" width="30px" alt="remove sign">
+                                                                                    </button>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+
+
+                                                            <?php
+                                                            }
+                                                            // }
+
+                                                        } else {
+                                                            ?>
+
+                                                            <div class="row m-0 p-0 px-3">
+                                                                <div id="voucher_rows_container2">
+                                                                    <div class="voucher_row2">
+
+                                                                        <div class="row mt-3 m-0 p-3">
+
+                                                                            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 row m-0 p-0">
+                                                                                <div class="col-12 m-0 p-0 pr-2">
+                                                                                    <label class=" font-weight-bold text-dark" for="cutting_from_product">Quality</label>
+
+                                                                                    <select class="form-control" name="cutting_from_product[]">
+                                                                                        <option value="">Select Product</option>
+                                                                                        <?php
+                                                                                        $purchase_data2 = mysqli_query($dbc, "SELECT * FROM `purchase_item` WHERE `purchase_id` = '$request_id'");
+                                                                                        $product_ids2 = array();
+
+                                                                                        while ($rowdata = mysqli_fetch_array($purchase_data2)) {
+                                                                                            $product_id2 = $rowdata['product_id'];
+                                                                                            $product_ids2[] = $product_id2;
+
+                                                                                            $purchase_data3 = mysqli_query($dbc, "SELECT * FROM `product` WHERE `product_id` = $product_id2");
+
+                                                                                            while ($rowdata3 = mysqli_fetch_array($purchase_data3)) {
+                                                                                                $getBrand = fetchRecord($dbc, "brands", "brand_id", $rowdata3['brand_id']);
+                                                                                                $getCat = fetchRecord($dbc, "categories", "categories_id", $rowdata3['category_id']);
+                                                                                        ?>
+
+
+                                                                                                <option <?= (@$lowerdata->cutting_from_product[$x] == $rowdata3["product_id"]) ? 'selected' : ''; ?> data-price="<?= $rowdata3["current_rate"] ?>" <?= empty($r['product_id']) ? "" : "selected" ?> value="<?= $rowdata3["product_id"] ?>">
+                                                                                                    <?= ucwords($rowdata3["product_name"]) ?> | <?= ucwords(@$getBrand["brand_name"]) ?>(<?= ucwords(@$getCat["categories_name"]) ?>)
+                                                                                                </option>
+
+                                                                                        <?php   }
+                                                                                        } ?>
+                                                                                    </select>
+
+                                                                                </div>
+
+                                                                            </div>
+
+
+
+
+                                                                            <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                                <label>Thaan</label>
+                                                                                <input type="text" class="form-control thaan" value="<?= @$lowerdata->cutt_thaan[$x] ?>" name="cutt_from_thaan[]" placeholder="Thaan">
+                                                                            </div>
+                                                                            <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                                <label>Gzanah</label>
+                                                                                <input type="text" class="form-control gzanah" value="<?= @$lowerdata->cutt_gzanah[$x] ?>" name="cutt_form_gzanah[]" placeholder="Gzanah">
+                                                                            </div>
+                                                                            <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                                <label>Quantity</label>
+                                                                                <input type="text" class="form-control quantity" value="<?= @$lowerdata->cutt_quantity[$x] ?>" name="cutt_from_quantity[]" value="0" placeholder="Quanitity">
+                                                                            </div>
+
+                                                                            <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                                <div class="form-group mb-0">
+                                                                                    <label class="font-weight-bold text-dark">Type</label>
+                                                                                    <input type="text" class="form-control" id="cutt_gzanah_type" name="cutt_from_gzanah_type[]" placeholder="Type" required value="<?= @$lowerdata->cutt_gzanah_type[$x] ?>">
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="col-lg-1 col-md-2 col-sm-4 col-xs-4 add_remove">
+                                                                                <button type="button" class="outline_none mt-4 border-0 bg-white" onclick="cutt_voucher_remove(this)">
+                                                                                    <img title="Remove Row" src="img/remove.png" width="30px" alt="remove sign">
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
-                                                                <div class="form-group mb-0">
-                                                                    <label class="font-weight-bold text-dark">Status</label>
-                                                                    <select name="cutt_status[]" id="cutt_status" class="form-control">
-                                                                        <option value="">Select</option>
-                                                                        <option <?= (@$lowerdata->cutt_status[$x] == 'Receivable') ? 'selected' : ''; ?> value="Receivable">Receivable</option>
-                                                                        <option <?= (@$lowerdata->cutt_status[$x] == 'Recieved') ? 'selected' : ''; ?> value="Recieved">Recieved</option>
-                                                                    </select>
+
+
+                                                        <?php
+                                                        }
+                                                        ?>
+                                                        <div class="row m-0 p-0 my-4 justify-content-end">
+                                                            <div class="col-lg-1">
+                                                                <div id="cutt_voucher_btn">
+                                                                    <button type="button" class="outline_none border-0 bg-white" onclick="cutt_voucher_duplicateRow()">
+                                                                        <img src="img/add.png" width="30px" alt="add sign">
+                                                                    </button>
                                                                 </div>
                                                             </div>
-
-
-                                                            <div class=" align-items-end jus d-flex col-lg-1 col-md-2 col-sm-4 col-xs-4 add_remove">
-                                                                <button type="button" class=" outline_none border-0 bg-white" onclick="cutt_voucher_remove(this)">
-                                                                    <img title="Remove Row" src="img/remove.png" width="30px" alt="remove sign">
-                                                                </button>
-                                                            </div>
                                                         </div>
-
-                                                    <?php
-                                                    }
-                                                    // }
-
-                                                } else {
-                                                    ?>
-                                                    <div class="row">
-
-                                                        <div class="ccol-lg-2 col-md-2 col-sm-4 col-xs-4 row m-0 p-0">
-                                                            <div class="col-11 m-0 p-0 pr-2">
-                                                                <label class=" font-weight-bold text-dark" for="cutt_product">Party Name</label>
-
-                                                                <select class="form-control " name="cutt_product[]">
-                                                                    <option value="">Party Name</option>
-                                                                    <?php
-
-                                                                    $result = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status = 1");
-                                                                    while ($row = mysqli_fetch_array($result)) {
-
-                                                                    ?>
-                                                                        <option <?= (@$lowerdata->cutt_product[$x] == $row["customer_id"]) ? 'selected' : ''; ?> value="<?= $row["customer_id"] ?>">
-                                                                            <?php echo  ucwords($row["customer_name"]) ?>
-                                                                            (<?= ucwords($row['customer_type']) ?>)
-                                                                        </option>
-
-                                                                    <?php   } ?>
-                                                                </select>
-
-                                                            </div>
-                                                            <div class="col-1 m-0 p-0 mt-1 ">
-                                                                <label class="invisible d-block">.</label>
-                                                                <button type="button" class="btn btn-danger btn-sm pt-1 pb-1" data-toggle="modal" data-target="#add_product_modal"> <i class="fa fa-plus"></i> </button>
-                                                            </div>
-                                                        </div>
-
-
-
-
-                                                        <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
-                                                            <label>Thaan</label>
-                                                            <input type="text" class="form-control thaan" value="<?= @$lowerdata->cutt_thaan[$x] ?>" name="cutt_thaan[]" placeholder="Thaan">
-                                                        </div>
-                                                        <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
-                                                            <label>Gzanah</label>
-                                                            <input type="text" class="form-control gzanah" value="<?= @$lowerdata->cutt_gzanah[$x] ?>" name="cutt_gzanah[]" placeholder="Gzanah">
-                                                        </div>
-                                                        <div class="col-lg-1 col-md-2 col-sm-4 col-xs-4">
-                                                            <label>Quantity</label>
-                                                            <input type="text" class="form-control quantity" value="<?= @$lowerdata->cutt_quantity[$x] ?>" name="cutt_quantity[]" readonly value="0" placeholder="Quanitity">
-                                                        </div>
-
-                                                        <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
-                                                            <div class="form-group mb-0">
-                                                                <label class="font-weight-bold text-dark">Type</label>
-                                                                <input type="text" class="form-control" id="cutt_gzanah_type" name="cutt_gzanah_type[]" placeholder="Type" required value="<?= @$lowerdata->cutt_gzanah_type[$x] ?>">
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
-                                                            <div class="form-group mb-0">
-                                                                <label class="font-weight-bold text-dark">Status</label>
-                                                                <select name="cutt_status[]" id="cutt_status" class="form-control">
-                                                                    <option value="">Select</option>
-                                                                    <option <?= (@$lowerdata->cutt_status[$x] == 'Receivable') ? 'selected' : ''; ?> value="Receivable">Receivable</option>
-                                                                    <option <?= (@$lowerdata->cutt_status[$x] == 'Recieved') ? 'selected' : ''; ?> value="Recieved">Recieved</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div class=" align-items-end jus d-flex col-lg-1 col-md-2 col-sm-4 col-xs-4 add_remove">
-                                                            <button type="button" class="d-none outline_none border-0 bg-white" onclick="cutt_voucher_remove(this)">
-                                                                <img title="Remove Row" src="img/remove.png" width="30px" alt="remove sign">
-                                                            </button>
-                                                        </div>
-
                                                     </div>
-                                                <?php
-                                                }
-                                                ?>
+                                                    <div class="list-2 card">
+                                                        <div class="card-header card-bg" align="center">
+                                                            <div class="row">
+                                                                <div class="col-12 mx-auto h4">
+                                                                    <b class="text-center card-text">To</b>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <?php
+                                                        // print_r($cuttingDatafetch['cutting_to_list']);
+                                                        if (@$cuttingDatafetch != 0) {
+                                                            $lowerdata11 = json_decode(@$cuttingDatafetch['cutting_to_list']);
+                                                            for ($z = 0; $z < count(@$lowerdata11->cutting_to_product); $z++) {
+
+                                                        ?>
 
 
+                                                                <!-- Container for dynamic rows -->
+                                                                <div class="row m-0 px-3">
+                                                                    <div id="voucher_rows_container">
+                                                                        <div class="voucher_row">
+                                                                            <div class="row mt-3 m-0 p-0">
+                                                                                <!-- Your existing row structure -->
+                                                                                <!-- This is your template for each row -->
 
-                                            </div>
+                                                                                <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 row m-0 p-0">
+                                                                                    <div class="col-11 m-0 p-0 pr-2">
+                                                                                        <label class=" font-weight-bold text-dark" for="cutting_to_product">Quality</label>
 
-                                            <div class="row my-4 justify-content-end">
-                                                <div class="col-lg-1">
-                                                    <div id="cutt_voucher_btn">
-                                                        <button type="button" class="outline_none border-0 bg-white" onclick="cutt_voucher_duplicateRow()">
-                                                            <img src="img/add.png" width="30px" alt="add sign">
-                                                        </button>
+                                                                                        <select class="form-control " name="cutting_to_product[]">
+                                                                                            <option value="">Select Product</option>
+                                                                                            <?php
+                                                                                            $result = mysqli_query($dbc, "SELECT * FROM product WHERE status=1 ");
+                                                                                            while ($row = mysqli_fetch_array($result)) {
+                                                                                                $getBrand = fetchRecord($dbc, "brands", "brand_id", $row['brand_id']);
+                                                                                                $getCat = fetchRecord($dbc, "categories", "categories_id", $row['category_id']);
+                                                                                            ?>
+                                                                                                <option <?= (@$lowerdata11->cutting_to_product[$z] == $row["product_id"]) ? 'selected' : ''; ?> data-price="<?= $row["current_rate"] ?>" <?= empty($r['product_id']) ? "" : "selected" ?> value="<?= $row["product_id"] ?>">
+                                                                                                    <?= ucwords($row["product_name"]) ?> | <?= ucwords(@$getBrand["brand_name"]) ?>(<?= ucwords(@$getCat["categories_name"]) ?>)
+                                                                                                </option>
+
+                                                                                            <?php   } ?>
+                                                                                        </select>
+
+                                                                                    </div>
+                                                                                    <div class="col-1 m-0 p-0 mt-1 ">
+                                                                                        <label class="invisible d-block">.</label>
+                                                                                        <button type="button" class="btn btn-danger btn-sm pt-1 pb-1" data-toggle="modal" data-target="#add_product_modal"> <i class="fa fa-plus"></i> </button>
+                                                                                    </div>
+                                                                                </div>
+
+                                                                                <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                                    <label>Thaan</label>
+                                                                                    <input type="text" class="form-control thaan" name="cutt_to_thaan[]" value="<?= @$lowerdata11->cutt_to_thaan[$z] ?>" placeholder="Thaan">
+                                                                                </div>
+                                                                                <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                                    <label>Gzanah</label>
+                                                                                    <input type="text" class="form-control gzanah" name="cutt_to_gzanah[]" value="<?= @$lowerdata11->cutt_to_gzanah[$z] ?>" placeholder="Gzanah">
+                                                                                </div>
+                                                                                <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                                    <label>Quantity</label>
+                                                                                    <input type="text" class="form-control quantity" name="cutt_to_quantity[]" value="<?= @$lowerdata11->cutt_to_quantity[$z] ?>" placeholder="Quantity">
+                                                                                </div>
+                                                                                <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                                    <label>Type</label>
+                                                                                    <input type="text" class="form-control" name="cutt_to_gzanah_type[]" value="<?= @$lowerdata11->cutt_to_gzanah_type[$z] ?>" placeholder="Type" required>
+                                                                                </div>
+
+                                                                                <div class="col-lg-1 col-md-2 col-sm-4 col-xs-4 add_remove">
+                                                                                    <button type="button" class="outline_none mt-4 border-0 bg-white" onclick="cutt_voucher_remove2(this)">
+                                                                                        <img title="Remove Row" src="img/remove.png" width="30px" alt="remove sign">
+                                                                                    </button>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+
+                                                                <!-- Container for dynamic rows -->
+                                                            <?php
+                                                            }
+                                                            // }
+
+                                                        } else {
+                                                            ?>
+
+                                                            <!-- Container for dynamic rows -->
+                                                            <div class="row m-0 p-3">
+                                                                <div id="voucher_rows_container">
+                                                                    <div class="voucher_row">
+                                                                        <div class="row mt-3 m-0 p-0">
+                                                                            <!-- Your existing row structure -->
+                                                                            <!-- This is your template for each row -->
+
+                                                                            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 row m-0 p-0">
+                                                                                <div class="col-11 m-0 p-0 pr-2">
+                                                                                    <label class="font-weight-bold text-dark" for="cutting_to_product">Quality</label>
+                                                                                    <select class="form-control " name="cutting_to_product[]">
+                                                                                        <option value="">Select Product</option>
+                                                                                        <?php
+                                                                                        $result = mysqli_query($dbc, "SELECT * FROM product WHERE status=1 ");
+                                                                                        while ($row = mysqli_fetch_array($result)) {
+                                                                                            $getBrand = fetchRecord($dbc, "brands", "brand_id", $row['brand_id']);
+                                                                                            $getCat = fetchRecord($dbc, "categories", "categories_id", $row['category_id']);
+                                                                                        ?>
+                                                                                            <option value="<?= $row["product_id"] ?>">
+                                                                                                <?= ucwords($row["product_name"]) ?> | <?= ucwords(@$getBrand["brand_name"]) ?>(<?= ucwords(@$getCat["categories_name"]) ?>)
+                                                                                            </option>
+                                                                                        <?php } ?>
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="col-1 m-0 p-0 mt-1">
+                                                                                    <label class="invisible d-block">.</label>
+                                                                                    <button type="button" class="btn btn-danger btn-sm pt-1 pb-1" data-toggle="modal" data-target="#add_product_modal">
+                                                                                        <i class="fa fa-plus"></i>
+                                                                                    </button>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                                <label>Thaan</label>
+                                                                                <input type="text" class="form-control thaan" name="cutt_to_thaan[]" placeholder="Thaan">
+                                                                            </div>
+                                                                            <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                                <label>Gzanah</label>
+                                                                                <input type="text" class="form-control gzanah" name="cutt_to_gzanah[]" placeholder="Gzanah">
+                                                                            </div>
+                                                                            <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                                <label>Quantity</label>
+                                                                                <input type="text" class="form-control quantity" name="cutt_to_quantity[]" value="0" placeholder="Quantity">
+                                                                            </div>
+                                                                            <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                                <label>Type</label>
+                                                                                <input type="text" class="form-control" name="cutt_to_gzanah_type[]" placeholder="Type" required>
+                                                                            </div>
+
+                                                                            <div class="col-lg-1 col-md-2 col-sm-4 col-xs-4 add_remove">
+                                                                                <button type="button" class="outline_none mt-4 border-0 bg-white" onclick="cutt_voucher_remove2(this)">
+                                                                                    <img title="Remove Row" src="img/remove.png" width="30px" alt="remove sign">
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+
+                                                        <?php
+                                                        }
+                                                        ?>
+                                                        <div class="row m-0 p-0 my-4 justify-content-end">
+                                                            <div cs="col-lg-1">
+                                                                <div id="cutt_voucher_btn">
+                                                                    <button type="button" class="outline_none border-0 bg-white" onclick="cutt_voucher_duplicateRow2()">
+                                                                        <img src="img/add.png" width="30px" alt="add sign">
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
+
                                             </div>
+
+
 
                                             <div class="row  justify-content-end">
                                                 <div class="col-lg-1 d-inline text-left p-0">
 
-                                                    <a target="_blank" href="print_production.php?print=<?= $ProductionID ?>&type=cutting&part=production" id="showData1">
+                                                    <a target="_blank" href="print.php?production=<?= $ProductionID ?>&type=cutting" id="showData1">
                                                         <div class="btn btn-primary">
                                                             <i class="fa fa-print"></i> Print
                                                         </div>
@@ -977,7 +1186,7 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                         <option value="">Part Name</option>
                                                         <?php
 
-                                                        $result = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status = 1");
+                                                        $result = mysqli_query($dbc, "SELECT * FROM customers WHERE  customer_type = 'dyeing' and customer_status = 1");
                                                         while ($row = mysqli_fetch_array($result)) {
 
                                                         ?>
@@ -988,46 +1197,10 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                         <?php   } ?>
                                                     </select>
                                                 </div>
-                                                <div class="col-lg-2 mt-3  row ">
-                                                    <div class="col-11 pr-3 m-0 p-0">
-                                                        <label class="font-weight-bold text-dark" for="dey_quality">Quality</label>
-                                                        <select class="form-control searchableSelect" name="dey_quality" value="<?= @$deyeingfetch['id'] ?>">
-                                                            <option value="">Select Product</option>
-                                                            <?php
-                                                            $result = mysqli_query($dbc, "SELECT * FROM product WHERE status=1 ");
-                                                            while ($row = mysqli_fetch_array($result)) {
-                                                                $getBrand = fetchRecord($dbc, "brands", "brand_id", $row['brand_id']);
-                                                                $getCat = fetchRecord($dbc, "categories", "categories_id", $row['category_id']);
-                                                            ?>
-                                                                <option <?= (@$deyeingfetch['dey_quality'] == $row["product_id"]) ? 'selected' : ''; ?> data-price="<?= $row["current_rate"] ?>" <?= empty($r['product_id']) ? "" : "selected" ?> value="<?= $row["product_id"] ?> ">
-                                                                    <?= ucwords($row["product_name"]) ?> | <?= ucwords(@$getBrand["brand_name"]) ?>(<?= ucwords(@$getCat["categories_name"]) ?>) </option>
-
-                                                            <?php   } ?>
-                                                        </select>
-                                                    </div>
-                                                    <div class="col-1 m-0 p-0 mt-1">
-                                                        <label class="invisible d-block">.</label>
-                                                        <button type="button" class="btn btn-danger btn-sm pt-1 pb-1" data-toggle="modal" data-target="#add_product_modal"> <i class="fa fa-plus"></i> </button>
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-1 ml-lg-4 mt-3">
-                                                    <label class="font-weight-bold text-dark" for="Thaan">Thaan</label>
-                                                    <input type="number" min="0" class="form-control thaanCount" name="dey_thaan" id="thaan" value="<?= @$deyeingfetch['dey_thaan'] ?>" placeholder="Thaan">
-                                                </div>
-                                                <div class="col-lg-1 mt-3 ">
-                                                    <label class="font-weight-bold text-dark">Gzanah</label>
-                                                    <input type="number" min="0" placeholder="Gzanah Here" value="<?= @$deyeingfetch['dey_gzanah'] ?>" autocomplete="off" class="form-control gzanahCount" name="dey_gzanah" id="gzanah">
-                                                </div>
-                                                <div class="col-lg-1 mt-3 ">
-                                                    <label class="font-weight-bold text-dark">Quantity</label>
-                                                    <input type="number" readonly class="form-control quantityCount" id="quantity" value="<?= isset($deyeingfetch['dey_quantity']) ? @$deyeingfetch['dey_quantity'] : 0  ?>" min="0" name="dey_quantity">
-                                                </div>
-
-                                                <div class="col-lg-1 mt-3">
+                                                <div class="col-lg-2 mt-3">
                                                     <label class="font-weight-bold text-dark" for="gate_no">Gate Pass No.</label>
-                                                    <input type="text" class="form-control" name="dyeing_gate_no" id="dyeing_gate_no" value="<?= @$deyeingfetch['dey_gate_no'] ?>" placeholder="Gate pass no.">
+                                                    <input type="text" class="form-control" name="dyeing_gate_no" id="dyeing_gate_no" value="<?= isset($deyeingfetch['dey_gate_no']) ? @$deyeingfetch['dey_gate_no'] : @$purchase_data['gate_pass'] ?>" placeholder="Gate pass no.">
                                                 </div>
-
                                                 <div class="col-lg-2 mt-3">
                                                     <label class="font-weight-bold text-dark" for="dyeing_lat_name">Lat no.</label>
                                                     <input type="text" class="form-control" name="dyeing_lat_name" id="dyeing_lat_name" value="<?= @$deyeingfetch['dey_lat_no'] ?>" placeholder="Lat Number">
@@ -1036,39 +1209,35 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                     <label class="font-weight-bold text-dark" for="Party Voucher No.">Party Voucher No.</label>
                                                     <input type="text" class="form-control" name="dyeing_party_voucher" id="dyeing_party_voucher" value="<?= @$deyeingfetch['dey_voucher_no'] ?>" placeholder="Party Voucher No.">
                                                 </div>
-                                                <div class="col-lg-2 mt-3">
-                                                    <label class="font-weight-bold text-dark" for="Qty">Qty</label>
-                                                    <input type="text" class="form-control" name="dyeing_qty" id="dyeing_qty" value="<?= @$deyeingfetch['dey_qty'] ?>" placeholder="Qty">
-                                                </div>
-                                                <div class="col-lg-2 mt-3">
-                                                    <label class="font-weight-bold text-dark" for="Ready Qty">Ready Qty</label>
-                                                    <input type="text" class="form-control" name="dyeing_readyqty" id="dyeing_readyqty" value="<?= @$deyeingfetch['dey_ready_qty'] ?>" placeholder="Ready Qty">
-                                                </div>
-                                                <div class="col-lg-2 mt-3">
-                                                    <label class="font-weight-bold text-dark" for="C-P">C-P</label>
-                                                    <input type="text" class="form-control" name="dyeing_cp" id="dyeing_cp" value="<?= @$deyeingfetch['dey_c_p'] ?>" placeholder="C-P">
-                                                </div>
-                                                <div class="col-lg-1 mt-3 pr-1">
+                                                <div class="col-lg-2 mt-3 pr-1">
                                                     <label class="font-weight-bold text-dark" for="color">Color Name</label>
                                                     <input type="text" class="form-control" name="dyeing_color_name" id="dyeing_color_name" value="<?= @$deyeingfetch['dey_color_name'] ?>" placeholder="Name">
                                                 </div>
-                                                <div class="col-lg-1 mt-3 pl-1">
-                                                    <label class="font-weight-bold text-dark" for="color">Color</label>
-                                                    <input type="color" class="form-control" name="dyeing_color" id="dyeing_color" value="<?= @$deyeingfetch['dey_color'] ?>" placeholder="Color">
-                                                </div>
-
                                                 <div class="col-lg-2 mt-3">
                                                     <label class="font-weight-bold text-dark" for="Location">Location</label>
-                                                    <input type="text" class="form-control" name="dyeing_location" id="dyeing_location" value="<?= @$deyeingfetch['dey_location'] ?>" placeholder="Location">
+                                                    <input type="text" class="form-control" name="dyeing_location" id="dyeing_location" value="<?= isset($deyeingfetch['dey_location']) ? @$deyeingfetch['dey_location'] : @$purchase_data['pur_location'] ?>" placeholder="Location">
                                                 </div>
-                                            </div>
-
-                                            <div class="row pb-2 mt-3">
-                                                <div class="col-lg-12">
+                                                <div class="col-lg-2 mt-3">
+                                                    <label class="font-weight-bold text-dark">Bill No.</label>
+                                                    <input type="number" min="0" placeholder="Bil No." value="<?= isset($deyeingfetch['dey_bill_no']) ? @$deyeingfetch['dey_bill_no'] : @$purchase_data['bill_no'] ?>" autocomplete="off" class="form-control" name="dey_bill_no">
+                                                </div>
+                                                <div class="col-lg-2 mt-3">
+                                                    <label class="font-weight-bold text-dark">Bilty No.</label>
+                                                    <input type="number" min="0" placeholder="Bilty No." value="<?= isset($deyeingfetch['dey_bilty_no']) ? @$deyeingfetch['dey_bilty_no'] : @$purchase_data['bilty_no'] ?>" autocomplete="off" class="form-control" name="dey_bilty_no">
+                                                </div>
+                                                <div class="col-lg-4 mt-3">
                                                     <label class="font-weight-bold text-dark" for="remarks">Remarks</label>
                                                     <textarea name="dyeing_remarks" id="dyeing_remarks" placeholder="Remarks" class="form-control"><?= @$deyeingfetch['dey_remarks'] ?></textarea>
                                                 </div>
+                                                <div class="col-lg-2 mt-3">
+                                                    <label class="font-weight-bold text-dark" for="Location">Delivery Date</label>
+                                                    <input type="Date" class="form-control" name="dyeing_delivery_date" id="dyeing_delivery_date" value="<?= @$deyeingfetch['dey_delivery_date'] ?>" placeholder="Location">
+                                                </div>
+
+
                                             </div>
+
+
                                             <div class="row mt-5">
                                                 <div class="col">
                                                     <h4>
@@ -1077,174 +1246,370 @@ $formattedDate = $currentDate->format('Y-m-d');
                                                 </div>
                                             </div>
                                             <div id="deyingContainer">
-                                                <?php
-                                                // print_r($deyeingfetch['dey_vouc_list']);
-                                                if (@$deyeingfetch != 0) {
-                                                    $lowerdata10 = json_decode(@$deyeingfetch['dey_vouc_list']);
-                                                    for ($x = 0; $x < count(@$lowerdata10->deying_product); $x++) {
-
-                                                ?>
-
-                                                        <div class="row mt-3">
-
-                                                            <div class="ccol-lg-2 col-md-2 col-sm-4 col-xs-4 row m-0 p-0">
-                                                                <div class="col-11 m-0 p-0 pr-2">
-                                                                    <label class=" font-weight-bold text-dark" for="deying_product">Party Name</label>
-
-                                                                    <select class="form-control " name="deying_product[]">
-                                                                        <option value="">Party Name</option>
-                                                                        <?php
-
-                                                                        $result = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status = 1");
-                                                                        while ($row = mysqli_fetch_array($result)) {
-
-                                                                        ?>
-                                                                            <option <?= (@$lowerdata10->deying_product[$x] == $row["customer_id"]) ? 'selected' : ''; ?> value="<?= $row["customer_id"] ?>">
-                                                                                <?php echo  ucwords($row["customer_name"]) ?>
-                                                                                (<?= ucwords($row['customer_type']) ?>)
-                                                                            </option>
-
-                                                                        <?php   } ?>
-                                                                    </select>
-
+                                                <div class="list-container">
+                                                    <div class="list-1 card">
+                                                        <div class="card-header card-bg" align="center">
+                                                            <div class="row">
+                                                                <div class="col-12 mx-auto h4">
+                                                                    <b class="text-center card-text">Sending</b>
                                                                 </div>
-                                                                <div class="col-1 m-0 p-0 mt-1 ">
-                                                                    <label class="invisible d-block">.</label>
-                                                                    <button type="button" class="btn btn-danger btn-sm pt-1 pb-1" data-toggle="modal" data-target="#add_product_modal"> <i class="fa fa-plus"></i> </button>
-                                                                </div>
-                                                            </div>
-
-
-
-                                                            <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
-                                                                <label>Thaan</label>
-                                                                <input type="text" class="form-control thaan" value="<?= @$lowerdata10->deying_thaan[$x] ?>" name="deying_thaan[]" placeholder="Thaan">
-                                                            </div>
-                                                            <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
-                                                                <label>Gzanah</label>
-                                                                <input type="text" class="form-control gzanah" value="<?= @$lowerdata10->deying_gzanah[$x] ?>" name="deying_gzanah[]" placeholder="Gzanah">
-                                                            </div>
-                                                            <div class="col-lg-1 col-md-2 col-sm-4 col-xs-4">
-                                                                <label>Quantity</label>
-                                                                <input type="text" class="form-control quantity" value="<?= @$lowerdata10->deying_quantity[$x] ?>" name="deying_quantity[]" readonly value="0" placeholder="Quanitity">
-                                                            </div>
-
-                                                            <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
-                                                                <div class="form-group mb-0">
-                                                                    <label class="font-weight-bold text-dark">Type</label>
-                                                                    <input type="text" class="form-control" id="deying_gzanah_type" name="deying_gzanah_type[]" placeholder="Type" required value="<?= @$lowerdata10->deying_gzanah_type[$x] ?>">
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
-                                                                <div class="form-group mb-0">
-                                                                    <label class="font-weight-bold text-dark">Status</label>
-                                                                    <select name="deying_status[]" id="deying_status" class="form-control">
-                                                                        <option value="">Select</option>
-                                                                        <option <?= (@$lowerdata10->deying_status[$x] == 'Receivable') ? 'selected' : ''; ?> value="Receivable">Receivable</option>
-                                                                        <option <?= (@$lowerdata10->deying_status[$x] == 'Recieved') ? 'selected' : ''; ?> value="Recieved">Recieved</option>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-
-
-                                                            <div class=" align-items-end jus d-flex col-lg-1 col-md-2 col-sm-4 col-xs-4 add_remove">
-                                                                <button type="button" class=" outline_none border-0 bg-white" onclick="deying_voucher_remove(this)">
-                                                                    <img title="Remove Row" src="img/remove.png" width="30px" alt="remove sign">
-                                                                </button>
                                                             </div>
                                                         </div>
 
-                                                    <?php
-                                                    }
-                                                    // }
 
-                                                } else {
-                                                    ?>
-                                                    <div class="row">
+                                                        <div class="row m-0 p-3">
+                                                            <div id="voucher_rows_container3">
+                                                                <div class="voucher_row3">
 
-                                                        <div class="ccol-lg-2 col-md-2 col-sm-4 col-xs-4 row m-0 p-0">
-                                                            <div class="col-11 m-0 p-0 pr-2">
-                                                                <label class=" font-weight-bold text-dark" for="deying_product">Party Name</label>
 
-                                                                <select class="form-control " name="deying_product[]">
-                                                                    <option value="">Party Name</option>
+
                                                                     <?php
-
-                                                                    $result = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status = 1");
-                                                                    while ($row = mysqli_fetch_array($result)) {
+                                                                    // print_r($deyeingfetch['dey_vouc_list']);
+                                                                    if (@$deyeingfetch != 0) {
+                                                                        $lowerdata10 = json_decode(@$deyeingfetch['dey_sending_list']);
+                                                                        for ($x = 0; $x < count(@$lowerdata10->deying_product); $x++) {
 
                                                                     ?>
-                                                                        <option <?= (@$lowerdata10->deying_product[$x] == $row["customer_id"]) ? 'selected' : ''; ?> value="<?= $row["customer_id"] ?>">
-                                                                            <?php echo  ucwords($row["customer_name"]) ?>
-                                                                            (<?= ucwords($row['customer_type']) ?>)
-                                                                        </option>
 
-                                                                    <?php   } ?>
-                                                                </select>
+                                                                            <div id="dey3">
+                                                                                <div class="row mt-3 m-0 p-0">
 
+                                                                                    <div class="ccol-lg-4 col-md-4 col-sm-4 col-xs-4 row m-0 p-0">
+                                                                                        <div class="col-12 m-0 p-0 pr-2">
+                                                                                            <label class=" font-weight-bold text-dark" for="deying_product">Quality</label>
+
+                                                                                            <select class="form-control " name="deying_product[]">
+                                                                                                <option value="">Select Product</option>
+                                                                                                <?php
+                                                                                                $purchase_data = mysqli_query($dbc, "SELECT * FROM `purchase_item` WHERE `purchase_id` = '$request_id'");
+                                                                                                $product_ids = array();
+
+                                                                                                while ($rowdata = mysqli_fetch_array($purchase_data)) {
+                                                                                                    $product_id = $rowdata['product_id'];
+                                                                                                    $product_ids[] = $product_id;
+
+                                                                                                    $purchase_data2 = mysqli_query($dbc, "SELECT * FROM `product` WHERE `product_id` = $product_id");
+
+                                                                                                    while ($rowdata2 = mysqli_fetch_array($purchase_data2)) {
+                                                                                                        $getBrand = fetchRecord($dbc, "brands", "brand_id", $rowdata2['brand_id']);
+                                                                                                        $getCat = fetchRecord($dbc, "categories", "categories_id", $rowdata2['category_id']);
+                                                                                                ?>
+
+
+                                                                                                        <option <?= (@$lowerdata10->deying_product[$x] == $rowdata2["product_id"]) ? 'selected' : ''; ?> data-price="<?= $rowdata2["current_rate"] ?>" <?= empty($r['product_id']) ? "" : "selected" ?> value="<?= $rowdata2["product_id"] ?>">
+                                                                                                            <?= ucwords($rowdata2["product_name"]) ?> | <?= ucwords(@$getBrand["brand_name"]) ?>(<?= ucwords(@$getCat["categories_name"]) ?>)
+                                                                                                        </option>
+
+                                                                                                <?php   }
+                                                                                                } ?>
+                                                                                            </select>
+
+                                                                                        </div>
+
+                                                                                    </div>
+
+
+
+                                                                                    <div class="col-lg-2 ml-2 col-md-2 col-sm-4 col-xs-4 row">
+                                                                                        <label>Thaan</label>
+                                                                                        <input type="text" class="form-control thaan3" value="<?= @$lowerdata10->dey_sending_thaan[$x] ?>" name="dey_sending_thaan[]" placeholder="Thaan">
+                                                                                    </div>
+                                                                                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4">
+                                                                                        <label>Gzanah</label>
+                                                                                        <input type="text" class="form-control gzanah3" value="<?= @$lowerdata10->dey_sending_gzanah[$x] ?>" name="dey_sending_gzanah[]" placeholder="Gzanah">
+                                                                                    </div>
+                                                                                    <div class="col-lg-2 mr-auto col-md-2 col-sm-4 col-xs-4">
+                                                                                        <label>Quantity</label>
+                                                                                        <input type="text" class="form-control quantity3" value="<?= @$lowerdata10->dey_sending_quantity[$x] ?>" name="dey_sending_quantity[]" value="0" placeholder="Quanitity">
+                                                                                    </div>
+
+                                                                                    <div class=" align-items-end jus d-flex col-lg-1 col-md-2 col-sm-4 col-xs-4 add_remove">
+                                                                                        <button type="button" class=" outline_none border-0 bg-white" onclick="deying_voucher_remove3(this)">
+                                                                                            <img title="Remove Row" src="img/remove.png" width="30px" alt="remove sign">
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+
+                                                                        <?php
+                                                                        }
+                                                                        // }
+
+                                                                    } else {
+                                                                        ?>
+
+                                                                        <div id="dey3">
+                                                                            <div class="row mt-3 m-0 p-0">
+
+                                                                                <div class="ccol-lg-4 col-md-4 col-sm-4 col-xs-4 row m-0 p-0">
+                                                                                    <div class="col-12 m-0 p-0 pr-2">
+                                                                                        <label class=" font-weight-bold text-dark" for="deying_product">Quality</label>
+
+                                                                                        <select class="form-control" name="deying_product[]">
+                                                                                            <option value="">Select Product</option>
+                                                                                            <?php
+                                                                                            $purchase_data = mysqli_query($dbc, "SELECT * FROM `purchase_item` WHERE `purchase_id` = '$request_id'");
+                                                                                            $product_ids = array();
+
+                                                                                            while ($rowdata = mysqli_fetch_array($purchase_data)) {
+                                                                                                $product_id = $rowdata['product_id'];
+                                                                                                $product_ids[] = $product_id;
+
+                                                                                                $purchase_data2 = mysqli_query($dbc, "SELECT * FROM `product` WHERE `product_id` = $product_id");
+
+                                                                                                while ($rowdata2 = mysqli_fetch_array($purchase_data2)) {
+                                                                                                    $getBrand = fetchRecord($dbc, "brands", "brand_id", $rowdata2['brand_id']);
+                                                                                                    $getCat = fetchRecord($dbc, "categories", "categories_id", $rowdata2['category_id']);
+                                                                                            ?>
+
+
+                                                                                                    <option <?= (@$lowerdata10->deying_product[$x] == $rowdata2["product_id"]) ? 'selected' : ''; ?> data-price="<?= $rowdata2["current_rate"] ?>" <?= empty($r['product_id']) ? "" : "selected" ?> value="<?= $rowdata2["product_id"] ?>">
+                                                                                                        <?= ucwords($rowdata2["product_name"]) ?> | <?= ucwords(@$getBrand["brand_name"]) ?>(<?= ucwords(@$getCat["categories_name"]) ?>)
+                                                                                                    </option>
+
+                                                                                            <?php   }
+                                                                                            } ?>
+                                                                                        </select>
+
+                                                                                    </div>
+
+                                                                                </div>
+
+
+
+                                                                                <div class="col-lg-2 ml-2 col-md-2 col-sm-4 col-xs-4 row">
+                                                                                    <label>Thaan</label>
+                                                                                    <input type="text" class="form-control thaan3" value="<?= @$lowerdata10->dey_sending_thaan[$x] ?>" name="dey_sending_thaan[]" placeholder="Thaan">
+                                                                                </div>
+                                                                                <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4">
+                                                                                    <label>Gzanah</label>
+                                                                                    <input type="text" class="form-control gzanah3" value="<?= @$lowerdata10->dey_sending_gzanah[$x] ?>" name="dey_sending_gzanah[]" placeholder="Gzanah">
+                                                                                </div>
+                                                                                <div class="col-lg-2 mr-auto col-md-2 col-sm-4 col-xs-4">
+                                                                                    <label>Quantity</label>
+                                                                                    <input type="text" class="form-control quantity3" value="<?= @$lowerdata10->dey_sending_quantity[$x] ?>" name="dey_sending_quantity[]" value="0" placeholder="Quanitity">
+                                                                                </div>
+
+                                                                                <div class=" align-items-end jus d-flex col-lg-1 col-md-2 col-sm-4 col-xs-4 add_remove">
+                                                                                    <button type="button" class=" outline_none border-0 bg-white" onclick="deying_voucher_remove3(this)">
+                                                                                        <img title="Remove Row" src="img/remove.png" width="30px" alt="remove sign">
+                                                                                    </button>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+
+                                                                    <?php
+                                                                    }
+                                                                    ?>
+                                                                </div>
                                                             </div>
-                                                            <div class="col-1 m-0 p-0 mt-1 ">
-                                                                <label class="invisible d-block">.</label>
-                                                                <button type="button" class="btn btn-danger btn-sm pt-1 pb-1" data-toggle="modal" data-target="#add_product_modal"> <i class="fa fa-plus"></i> </button>
+                                                        </div>
+                                                        <div class="row m-0 p-0 my-4 justify-content-end">
+                                                            <div class="col-lg-1">
+                                                                <div id="cutt_voucher_btn">
+                                                                    <button type="button" class="outline_none border-0 bg-white" onclick="deying_voucher_duplicateRow5()">
+                                                                        <img src="img/add.png" width="30px" alt="add sign">
+                                                                    </button>
+                                                                </div>
                                                             </div>
                                                         </div>
-
-                                                        <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
-                                                            <label>Thaan</label>
-                                                            <input type="text" class="form-control thaan" value="<?= @$lowerdata10->deying_thaan[$x] ?>" name="deying_thaan[]" placeholder="Thaan">
-                                                        </div>
-                                                        <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
-                                                            <label>Gzanah</label>
-                                                            <input type="text" class="form-control gzanah" value="<?= @$lowerdata10->deying_gzanah[$x] ?>" name="deying_gzanah[]" placeholder="Gzanah">
-                                                        </div>
-                                                        <div class="col-lg-1 col-md-2 col-sm-4 col-xs-4">
-                                                            <label>Quantity</label>
-                                                            <input type="text" class="form-control quantity" value="<?= @$lowerdata10->deying_quantity[$x] ?>" name="deying_quantity[]" readonly value="0" placeholder="Quanitity">
-                                                        </div>
-
-                                                        <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
-                                                            <div class="form-group mb-0">
-                                                                <label class="font-weight-bold text-dark">Type</label>
-                                                                <input type="text" class="form-control" id="deying_gzanah_type" name="deying_gzanah_type[]" placeholder="Type" required value="<?= @$lowerdata10->deying_gzanah_type[$x] ?>">
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
-                                                            <div class="form-group mb-0">
-                                                                <label class="font-weight-bold text-dark">Status</label>
-                                                                <select name="deying_status[]" id="deying_status" class="form-control">
-                                                                    <option value="">Select</option>
-                                                                    <option <?= (@$lowerdata10->deying_status[$x] == 'Receivable') ? 'selected' : ''; ?> value="Receivable">Receivable</option>
-                                                                    <option <?= (@$lowerdata10->deying_status[$x] == 'Recieved') ? 'selected' : ''; ?> value="Recieved">Recieved</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div class=" align-items-end jus d-flex col-lg-1 col-md-2 col-sm-4 col-xs-4 add_remove">
-                                                            <button type="button" class="d-none outline_none border-0 bg-white" onclick="deying_voucher_remove(this)">
-                                                                <img title="Remove Row" src="img/remove.png" width="30px" alt="remove sign">
-                                                            </button>
-                                                        </div>
-
                                                     </div>
-                                                <?php
-                                                }
-                                                ?>
+                                                    <div class="list-2 card">
+                                                        <div class="card-header card-bg" align="center">
+                                                            <div class="row">
+                                                                <div class="col-12 mx-auto h4">
+                                                                    <b class="text-center card-text">Recieving</b>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row m-0 p-3">
+                                                            <div id="voucher_rows_container4">
+                                                                <div class="voucher_row4">
 
 
 
-                                            </div>
+                                                                    <?php
+                                                                    // print_r($deyeingfetch['dey_vouc_list']);
+                                                                    if (@$deyeingfetch != 0) {
+                                                                        $lowerdata12 = json_decode(@$deyeingfetch['dey_recieving_list']);
+                                                                        for ($x = 0; $x < count(@$lowerdata12->dey_recieving_product); $x++) {
 
-                                            <div class="row my-4 justify-content-end">
-                                                <div class="col-lg-1">
-                                                    <div id="deying_voucher_btn">
-                                                        <button type="button" class="outline_none border-0 bg-white" onclick="deying_voucher_duplicateRow()">
-                                                            <img src="img/add.png" width="30px" alt="add sign">
-                                                        </button>
+                                                                    ?>
+
+                                                                            <div id="dey4">
+                                                                                <div class="row mt-3 m-0 p-0">
+                                                                                    <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4 row m-0 p-0">
+                                                                                        <div class="col-12 m-0 p-0 pr-2">
+                                                                                            <label class=" font-weight-bold text-dark" for="dey_recieving_product">Quality</label>
+
+                                                                                            <select class="form-control" name="dey_recieving_product[]">
+                                                                                                <option value="">Select Product</option>
+                                                                                                <?php
+                                                                                                $purchase_data2 = mysqli_query($dbc, "SELECT * FROM `purchase_item` WHERE `purchase_id` = '$request_id'");
+                                                                                                $product_ids2 = array();
+
+                                                                                                while ($rowdata2 = mysqli_fetch_array($purchase_data2)) {
+                                                                                                    $product_id2 = $rowdata2['product_id'];
+                                                                                                    $product_ids2[] = $product_id;
+
+                                                                                                    $purchase_data3 = mysqli_query($dbc, "SELECT * FROM `product` WHERE `product_id` = $product_id2");
+
+                                                                                                    while ($rowdata3 = mysqli_fetch_array($purchase_data3)) {
+                                                                                                        $getBrand = fetchRecord($dbc, "brands", "brand_id", $rowdata3['brand_id']);
+                                                                                                        $getCat = fetchRecord($dbc, "categories", "categories_id", $rowdata3['category_id']);
+                                                                                                ?>
+
+
+                                                                                                        <option <?= (@$lowerdata12->dey_recieving_product[$x] == $rowdata3["product_id"]) ? 'selected' : ''; ?> data-price="<?= $rowdata3["current_rate"] ?>" <?= empty($r['product_id']) ? "" : "selected" ?> value="<?= $rowdata3["product_id"] ?>">
+                                                                                                            <?= ucwords($rowdata3["product_name"]) ?> | <?= ucwords(@$getBrand["brand_name"]) ?>(<?= ucwords(@$getCat["categories_name"]) ?>)
+                                                                                                        </option>
+
+                                                                                                <?php   }
+                                                                                                } ?>
+                                                                                            </select>
+
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                                        <label>Thaan</label>
+                                                                                        <input type="text" class="form-control thaan2" value="<?= @$lowerdata12->dey_recieving_thaan[$x] ?>" name="dey_recieving_thaan[]" placeholder="Thaan">
+                                                                                    </div>
+                                                                                    <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                                        <label>Gzanah</label>
+                                                                                        <input type="text" class="form-control gzanah2" value="<?= @$lowerdata12->dey_recieving_gzanah[$x] ?>" name="dey_recieving_gzanah[]" placeholder="Gzanah">
+                                                                                    </div>
+                                                                                    <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                                        <label>Quantity</label>
+                                                                                        <input type="text" class="form-control quantity2" value="<?= @$lowerdata12->dey_recieving_quantity[$x] ?>" name="dey_recieving_quantity[]" value="0" placeholder="Quanitity">
+                                                                                    </div>
+                                                                                    <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                                        <label class="font-weight-bold text-dark" for="C-P">C-P</label>
+                                                                                        <input type="text" class="form-control" name="dyeing_cp[]" id="dyeing_cp" value="<?= @$lowerdata12->dyeing_cp[$x] ?>" placeholder="C-P">
+                                                                                    </div>
+
+
+                                                                                    <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4 d-flex align-items-end">
+                                                                                        <div class="form-group mb-0">
+                                                                                            <label class="font-weight-bold text-dark">Shortage</label>
+                                                                                            <input type="text" class="form-control" id="deying_Shortage" name="deying_Shortage[]" placeholder="Shortage" value="<?= @$lowerdata12->deying_Shortage[$x] ?>">
+                                                                                        </div>
+                                                                                        <div class="add_remove">
+                                                                                            <button type="button" class=" outline_none border-0 bg-white" onclick="deying_voucher_remove4(this)">
+                                                                                                <img title="Remove Row" src="img/remove.png" width="30px" alt="remove sign">
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </div>
+
+
+
+                                                                        <?php
+                                                                        }
+                                                                        // }
+
+                                                                    } else {
+                                                                        ?>
+
+                                                                        <div id="dey4">
+                                                                            <div class="row mt-3 m-0 p-0">
+                                                                                <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4 row m-0 p-0">
+                                                                                    <div class="col-12 m-0 p-0 pr-2">
+                                                                                        <label class=" font-weight-bold text-dark" for="dey_recieving_product">Quality</label>
+
+                                                                                        <select class="form-control" name="dey_recieving_product[]">
+                                                                                            <option value="">Select Product</option>
+                                                                                            <?php
+                                                                                            $purchase_data2 = mysqli_query($dbc, "SELECT * FROM `purchase_item` WHERE `purchase_id` = '$request_id'");
+                                                                                            $product_ids2 = array();
+
+                                                                                            while ($rowdata2 = mysqli_fetch_array($purchase_data2)) {
+                                                                                                $product_id2 = $rowdata2['product_id'];
+                                                                                                $product_ids2[] = $product_id;
+
+                                                                                                $purchase_data3 = mysqli_query($dbc, "SELECT * FROM `product` WHERE `product_id` = $product_id2");
+
+                                                                                                while ($rowdata3 = mysqli_fetch_array($purchase_data3)) {
+                                                                                                    $getBrand = fetchRecord($dbc, "brands", "brand_id", $rowdata3['brand_id']);
+                                                                                                    $getCat = fetchRecord($dbc, "categories", "categories_id", $rowdata3['category_id']);
+                                                                                            ?>
+
+
+                                                                                                    <option <?= (@$lowerdata12->dey_recieving_product[$x] == $rowdata3["product_id"]) ? 'selected' : ''; ?> data-price="<?= $rowdata3["current_rate"] ?>" <?= empty($r['product_id']) ? "" : "selected" ?> value="<?= $rowdata3["product_id"] ?>">
+                                                                                                        <?= ucwords($rowdata3["product_name"]) ?> | <?= ucwords(@$getBrand["brand_name"]) ?>(<?= ucwords(@$getCat["categories_name"]) ?>)
+                                                                                                    </option>
+
+                                                                                            <?php   }
+                                                                                            } ?>
+                                                                                        </select>
+
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                                    <label>Thaan</label>
+                                                                                    <input type="text" class="form-control thaan2" value="<?= @$lowerdata12->dey_recieving_thaan[$x] ?>" name="dey_recieving_thaan[]" placeholder="Thaan">
+                                                                                </div>
+                                                                                <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                                    <label>Gzanah</label>
+                                                                                    <input type="text" class="form-control gzanah2" value="<?= @$lowerdata12->dey_recieving_gzanah[$x] ?>" name="dey_recieving_gzanah[]" placeholder="Gzanah">
+                                                                                </div>
+                                                                                <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                                    <label>Quantity</label>
+                                                                                    <input type="text" class="form-control quantity2" value="<?= @$lowerdata12->dey_recieving_quantity[$x] ?>" name="dey_recieving_quantity[]" value="0" placeholder="Quanitity">
+                                                                                </div>
+                                                                                <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                                    <label class="font-weight-bold text-dark" for="C-P">C-P</label>
+                                                                                    <input type="text" class="form-control" name="dyeing_cp[]" id="dyeing_cp" value="<?= @$lowerdata12->dyeing_cp[$x] ?>" placeholder="C-P">
+                                                                                </div>
+
+
+                                                                                <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4 d-flex align-items-end">
+                                                                                    <div class="form-group mb-0">
+                                                                                        <label class="font-weight-bold text-dark">Shortage</label>
+                                                                                        <input type="text" class="form-control" id="deying_Shortage" name="deying_Shortage[]" placeholder="Shortage" value="<?= @$lowerdata12->deying_Shortage[$x] ?>">
+                                                                                    </div>
+                                                                                    <div class="add_remove">
+                                                                                        <button type="button" class=" outline_none border-0 bg-white" onclick="deying_voucher_remove4(this)">
+                                                                                            <img title="Remove Row" src="img/remove.png" width="30px" alt="remove sign">
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </div>
+
+                                                                            </div>
+                                                                        </div>
+
+
+                                                                    <?php
+                                                                    }
+                                                                    ?>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row m-0 p-0 my-4 justify-content-end">
+                                                            <div cs="col-lg-1">
+                                                                <div id="cutt_voucher_btn">
+                                                                    <button type="button" class="outline_none border-0 bg-white" onclick="deying_voucher_duplicateRow4()">
+                                                                        <img src="img/add.png" width="30px" alt="add sign">
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
+
+
+
+
                                             </div>
+
+
                                             <div class="row justify-content-end">
                                                 <div class="col-lg-2  text-right">
-                                                    <a target="_blank" href="print_production.php?print=<?= $ProductionID ?>&type=deyeing&part=production" id="showData3">
+                                                    <a target="_blank" href="print.php?production=<?= $ProductionID ?>&type=dyeing" id="showData3">
                                                         <div class="btn btn-primary">
                                                             <i class="fa fa-print"></i> Print
                                                         </div>
@@ -2175,6 +2540,7 @@ $formattedDate = $currentDate->format('Y-m-d');
             calculateQuantity();
         });
     });
+
     $(document).ready(function() {
         // Function to calculate and update the quantity for a specific row
         function calculateQuantity(row) {
@@ -2190,6 +2556,40 @@ $formattedDate = $currentDate->format('Y-m-d');
         $('#container').on('input', '.thaan, .gzanah', function() {
             var row = $(this).closest('.row'); // Find the closest row to the input that triggered the event
             calculateQuantity(row); // Calculate quantity for the current row
+        });
+    });
+    $(document).ready(function() {
+        // Function to calculate and update the quantity for a specific row
+        function calculateQuantity2(row) {
+            var thaan2 = parseFloat($(row).find('.thaan2').val()) || 0; // Get thaan2 value, default to 0 if invalid
+            var gzanah2 = parseFloat($(row).find('.gzanah2').val()) || 0; // Get gzanah2 value, default to 0 if invalid
+
+            var quantity2 = thaan2 * gzanah2; // Calculate quantity2
+
+            $(row).find('.quantity2').val(quantity2); // Update the quantity2 field in the row
+        }
+
+        // Attach event listeners to thaan2 and gzanah2 inputs for each row
+        $('#deyingContainer').on('input', '.thaan2, .gzanah2', function() {
+            var row = $(this).closest('.row'); // Find the closest row to the input that triggered the event
+            calculateQuantity2(row); // Calculate quantity for the current row
+        });
+    });
+    $(document).ready(function() {
+        // Function to calculate and update the quantity for a specific row
+        function calculateQuantity3(row) {
+            var thaan3 = parseFloat($(row).find('.thaan3').val()) || 0; // Get thaan3 value, default to 0 if invalid
+            var gzanah3 = parseFloat($(row).find('.gzanah3').val()) || 0; // Get gzanah3 value, default to 0 if invalid
+
+            var quantity3 = thaan3 * gzanah3; // Calculate quantity3
+
+            $(row).find('.quantity3').val(quantity3); // Update the quantity3 field in the row
+        }
+
+        // Attach event listeners to thaan3 and gzanah3 inputs for each row
+        $('#deyingContainer').on('input', '.thaan3, .gzanah3', function() {
+            var row = $(this).closest('.row'); // Find the closest row to the input that triggered the event
+            calculateQuantity3(row); // Calculate quantity for the current row
         });
     });
 </script>

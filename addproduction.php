@@ -121,14 +121,14 @@ if (@$_REQUEST['update-production']) {
                                                 <a class="btn btn-secondary py-1 px-2 m-1" href="addproduction.php?update-production=<?= $a['production_id'] ?>">
                                                     <i class="fa fa-edit"></i> Edit
                                                 </a>
-                                                <a class="btn btn-secondary py-1 px-2 m-1" href="Production.php?ProductionID=<?= base64_encode($a['production_id']) ?>">
+                                                <a class="btn btn-secondary py-1 px-2 m-1" href="Production.php?ProductionID=<?= $a['production_id'] ?>">
                                                     <i class="fa fa-edit"></i> Edit Voucher
                                                 </a>
                                                 <!-- <a target="_blank" class="btn btn-primary py-1 px-2 m-1" href="print_production.php?print=<?= $a['production_id'] ?>&type=all">
                                                     <i class="fa fa-print"></i> Print
                                                 </a> -->
                                                 <div class="dropdown d-inline">
-                                                    <a class="btn btn-primary dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                                                    <a class="btn btn-primary d-none dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
                                                         <i class="fa fa-print"></i> Print
                                                     </a>
 

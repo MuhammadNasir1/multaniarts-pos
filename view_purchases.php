@@ -2,6 +2,7 @@
 <html lang="en">
 <?php include_once 'includes/head.php'; ?>
 
+
 <body class="horizontal light  ">
   <div class="wrapper">
     <?php include_once 'includes/header.php'; ?>
@@ -76,15 +77,20 @@
 
 
                       <a target="_blank" href="print_sale.php?id=<?= $r['purchase_id'] ?>&type=purchase" class="btn btn-admin2 btn-sm m-1">Print</a>
-
-                      <button type="button" class="btn btn-danger btn-sm m-1" id="productionModalButton" data-toggle="modal" data-target="#addProductionModal" onclick="getPurId(<?= $r['purchase_id'] ?>) , getRandomCode()">Production</button>
+                      <?php
+                      $id = $r['purchase_id'];
+                      $pro_id = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `production` WHERE purchase_id = '$id'"));
+                      if (!$pro_id) {
+                      ?>
+                        <button type="button" class="btn btn-danger  btn-sm m-1" id="productionModalButton" data-toggle="modal" data-target="#addProductionModal" onclick="getPurId(<?= $r['purchase_id'] ?>) , getRandomCode()">Production</button>
+                      <?php } ?>
                       <?php
                       $id = $r['purchase_id'];
                       $pro_id = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM `production` WHERE purchase_id = '$id'"));
                       if ($pro_id) {
                       ?>
-                        <div class="dropdown d-inline">
-                          <a class="btn btn-primary dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                        <div class="dropdown d-inline ">
+                          <a class="btn btn-primary d-none dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
                             <i class="fa fa-print"></i> Print
                           </a>
 
@@ -100,6 +106,8 @@
                           </div>
                         </div>
                       <?php } ?>
+
+
 
                     </td>
 
