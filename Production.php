@@ -1473,17 +1473,25 @@ $formattedDate = $currentDate->format('Y-m-d');
 
                                                                                         </div>
                                                                                     </div>
-                                                                                    <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                                    <div class="col-lg-2 col-md-2 d-none col-sm-4 col-xs-4">
                                                                                         <label>Thaan</label>
                                                                                         <input type="text" class="form-control thaan2" value="<?= @$lowerdata12->dey_recieving_thaan[$x] ?>" name="dey_recieving_thaan[]" placeholder="Thaan">
                                                                                     </div>
-                                                                                    <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                                    <div class="col-lg-2 col-md-2 d-none col-sm-4 col-xs-4">
                                                                                         <label>Gzanah</label>
                                                                                         <input type="text" class="form-control gzanah2" value="<?= @$lowerdata12->dey_recieving_gzanah[$x] ?>" name="dey_recieving_gzanah[]" placeholder="Gzanah">
                                                                                     </div>
-                                                                                    <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                                                                                    <div class="col-lg-2 col-md-2 d-none col-sm-4 col-xs-4">
                                                                                         <label>Quantity</label>
                                                                                         <input type="text" class="form-control quantity2" value="<?= @$lowerdata12->dey_recieving_quantity[$x] ?>" name="dey_recieving_quantity[]" value="0" placeholder="Quanitity">
+                                                                                    </div>
+                                                                                    <div class="col-lg-2 font-weight-bold col-md-2  col-sm-4 col-xs-4">
+                                                                                        <label>Gray Qty</label>
+                                                                                        <input type="text" class="form-control quantity2" value="<?= @$lowerdata12->dey_recieving_quantity[$x] ?>" name="dey_recieving_quantity[]" value="0" placeholder="Gray">
+                                                                                    </div>
+                                                                                    <div class="col-lg-2 font-weight-bold col-md-2  col-sm-4 col-xs-4">
+                                                                                        <label>Ready Qty</label>
+                                                                                        <input type="text" class="form-control quantity2" value="<?= @$lowerdata12->dey_recieving_quantity[$x] ?>" name="dey_recieving_quantity[]" value="0" placeholder="Ready">
                                                                                     </div>
                                                                                     <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
                                                                                         <label class="font-weight-bold text-dark" for="C-P">C-P</label>
