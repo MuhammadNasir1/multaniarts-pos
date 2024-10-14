@@ -151,7 +151,7 @@ if (isset($_POST['dyeing_btn'])) {
                                             <input type="date" class="form-control" name="dyeing_date" id="dyeing_date" placeholder="Select Date">
                                         </div>
                                         <div class="col-lg-2 mt-3 d-flex">
-                                            <div>
+                                            <div class="w-100">
                                                 <label class="font-weight-bold text-dark" for="Party Name">Dyer Name</label>
                                                 <select class="form-control searchableSelect" name="dyeing_party_name" id="dyeing_party_name" onchange="fetchDyerBalance(this.value); fetchDyerData(this.value);">
                                                     <option value="">Select Dyer</option>
@@ -286,11 +286,11 @@ if (isset($_POST['dyeing_btn'])) {
                                     </div>
                                     <div class="row justify-content-end mt-3">
                                         <div class="col-lg-2  text-right">
-                                            <a target="_blank" href="print.php?production=<?= $ProductionID ?>&type=dyeing" id="showData3">
+                                            <!-- <a target="_blank" href="print.php?production=<?= $ProductionID ?>&type=dyeing" id="showData3">
                                                 <div class="btn btn-primary">
                                                     <i class="fa fa-print"></i> Print
                                                 </div>
-                                            </a>
+                                            </a> -->
                                             <input class="btn btn-success" type="submit" value="Save" name="dyeing_btn">
                                         </div>
                                     </div>
@@ -308,7 +308,7 @@ if (isset($_POST['dyeing_btn'])) {
                                     </thead>
                                     <tbody class="tbody">
                                         <tr>
-                                            <td colspan="5">No data found</td>
+                                            <td colspan="5" class="text-center">No Data Found</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -323,24 +323,25 @@ if (isset($_POST['dyeing_btn'])) {
                                             <label class="font-weight-bold text-dark" for="dyeing_date">Date</label>
                                             <input type="date" class="form-control" name="dyeing_date" id="dyeing_date" placeholder="Select Date">
                                         </div>
-                                        <div class="col-lg-2 mt-3">
-                                            <label class="font-weight-bold text-dark" for="Party Name">Party Name</label>
-
-
-                                            <select class="form-control searchableSelect" name="dyeing_party_name" id="dyeing_party_name">
-                                                <option value="">Part Name</option>
-                                                <?php
-
-                                                $result = mysqli_query($dbc, "SELECT * FROM customers WHERE  customer_type = 'dyeing' and customer_status = 1");
-                                                while ($row = mysqli_fetch_array($result)) {
-
-                                                ?>
-                                                    <option value="<?= $row["customer_id"] ?>">
-                                                        <?php echo  ucwords($row["customer_name"]) ?>
-                                                        (<?= ucwords($row['customer_type']) ?>) </option>
-
-                                                <?php   } ?>
-                                            </select>
+                                        <div class="col-lg-2 mt-3 d-flex">
+                                            <div class="w-100">
+                                                <label class="font-weight-bold text-dark" for="Party Name">Dyer Name</label>
+                                                <select class="form-control searchableSelect" name="party_name_selector" id="party_name_selector" onchange="getBalance(this.value); getDyerData(this.value);">
+                                                    <option value="">Select Dyer</option>
+                                                    <?php
+                                                    $result = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'dyeing' AND customer_status = 1");
+                                                    while ($row = mysqli_fetch_array($result)) {
+                                                    ?>
+                                                        <option value="<?= $row['customer_id'] ?>">
+                                                            <?= ucwords($row['customer_name']) ?> (<?= ucwords($row['customer_type']) ?>)
+                                                        </option>
+                                                    <?php } ?>
+                                                </select>
+                                            </div>
+                                            <div class="input-group-prepend mt-4 ml-2">
+                                                <span class="input-group-text mt-1" id="balance_text">Balance: <span id="balance_amount">0</span></span>
+                                            </div>
+                                            <input type="hidden" id="hidden_party_id">
                                         </div>
                                         <div class="col-lg-2 mt-3">
                                             <label class="font-weight-bold text-dark" for="gate_no">Gate Pass No.</label>
@@ -473,11 +474,11 @@ if (isset($_POST['dyeing_btn'])) {
                                     </div>
                                     <div class="row justify-content-end mt-3">
                                         <div class="col-lg-2  text-right">
-                                            <a target="_blank" href="print.php?production=<?= $ProductionID ?>&type=dyeing" id="showData3">
+                                            <!-- <a target="_blank" href="print.php?production=<?= $ProductionID ?>&type=dyeing" id="showData3">
                                                 <div class="btn btn-primary">
                                                     <i class="fa fa-print"></i> Print
                                                 </div>
-                                            </a>
+                                            </a> -->
                                             <input class="btn btn-success" type="submit" value="Save" name="dyeing_btn">
                                         </div>
                                     </div>
@@ -487,33 +488,13 @@ if (isset($_POST['dyeing_btn'])) {
                                         <tr>
                                             <th class="font-weight-bold text-dark">Sr.</th>
                                             <th class="font-weight-bold text-dark">Dyer Name</th>
-                                            <th class="font-weight-bold text-dark">Total Quantity (Sent)</th>
+                                            <th class="font-weight-bold text-dark">Total Quantity (Received)</th>
                                             <th class="font-weight-bold text-dark">Location</th>
                                             <th class="font-weight-bold text-dark">Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="tbody">
-                                        <?php
-                                        $deyeing_fetch = mysqli_query($dbc, "SELECT * FROM `deyeing` WHERE dey_production_id =  '$ProductionID' and deyeing_status = 'recieved'");
-                                        $a = 0;
-                                        while ($row = mysqli_fetch_assoc($deyeing_fetch)) {
-                                            $a++;
-                                        ?>
-                                            <tr>
-                                                <th><?= $a ?></th>
-                                                <td>
-                                                    <?php
-                                                    $id = $row['dey_party_name'];
-                                                    $result = mysqli_query($dbc, "SELECT * FROM customers WHERE  customer_id = '$id' and customer_status = 1");
-                                                    while ($row2 = mysqli_fetch_array($result)) {
-                                                        echo ucwords($row2["customer_name"]);
-                                                    } ?>
-                                                </td>
-                                                <td>2500</td>
-                                                <td><?= $row['dey_location'] ?></td>
-                                                <td>Delete</td>
-                                            </tr>
-                                        <?php } ?>
+                                    <tbody id="dyer_data_table_body">
+                                        <td colspan="5" class="text-center">No Data Found</td>
                                     </tbody>
                                 </table>
                             </div>

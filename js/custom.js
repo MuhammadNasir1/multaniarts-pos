@@ -235,7 +235,7 @@ $(document).ready(function () {
                 '<div class="col-6">' +
                 '<a class="dropdown-item" target="_blank" href="./dyeing.php?ProductionID=' +
                 productionID +
-                '#profile">' +
+                '#sending">' +
                 '<button class="voucher-div">Dyeing</button>' +
                 "</a>" +
                 "</div>" +
@@ -1914,7 +1914,45 @@ function fetchDyerData(dyerId) {
   }
 }
 
+function getBalance(partyId) {
+  if (partyId !== "") {
+    $("#hidden_party_id").val(partyId);
+    $.ajax({
+      url: "php_action/custom_action.php",
+      method: "POST",
+      data: { action: "get_balance", party_id: partyId },
+      success: function (response) {
+        $("#balance_amount").text(response === "" ? "0" : response);
+      },
+      error: function (xhr, status, error) {
+        console.error("Balance AJAX Error:", status, error);
+      },
+    });
+  } else {
+    $("#balance_amount").text("0");
+    $("#hidden_party_id").val("");
+  }
+}
 
+function getDyerData(partyId) {
+  if (partyId !== "") {
+    $.ajax({
+      url: "php_action/custom_action.php",
+      method: "POST",
+      data: { action: "get_dyer_data", party_id: partyId },
+      success: function (response) {
+        $("#dyer_data_table_body").html(response);
+      },
+      error: function (xhr, status, error) {
+        console.error("Data AJAX Error:", status, error);
+      },
+    });
+  } else {
+    $("#dyer_data_table_body").html(
+      '<tr><td colspan="5">No data found</td></tr>'
+    );
+  }
+}
 
 // function deleteRow(deyId) {
 //   if (confirm("Are you sure you want to delete this row?")) {
