@@ -1897,11 +1897,17 @@ function fetchDyerBalance(dyerId) {
 }
 
 function fetchDyerData(dyerId) {
+  const productionId = document.getElementById("production_id_input").value;
+
   if (dyerId !== "") {
     $.ajax({
       url: "php_action/custom_action.php",
       method: "POST",
-      data: { action: "fetch_dyer_data", dyer_id: dyerId },
+      data: {
+        action: "fetch_dyer_data",
+        dyer_id: dyerId,
+        ProductionID: productionId,
+      },
       success: function (response) {
         $(".tbody").html(response);
       },
@@ -1935,11 +1941,17 @@ function getBalance(partyId) {
 }
 
 function getDyerData(partyId) {
+  const productionId = document.getElementById("production_id_input").value;
+
   if (partyId !== "") {
     $.ajax({
       url: "php_action/custom_action.php",
       method: "POST",
-      data: { action: "get_dyer_data", party_id: partyId },
+      data: {
+        action: "get_dyer_data",
+        party_id: partyId,
+        ProductionID: productionId,
+      },
       success: function (response) {
         $("#dyer_data_table_body").html(response);
       },

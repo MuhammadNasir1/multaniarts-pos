@@ -1639,7 +1639,7 @@ if (isset($_POST['action'])) {
 	) {
 		$dyer_id = $_POST['dyer_id'];
 		$deyeing_fetch = mysqli_query($dbc, "SELECT * FROM deyeing WHERE dey_party_name = '$dyer_id' AND deyeing_status = 'sent'");
-
+		$ProductionID = $_POST['ProductionID'];
 		$output = '';
 		$a = 0;
 
@@ -1656,7 +1656,14 @@ if (isset($_POST['action'])) {
                   <td>' . $customer_name . '</td>
                   <td>' . $row['stock'] . '</td>
                   <td>' . $row['dey_location'] . '</td>
-                  <td><button class="btn btn-danger btn-sm" onclick="deleteRow(' . $row['dey_party_name'] . ')">Delete</button></td>
+                 <td class="d-flex">
+                <a target="_blank" href="print.php?production=' . $ProductionID . '&id=' . $row['id'] . '&type=dyeing" id="showData3">
+                    <div class="btn btn-primary">
+                        <i class="fa fa-print"></i> Print
+                    </div>
+                </a>
+                <button class="btn btn-danger ml-2 btn-sm" onclick="deleteRow(' . $row['id'] . ')">Delete</button>
+              </td>
                 </tr>';
 			}
 		} else {
@@ -1686,6 +1693,7 @@ if (isset($_POST['action'])) {
 
 	if ($action === 'get_dyer_data' && isset($_POST['party_id'])) {
 		$party_id = $_POST['party_id'];
+		$ProductionID = $_POST['ProductionID'];
 
 		$deyeing_fetch = mysqli_query($dbc, "SELECT * FROM deyeing WHERE dey_party_name = '$party_id' AND deyeing_status = 'recieved'");
 
@@ -1700,13 +1708,20 @@ if (isset($_POST['action'])) {
 				$customer_name = ucwords($customer['customer_name']);
 
 				$output .= '
-                <tr>
-                  <th>' . $a . '</th>
-                  <td>' . $customer_name . '</td>
-                  <td>' . $row['stock'] . '</td>
-                  <td>' . $row['dey_location'] . '</td>
-                  <td><button class="btn btn-danger btn-sm" onclick="deleteRow(' . $row['id'] . ')">Delete</button></td>
-                </tr>';
+            <tr>
+              <th>' . $a . '</th>
+              <td>' . $customer_name . '</td>
+              <td>' . $row['stock'] . '</td>
+              <td>' . $row['dey_location'] . '</td>
+              <td class="d-flex">
+                <a target="_blank" href="print.php?production=' . $ProductionID . '&id=' . $row['id'] . '&type=dyeing" id="showData3">
+                    <div class="btn btn-primary">
+                        <i class="fa fa-print"></i> Print
+                    </div>
+                </a>
+                <button class="btn btn-danger ml-2 btn-sm" onclick="deleteRow(' . $row['id'] . ')">Delete</button>
+              </td>
+            </tr>';
 			}
 		} else {
 			$output = '<tr><td colspan="5" class="text-center">No Data Found For This Dyer</td></tr>';

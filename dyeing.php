@@ -51,6 +51,7 @@ if (isset($_POST['dyeing_btn'])) {
         }
     }
 
+
     $deyData1 = [
         'deying_product' => @$_POST['deying_product'],
         'dey_sending_thaan' => @$_POST['dey_sending_thaan'],
@@ -64,16 +65,34 @@ if (isset($_POST['dyeing_btn'])) {
         'dey_recieving_thaan' => @$_POST['dey_recieving_thaan'],
         'dey_recieving_gzanah' => @$_POST['dey_recieving_gzanah'],
         'dey_recieving_quantity' => $dey_recieving_quantity,
-        'total_recieving_quantity' => $total_recieving_quantity
+        'total_recieving_quantity' => $total_recieving_quantity,
+        'dyeing_cp' => @$_POST['dyeing_cp'],
+        'deying_Shortage' => @$_POST['deying_Shortage']
     ];
 
     $deyJson1 = json_encode($deyData1);
     $deyJson2 = json_encode($deyData2);
 
     if (empty($deyeing_id)) {
-        // echo $total_sending_quantity;
-        $deyeingDataInsert = "INSERT INTO `deyeing`(`user_id`, `updated_user_id`, `deyeing_in_out`, `deyeing_status`, `dey_production_id`, `dey_date`, `dey_gate_no`, `dey_lat_no`, `dey_party_name`, `dey_voucher_no`, `dey_color_name`, `dey_location`, `dey_bill_no`, `dey_bilty_no`, `dey_delivery_date`, `dey_remarks`, `dey_sending_list`, `dey_recieving_list`, `stock`) 
-            VALUES ('$user_id','$user_id','$deyeing_in_out','$deyeing_status','$ProductionID','$dyeing_date','$dyeing_gate_no','$dyeing_lat_name','$dyeing_party_name','$dyeing_party_voucher','$dyeing_color_name','$dyeing_location','$dey_bill_no','$dey_bilty_no','$dyeing_delivery_date','$dyeing_remarks','$deyJson1','$deyJson2','$total_sending_quantity')";
+        $add_stock = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_id = '$dyeing_party_name'");
+        while ($row = mysqli_fetch_assoc($add_stock)) {
+            $id = $row['customer_id'];
+            $current_stock = $row['stock'];
+        }
+        if ($deyeing_status === 'recieved') {
+            $new_stock = $current_stock - array_sum($dey_recieving_quantity);
+        } else {
+            $new_stock = $current_stock + array_sum($dey_sending_quantity);
+        }
+        $add = mysqli_query($dbc, "UPDATE `customers` SET `stock`=$new_stock WHERE customer_id = '$id'");
+
+        if ($deyeing_status === 'sent') {
+            $deyeingDataInsert = "INSERT INTO `deyeing`(`user_id`, `updated_user_id`, `deyeing_in_out`, `deyeing_status`, `dey_production_id`, `dey_date`, `dey_gate_no`, `dey_lat_no`, `dey_party_name`, `dey_voucher_no`, `dey_color_name`, `dey_location`, `dey_bill_no`, `dey_bilty_no`, `dey_delivery_date`, `dey_remarks`, `dey_sending_list`, `dey_recieving_list`, `stock`) 
+VALUES ('$user_id','$user_id','$deyeing_in_out','$deyeing_status','$ProductionID','$dyeing_date','$dyeing_gate_no','$dyeing_lat_name','$dyeing_party_name','$dyeing_party_voucher','$dyeing_color_name','$dyeing_location','$dey_bill_no','$dey_bilty_no','$dyeing_delivery_date','$dyeing_remarks','$deyJson1','$deyJson2','$total_sending_quantity')";
+        } else {
+            $deyeingDataInsert = "INSERT INTO `deyeing`(`user_id`, `updated_user_id`, `deyeing_in_out`, `deyeing_status`, `dey_production_id`, `dey_date`, `dey_gate_no`, `dey_lat_no`, `dey_party_name`, `dey_voucher_no`, `dey_color_name`, `dey_location`, `dey_bill_no`, `dey_bilty_no`, `dey_delivery_date`, `dey_remarks`, `dey_sending_list`, `dey_recieving_list`, `stock`) 
+VALUES ('$user_id','$user_id','$deyeing_in_out','$deyeing_status','$ProductionID','$dyeing_date','$dyeing_gate_no','$dyeing_lat_name','$dyeing_party_name','$dyeing_party_voucher','$dyeing_color_name','$dyeing_location','$dey_bill_no','$dey_bilty_no','$dyeing_delivery_date','$dyeing_remarks','$deyJson1','$deyJson2','$total_recieving_quantity')";
+        }
         $deyeingQuery = mysqli_query($dbc, $deyeingDataInsert);
 
         if (@$deyeingQuery) {
@@ -145,6 +164,7 @@ if (isset($_POST['dyeing_btn'])) {
                                     <input type="hidden" id="hiddenInput3" name="deyeing_id">
                                     <input type="hidden" value="sent" name="deyeing_status">
                                     <input type="hidden" value="in" name="deyeing_in_out">
+                                    <input type="hidden" value="<?= $ProductionID ?>" name="production_id_input">
                                     <div class="row pb-2">
                                         <div class="col-lg-2 mt-3">
                                             <label class="font-weight-bold text-dark" for="dyeing_date">Date</label>
@@ -160,7 +180,7 @@ if (isset($_POST['dyeing_btn'])) {
                                                     while ($row = mysqli_fetch_array($result)) {
                                                     ?>
                                                         <option value="<?= $row['customer_id'] ?>">
-                                                            <?= ucwords($row['customer_name']) ?> (<?= ucwords($row['customer_type']) ?>)
+                                                            <?= ucwords($row['customer_name']) ?>
                                                         </option>
                                                     <?php } ?>
                                                 </select>
@@ -318,6 +338,7 @@ if (isset($_POST['dyeing_btn'])) {
                                     <input type="hidden" id="hiddenInput3" name="deyeing_id">
                                     <input type="hidden" value="recieved" name="deyeing_status">
                                     <input type="hidden" value="out" name="deyeing_in_out">
+                                    <input type="hidden" value="<?= $ProductionID ?>" id="production_id_input">
                                     <div class="row pb-2">
                                         <div class="col-lg-2 mt-3">
                                             <label class="font-weight-bold text-dark" for="dyeing_date">Date</label>
@@ -326,14 +347,14 @@ if (isset($_POST['dyeing_btn'])) {
                                         <div class="col-lg-2 mt-3 d-flex">
                                             <div class="w-100">
                                                 <label class="font-weight-bold text-dark" for="Party Name">Dyer Name</label>
-                                                <select class="form-control searchableSelect" name="party_name_selector" id="party_name_selector" onchange="getBalance(this.value); getDyerData(this.value);">
+                                                <select class="form-control searchableSelect" name="dyeing_party_name" id="party_name_selector" onchange="getBalance(this.value); getDyerData(this.value);">
                                                     <option value="">Select Dyer</option>
                                                     <?php
                                                     $result = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'dyeing' AND customer_status = 1");
                                                     while ($row = mysqli_fetch_array($result)) {
                                                     ?>
                                                         <option value="<?= $row['customer_id'] ?>">
-                                                            <?= ucwords($row['customer_name']) ?> (<?= ucwords($row['customer_type']) ?>)
+                                                            <?= ucwords($row['customer_name']) ?>
                                                         </option>
                                                     <?php } ?>
                                                 </select>
