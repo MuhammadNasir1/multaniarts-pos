@@ -118,6 +118,7 @@ if (!empty($_REQUEST['edit_purchase_id'])) {
               </div>
               <div class="col-md-2 mt-3">
                 <label>Type</label>
+
                 <input type="text" placeholder="Type Here" value="<?= @$fetchPurchase['pur_type'] ?>" autocomplete="off" class="form-control " name="pur_type">
               </div>
               <div class="col-12 mt-3">
