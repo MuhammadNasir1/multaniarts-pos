@@ -1609,3 +1609,60 @@ if (@$_REQUEST['production_add_date'] && @$_REQUEST['production_lat_no']) {
 
 	echo json_encode($response);
 }
+
+
+// Vouchers
+
+if (isset($_POST['action'])) {
+	$action = $_POST['action'];
+
+	if (
+		$action === 'fetch_balance' && isset($_POST['dyer_id'])
+	) {
+		$dyer_id = $_POST['dyer_id'];
+
+		$query = "SELECT stock FROM customers WHERE customer_id = '$dyer_id' AND customer_type = 'dyeing' AND customer_status = 1";
+		$result = mysqli_query($dbc, $query);
+
+		if (
+			$result && mysqli_num_rows($result) > 0
+		) {
+			$row = mysqli_fetch_assoc($result);
+			echo $row['stock']; // Return balance as response
+		} else {
+			echo "0"; // Return 0 if no balance is found
+		}
+	}
+
+	if (
+		$action === 'fetch_dyer_data' && isset($_POST['dyer_id'])
+	) {
+		$dyer_id = $_POST['dyer_id'];
+		$deyeing_fetch = mysqli_query($dbc, "SELECT * FROM deyeing WHERE dey_party_name = '$dyer_id' AND deyeing_status = 'sent'");
+
+		$output = '';
+		$a = 0;
+
+		if (mysqli_num_rows($deyeing_fetch) > 0) {
+			while ($row = mysqli_fetch_assoc($deyeing_fetch)) {
+				$a++;
+				$customer_result = mysqli_query($dbc, "SELECT customer_name FROM customers WHERE customer_id = '$dyer_id' AND customer_status = 1");
+				$customer = mysqli_fetch_assoc($customer_result);
+				$customer_name = ucwords($customer['customer_name']);
+
+				$output .= '
+                <tr>
+                  <th>' . $a . '</th>
+                  <td>' . $customer_name . '</td>
+                  <td>' . $row['stock'] . '</td>
+                  <td>' . $row['dey_location'] . '</td>
+                  <td><button class="btn btn-danger btn-sm" onclick="deleteRow(' . $row['dey_party_name'] . ')">Delete</button></td>
+                </tr>';
+			}
+		} else {
+			$output = '<tr><td colspan="5" class="text-center">No Data Found For This Dyer</td></tr>';
+		}
+
+		echo $output;
+	}
+}
