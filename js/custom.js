@@ -219,9 +219,9 @@ $(document).ready(function () {
             $("#voucherData").html(
               '<div class="voucher-container row">' +
                 '<div class="col-6">' +
-                '<a class="dropdown-item" target="_blank" href="./Production.php?ProductionID=' +
+                '<a class="dropdown-item" target="_blank" href="./cutting.php?ProductionID=' +
                 productionID +
-                '">' +
+                '#from">' +
                 '<button class="voucher-div">Cutting Voucher</button>' +
                 "</a>" +
                 "</div>" +
