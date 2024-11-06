@@ -399,7 +399,7 @@ if (isset($_POST['cutting_btn'])) {
                                     </div>
                                 </div>
                                 <div class="row  justify-content-end mt-3">
-                                    <div class="col-lg-1 d-inline text-left p-0">
+                                    <div class="col-lg-1 d-inline text-left p-0 ml-auto">
 
                                         <!-- <a target="_blank" href="print.php?production=<?= $ProductionID ?>&type=cutting" id="showData1">
                                             <div class="btn btn-primary">

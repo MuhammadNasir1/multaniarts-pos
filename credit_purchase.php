@@ -46,8 +46,7 @@
               </div>
               <div class="col-md-2">
                 <label>Purchase Date</label>
-
-                <input type="text" name="purchase_date" id="purchase_date" value="<?= @empty($_REQUEST['edit_order_id']) ? date('Y-m-d') : $fetchPurchase['purchase_date'] ?>" class="form-control">
+                <input type="date" name="purchase_date" id="purchase_date" value="<?= @empty($_REQUEST['edit_order_id']) ? date('Y-m-d') : $fetchPurchase['purchase_date'] ?>" class="form-control">
               </div>
               <div class="col-sm-4">
                 <label>Select Supplier</label>
