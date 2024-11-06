@@ -5,9 +5,11 @@
 $get_company = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM company"));
 $type = $_REQUEST['type'];
 $production_id = $_REQUEST['production'];
+$voucher_id = $_REQUEST['id'];
 
 if ($type == 'dyeing') {
-    $all_data = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM deyeing WHERE dey_production_id = $production_id"));
+    $all_data = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM deyeing WHERE id = $voucher_id and dey_production_id = $production_id"));
+    // print_r($all_data);
 } else if ($type == 'cutting') {
     $all_data = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM cutting_voucher WHERE cutt_production_id = $production_id"));
 }
@@ -139,51 +141,63 @@ if ($type == 'dyeing') {
                 </tr>
             </table>
             <div class="d-flex">
-                <?php if (isset($all_data['dey_sending_list'])) { ?>
-                    <div class="px-3 w-100">
-                        <h3 class="text-center">Sending</h3>
-                        <div class="row table_row mt-4">
-                            <div class="col-sm-12 p-0">
-                                <table class="w-100">
-                                    <thead class="thead_row">
-                                        <th>Sr</th>
-                                        <th>Quality</th>
-                                        <th>Thaan</th>
-                                        <th>Gzanah</th>
-                                        <th>Quantity</th>
-                                    </thead>
-                                    <tbody class="tbody_row">
-                                        <?php
-                                        if (@$all_data != 0) {
-                                            $lowerdata = json_decode(@$all_data['dey_sending_list']);
-                                            for ($x = 0; $x < count(@$lowerdata->deying_product); $x++) {
-                                        ?>
-                                                <tr>
-                                                    <td><?= $x + 1 ?></td>
-                                                    <td>
-                                                        <?php
-                                                        $id = $lowerdata->deying_product[$x];
-                                                        $result = mysqli_query($dbc, "SELECT * FROM product WHERE product_id = $id ");
-                                                        while ($row = mysqli_fetch_array($result)) {
-                                                            $getBrand = fetchRecord($dbc, "brands", "brand_id", $row['brand_id']);
-                                                            $getCat = fetchRecord($dbc, "categories", "categories_id", $row['category_id']);
-                                                        ?>
-                                                            <?= ucwords($row["product_name"]) ?> | <?= ucwords(@$getBrand["brand_name"]) ?>(<?= ucwords(@$getCat["categories_name"]) ?>)
-                                                        <?php   } ?>
-                                                    </td>
-                                                    <td> <?= @$lowerdata->dey_sending_thaan[$x] ?> </td>
-                                                    <td> <?= @$lowerdata->dey_sending_gzanah[$x] ?> </td>
-                                                    <td> <?= @$lowerdata->dey_sending_quantity[$x] ?> </td>
-                                                </tr>
-                                        <?php }
-                                        } ?>
-                                    </tbody>
+                <?php if (isset($all_data['dey_sending_list'])) {
+                    $lowerdata = json_decode($all_data['dey_sending_list'], true);
+                    $hasData = false;
 
-                                </table>
+                    if (!empty($lowerdata['deying_product'])) {
+                        foreach ($lowerdata['deying_product'] as $value) {
+                            if (!empty(trim($value))) {
+                                $hasData = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if ($hasData) { ?>
+                        <div class="px-3 w-100">
+                            <h3 class="text-center">Sending</h3>
+                            <div class="row table_row mt-4">
+                                <div class="col-sm-12 p-0">
+                                    <table class="w-100">
+                                        <thead class="thead_row">
+                                            <th>Sr</th>
+                                            <th>Quality</th>
+                                            <th>Thaan</th>
+                                            <th>Gzanah</th>
+                                            <th>Quantity</th>
+                                        </thead>
+                                        <tbody class="tbody_row">
+                                            <?php
+                                            for ($x = 0; $x < count($lowerdata['deying_product']); $x++) {
+                                                if (!empty($lowerdata['deying_product'][$x])) { ?>
+                                                    <tr>
+                                                        <td><?= $x + 1 ?></td>
+                                                        <td>
+                                                            <?php
+                                                            $id = $lowerdata['deying_product'][$x];
+                                                            $result = mysqli_query($dbc, "SELECT * FROM product WHERE product_id = '$id' ");
+                                                            while ($row = mysqli_fetch_array($result)) {
+                                                                $getBrand = fetchRecord($dbc, "brands", "brand_id", $row['brand_id']);
+                                                                $getCat = fetchRecord($dbc, "categories", "categories_id", $row['category_id']);
+                                                            ?>
+                                                                <?= ucwords($row["product_name"]) ?> | <?= ucwords(@$getBrand["brand_name"]) ?>(<?= ucwords(@$getCat["categories_name"]) ?>)
+                                                            <?php } ?>
+                                                        </td>
+                                                        <td><?= @$lowerdata['dey_sending_thaan'][$x] ?></td>
+                                                        <td><?= @$lowerdata['dey_sending_gzanah'][$x] ?></td>
+                                                        <td><?= @$lowerdata['dey_sending_quantity'][$x] ?></td>
+                                                    </tr>
+                                            <?php }
+                                            } ?>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                <?php } ?>
+                <?php }
+                } ?>
+
                 <?php
                 if (isset($all_data['dey_recieving_list'])) {
                     $lowerdata = json_decode($all_data['dey_recieving_list'], true);

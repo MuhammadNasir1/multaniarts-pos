@@ -60,7 +60,7 @@ if (!empty($_REQUEST['edit_purchase_id'])) {
               <div class="col-md-2">
                 <label>Purchase Date</label>
 
-                <input type="text" name="purchase_date" id="purchase_date" value="<?= @empty($_REQUEST['edit_purchase_id']) ? date('Y-m-d') : $fetchPurchase['purchase_date'] ?>" readonly class="form-control">
+                <input type="text" name="purchase_date" id="purchase_date" value="<?= @empty($_REQUEST['edit_purchase_id']) ? date('Y-m-d') : $fetchPurchase['purchase_date'] ?>" class="form-control">
               </div>
               <div class="col-md-4">
                 <label>Select Supplier</label>
@@ -118,7 +118,12 @@ if (!empty($_REQUEST['edit_purchase_id'])) {
               </div>
               <div class="col-md-2 mt-3">
                 <label>Type</label>
-                <input type="text" placeholder="Type Here" value="<?= @$fetchPurchase['pur_type'] ?>" autocomplete="off" class="form-control " name="pur_type">
+                <select class="form-control" name="pur_type" id="pur_type">
+                  <option disabled>Select Type</option>
+                  <option value="shafoon" <?= @($fetchPurchase['pur_type'] == 'meter') ? "selected" : "" ?>>Meter</option>
+                  <option value="others" <?= @($fetchPurchase['pur_type'] == 'yard') ? "selected" : "" ?>>Yard</option>
+                  <option value="others" <?= @($fetchPurchase['pur_type'] == 'suit') ? "selected" : "" ?>>Suit</option>
+                </select>
               </div>
               <div class="col-12 mt-3">
                 <label>Remarks</label>

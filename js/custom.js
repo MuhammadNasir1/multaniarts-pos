@@ -219,9 +219,9 @@ $(document).ready(function () {
             $("#voucherData").html(
               '<div class="voucher-container row">' +
                 '<div class="col-6">' +
-                '<a class="dropdown-item" target="_blank" href="./Production.php?ProductionID=' +
+                '<a class="dropdown-item" target="_blank" href="./cutting.php?ProductionID=' +
                 productionID +
-                '">' +
+                '#from">' +
                 '<button class="voucher-div">Cutting Voucher</button>' +
                 "</a>" +
                 "</div>" +
@@ -233,9 +233,9 @@ $(document).ready(function () {
                 "</a>" +
                 "</div>" +
                 '<div class="col-6">' +
-                '<a class="dropdown-item" target="_blank" href="./Production.php?ProductionID=' +
+                '<a class="dropdown-item" target="_blank" href="./dyeing.php?ProductionID=' +
                 productionID +
-                '#Dyeing_content">' +
+                '#sending">' +
                 '<button class="voucher-div">Dyeing</button>' +
                 "</a>" +
                 "</div>" +
@@ -1448,33 +1448,6 @@ function deleteQuotationData(id) {
 //   }
 // }
 
-// Function to calculate Thaan * Gzanah = Quantity for each row
-function calculateQuantity(row) {
-  var thaan = row.find(".thaan").val();
-  var gzanah = row.find(".gzanah").val();
-  var quantity = thaan * gzanah; // Multiply Thaan and Gzanah
-  row.find(".quantity").val(quantity); // Set the result in the Quantity field
-}
-
-// Attach the event listeners to existing rows
-$(document).ready(function () {
-  // For any existing rows on page load
-  $("#deyingContainer")
-    .find(".row")
-    .each(function () {
-      attachCalculation($(this));
-    });
-
-  // Bind the "Add" button event
-});
-
-// Function to attach calculation logic to Thaan and Gzanah fields for a row
-function attachCalculation(row) {
-  row.find(".thaan, .gzanah").on("input", function () {
-    calculateQuantity(row); // Call the function to update Quantity
-  });
-}
-
 function cutt_voucher_duplicateRow() {
   // Clone the first row
   let newRow = $(".voucher_row2:first").clone();
@@ -1898,3 +1871,114 @@ function singleprint_remove(button) {
     location.reload();
   }
 }
+
+// Vouchers
+
+function fetchDyerBalance(dyerId) {
+  if (dyerId !== "") {
+    $("#dyer_id").val(dyerId);
+
+    $.ajax({
+      url: "php_action/custom_action.php",
+      method: "POST",
+      data: { action: "fetch_balance", dyer_id: dyerId },
+      success: function (response) {
+        $("#from_account_bl").text(response === "" ? "0" : response);
+      },
+      error: function (xhr, status, error) {
+        console.error("Balance AJAX Error:", status, error);
+      },
+    });
+  } else {
+    $("#from_account_bl").text("0");
+    $("#dyer_id").val("");
+    $(".tbody").html('<tr><td colspan="5">No data found</td></tr>');
+  }
+}
+
+function fetchDyerData(dyerId) {
+  const productionId = document.getElementById("production_id_input").value;
+
+  if (dyerId !== "") {
+    $.ajax({
+      url: "php_action/custom_action.php",
+      method: "POST",
+      data: {
+        action: "fetch_dyer_data",
+        dyer_id: dyerId,
+        ProductionID: productionId,
+      },
+      success: function (response) {
+        $(".tbody").html(response);
+      },
+      error: function (xhr, status, error) {
+        console.error("Table Data AJAX Error:", status, error);
+      },
+    });
+  } else {
+    $(".tbody").html('<tr><td colspan="5">No data found</td></tr>');
+  }
+}
+
+function getBalance(partyId) {
+  if (partyId !== "") {
+    $("#hidden_party_id").val(partyId);
+    $.ajax({
+      url: "php_action/custom_action.php",
+      method: "POST",
+      data: { action: "get_balance", party_id: partyId },
+      success: function (response) {
+        $("#balance_amount").text(response === "" ? "0" : response);
+      },
+      error: function (xhr, status, error) {
+        console.error("Balance AJAX Error:", status, error);
+      },
+    });
+  } else {
+    $("#balance_amount").text("0");
+    $("#hidden_party_id").val("");
+  }
+}
+
+function getDyerData(partyId) {
+  const productionId = document.getElementById("production_id_input").value;
+
+  if (partyId !== "") {
+    $.ajax({
+      url: "php_action/custom_action.php",
+      method: "POST",
+      data: {
+        action: "get_dyer_data",
+        party_id: partyId,
+        ProductionID: productionId,
+      },
+      success: function (response) {
+        $("#dyer_data_table_body").html(response);
+      },
+      error: function (xhr, status, error) {
+        console.error("Data AJAX Error:", status, error);
+      },
+    });
+  } else {
+    $("#dyer_data_table_body").html(
+      '<tr><td colspan="5">No data found</td></tr>'
+    );
+  }
+}
+
+// function deleteRow(deyId) {
+//   if (confirm("Are you sure you want to delete this row?")) {
+//     $.ajax({
+//       url: "php_action/delete_dyeing_entry.php",
+//       method: "POST",
+//       data: { dey_id: deyId },
+//       success: function (response) {
+//         alert(response); // Show success message
+//         location.reload(); // Reload the page or fetch the data again to update the table
+//       },
+//       error: function (xhr, status, error) {
+//         console.error("AJAX Error:", status, error);
+//       },
+//     });
+//   }
+// }
