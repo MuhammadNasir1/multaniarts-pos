@@ -95,7 +95,46 @@
               </div>
               <div class="col-md-2 mt-3">
                 <label>Location</label>
-                <input type="text" placeholder="Location Here" value="<?= @$fetchPurchase['pur_location'] ?>" autocomplete="off" class="form-control" name="pur_location">
+                <!-- <input type="text" placeholder="Location Here" value="<?= @$fetchPurchase['pur_location'] ?>" autocomplete="off" class="form-control" name="pur_location"> -->
+                <select class="form-control searchableSelect" name="pur_location" id="pur_location">
+                  <option disabled selected>
+                    <h3>Deyeing</h3>
+                  </option>
+                  <?php
+                  $location = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'dyeing'");
+                  while ($d = mysqli_fetch_assoc($location)) {
+                  ?>
+                    <option value="<?= $d['customer_id'] ?>"> <?= ucwords($d['customer_name']) ?></option>
+                  <?php } ?>
+                  <option disabled>
+                    <h3>Printing</h3>
+                  </option>
+                  <?php
+                  $location = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'printer'");
+                  while ($d = mysqli_fetch_assoc($location)) {
+                  ?>
+                    <option value="<?= $d['customer_id'] ?>"><?= ucwords($d['customer_name']) ?></option>
+                  <?php } ?>
+                  <option disabled>
+                    <h3>Stiching & Packing</h3>
+                  </option>
+                  <?php
+                  $location = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'packing'");
+                  while ($d = mysqli_fetch_assoc($location)) {
+                  ?>
+                    <option value="<?= $d['customer_id'] ?>"><?= ucwords($d['customer_name']) ?></option>
+                  <?php } ?>
+                  <option disabled>
+                    <h3>Embroidery</h3>
+                  </option>
+                  <?php
+                  $location = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'embroidery'");
+                  while ($d = mysqli_fetch_assoc($location)) {
+                  ?>
+                    <option value="<?= $d['customer_id'] ?>"><?= ucwords($d['customer_name']) ?></option>
+                  <?php } ?>
+                </select>
+
               </div>
               <div class="col-md-2 mt-3">
                 <label>Cargo</label>
