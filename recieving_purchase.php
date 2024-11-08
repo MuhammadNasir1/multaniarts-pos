@@ -2,11 +2,6 @@
     <!DOCTYPE html>
     <html lang="en">
     <?php include_once 'includes/head.php';
-
-    if (!empty($_REQUEST['edit_purchase_id'])) {
-        # code...
-        $fetchPurchase = fetchRecord($dbc, "purchase", "purchase_id", base64_decode($_REQUEST['edit_purchase_id']));
-    }
     ?>
 
     <body class="horizontal light">
@@ -30,7 +25,7 @@
                     <?php } ?>
 
                     <form action="php_action/custom_action.php" method="POST" id="recieving_form">
-                        <input type="hidden" name="product_purchase_id" value="<?= @empty($_REQUEST['edit_purchase_id']) ? "" : base64_decode($_REQUEST['edit_purchase_id']) ?>">
+                        <input type="hidden" name="product_purchase_id" >
                         <input type="hidden" name="payment_type" id="payment_type" value="credit_purchase">
 
 
@@ -166,7 +161,7 @@
                             </div>
                         </div>
                     </form>
-                    <?php if (basename($_SERVER['REQUEST_URI']) == 'credit_purchase.php') { ?>
+                    <?php if (basename($_SERVER['REQUEST_URI']) == 'recieving_purchase.php') { ?>
                     </div>
                 </div> <!-- .row -->
             </div> <!-- .container-fluid -->
@@ -176,11 +171,11 @@
 
 
 
-    </body>
-
-    </html>
-
-<?php
+        </body>
+        
+        </html>
+        
+        <?php
                         include_once 'includes/foot.php';
                     } ?>
 
@@ -210,6 +205,7 @@
                 } else {
                     console.log("No data found for this ID.");
                     $("#recieving_form").trigger('reset');
+                    $("#purchase_narration").val('');
                 }
             },
             error: function(xhr, status, error) {
