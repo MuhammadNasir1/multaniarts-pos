@@ -1730,3 +1730,20 @@ if (isset($_POST['action'])) {
 		echo $output;
 	}
 }
+
+
+// Recieving Purchase Data Fetch
+if (isset($_POST['purc_id'])) {
+    $id = $dbc->real_escape_string($_POST['purc_id']);
+    
+   $result = mysqli_query($dbc, "SELECT * FROM purchase WHERE purchase_id = '$id'");
+
+    if ($result->num_rows > 0) {
+        $data = $result->fetch_assoc();
+        echo json_encode(['success' => true, 'data' => $data]);
+    } else {
+        echo json_encode(['success' => false, 'data' => null]);
+    }
+} else {
+    echo json_encode(['success' => false, 'data' => null]);
+}

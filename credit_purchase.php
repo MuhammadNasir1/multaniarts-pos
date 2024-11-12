@@ -51,7 +51,7 @@
               <div class="col-sm-4">
                 <label>Select Supplier</label>
                 <div class="input-group">
-                  <select class="form-control" name="cash_purchase_supplier" id="credit_order_client_name" required onchange="getBalance(this.value,'customer_account_exp')" aria-label="Username" aria-describedby="basic-addon1">
+                  <select class="form-control searchableSelect" name="cash_purchase_supplier" id="credit_order_client_name" required onchange="getBalance(this.value,'customer_account_exp')" aria-label="Username" aria-describedby="basic-addon1">
                     <option value="">Select Supplier</option>
                     <?php
                     $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status =1 AND customer_type='supplier'");
@@ -75,7 +75,7 @@
               <div class="col-md-3">
                 <label class="text-dark" for="purchase_for">Purchase For</label>
 
-                <select class="form-control" name="purchase_for" id="purchase_for">
+                <select class="form-control searchableSelect" name="purchase_for" id="purchase_for">
                   <option disabled>Select Type</option>
                   <option value="shafoon" <?= @($fetchPurchase['purchase_for'] == 'shafoon') ? "selected" : "" ?>>Shafoon</option>
                   <option value="others" <?= @($fetchPurchase['purchase_for'] == 'others') ? "selected" : "" ?>>Others</option>
@@ -95,7 +95,46 @@
               </div>
               <div class="col-md-2 mt-3">
                 <label>Location</label>
-                <input type="text" placeholder="Location Here" value="<?= @$fetchPurchase['pur_location'] ?>" autocomplete="off" class="form-control" name="pur_location">
+                <!-- <input type="text" placeholder="Location Here" value="<?= @$fetchPurchase['pur_location'] ?>" autocomplete="off" class="form-control" name="pur_location"> -->
+                <select class="form-control searchableSelect" name="pur_location" id="pur_location">
+                  <option disabled selected>
+                    <h3>Deyeing</h3>
+                  </option>
+                  <?php
+                  $location = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'dyeing'");
+                  while ($d = mysqli_fetch_assoc($location)) {
+                  ?>
+                    <option value="<?= $d['customer_id'] ?>"> <?= ucwords($d['customer_name']) ?></option>
+                  <?php } ?>
+                  <option disabled>
+                    <h3>Printing</h3>
+                  </option>
+                  <?php
+                  $location = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'printer'");
+                  while ($d = mysqli_fetch_assoc($location)) {
+                  ?>
+                    <option value="<?= $d['customer_id'] ?>"><?= ucwords($d['customer_name']) ?></option>
+                  <?php } ?>
+                  <option disabled>
+                    <h3>Stiching & Packing</h3>
+                  </option>
+                  <?php
+                  $location = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'packing'");
+                  while ($d = mysqli_fetch_assoc($location)) {
+                  ?>
+                    <option value="<?= $d['customer_id'] ?>"><?= ucwords($d['customer_name']) ?></option>
+                  <?php } ?>
+                  <option disabled>
+                    <h3>Embroidery</h3>
+                  </option>
+                  <?php
+                  $location = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'embroidery'");
+                  while ($d = mysqli_fetch_assoc($location)) {
+                  ?>
+                    <option value="<?= $d['customer_id'] ?>"><?= ucwords($d['customer_name']) ?></option>
+                  <?php } ?>
+                </select>
+
               </div>
               <div class="col-md-2 mt-3">
                 <label>Cargo</label>
@@ -105,7 +144,7 @@
                 <label>Type</label>
                 <!-- <input type="text" placeholder="Type Here" value="<?= @$fetchPurchase['pur_type'] ?>" autocomplete="off" class="form-control " name="pur_type"> -->
 
-                <select class="form-control" name="pur_type" id="pur_type">
+                <select class="form-control searchableSelect" name="pur_type" id="pur_type">
                   <option disabled>Select Type</option>
                   <option value="meter" <?= @($fetchPurchase['pur_type'] == 'meter') ? "selected" : "" ?>>Meter</option>
                   <option value="yard" <?= @($fetchPurchase['pur_type'] == 'yard') ? "selected" : "" ?>>Yard</option>
@@ -156,13 +195,20 @@
               </div>
               <div class="col-sm-2">
                 <label>Quantity</label>
-                <input type="number" readonly class="form-control" id="get_product_quantity" value="1" min="1" name="quantity">
+                <input type="number" class="form-control" id="get_product_quantity" value="1" min="1" name="quantity">
               </div>
 
               <div class="col-sm-2  d-flex align-items-center">
                 <div>
                   <label>Unit</label>
-                  <input type="text" placeholder="Unit Here" value="" autocomplete="off" class="form-control " name="pur_unit" id="get_pur_unit">
+                  <!-- <input type="text" placeholder="Unit Here" value="" autocomplete="off" class="form-control " name="pur_unit" id="get_pur_unit"> -->
+                  <select class="form-control searchableSelect" name="pur_unit" id="get_pur_unit">
+                    <option disabled>Select Type</option>
+                    <option value="meter" <?= @($fetchPurchase['pur_unit'] == 'meter') ? "selected" : "" ?>>Meter</option>
+                    <option value="yard" <?= @($fetchPurchase['pur_unit'] == 'yard') ? "selected" : "" ?>>Yard</option>
+                    <option value="others" <?= @($fetchPurchase['pur_unit'] == 'suit') ? "selected" : "" ?>>Suit</option>
+                  </select>
+
                 </div>
                 <div class="ml-3 mt-3">
                   <button type="button" class="btn btn-success btn-sm mt-2 addProductPurchase" id="addProductPurchase"><i class="fa fa-plus"></i> <b>Add</b></button>
@@ -299,7 +345,7 @@
           </div>
         </div> <!-- .row -->
       </div> <!-- .container-fluid -->
-      <button type="button" class="btn btn-danger d-none btn-sm m-1" id="productionModalButton" data-toggle="modal" data-target="#addProductionModal" onclick="getPurId(<?= $r['purchase_id'] ?>) , getRandomCode()">Production</button>
+      <!-- <button type="button" class="btn btn-danger d-none btn-sm m-1" id="productionModalButton" data-toggle="modal" data-target="#addProductionModal" onclick="getPurId(<?= $r['purchase_id'] ?>) , getRandomCode()">Production</button> -->
       <!-- Button trigger modal -->
 
 

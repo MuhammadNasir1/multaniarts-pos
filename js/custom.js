@@ -133,46 +133,46 @@ $(document).ready(function () {
           $("#purchase_product_tb").html("");
           $("#product_grand_total_amount").html("");
           $("#product_total_amount").html("");
-          $("#productionModalButton").click();
-          function generateRandomCode(length = 11) {
-            var characters = "0123456789";
-            var code = "";
-            for (var i = 0; i < length; i++) {
-              code += characters.charAt(
-                Math.floor(Math.random() * characters.length)
-              );
-            }
-            return code;
-          }
-          var randomCode = generateRandomCode();
-          $("#production_lat_no").val(randomCode);
-          $("#purchase_id").val(response.order_id);
+          // $("#productionModalButton").click();
+          // function generateRandomCode(length = 11) {
+          //   var characters = "0123456789";
+          //   var code = "";
+          //   for (var i = 0; i < length; i++) {
+          //     code += characters.charAt(
+          //       Math.floor(Math.random() * characters.length)
+          //     );
+          //   }
+          //   return code;
+          // }
+          // var randomCode = generateRandomCode();
+          // $("#production_lat_no").val(randomCode);
+          // $("#purchase_id").val(response.order_id);
 
           // 	window.location.assign('print_order.php?order_id='+response.order_id);
 
-          //$("#tableData").load(location.href+" #tableData");
-          // Swal.fire({
-          //   title: response.msg,
-          //   showDenyButton: true,
-          //   showCancelButton: true,
-          //   confirmButtonText: `Print`,
-          //   denyButtonText: `Add New`,
-          // }).then((result) => {
-          /* Read more about isConfirmed, isDenied below */
-          // if (result.isConfirmed) {
-          //   location.reload();
+          $("#tableData").load(location.href + " #tableData");
+          Swal.fire({
+            title: response.msg,
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: `Print`,
+            denyButtonText: `Add New`,
+          }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+              location.reload();
 
-          //   window.open(
-          //     "print_sale.php?id=" +
-          //       response.order_id +
-          //       "&type=" +
-          //       response.type,
-          //     "_blank"
-          //   );
-          // } else if (result.isDenied) {
-          //   location.reload();
-          // }
-          // });
+              window.open(
+                "print_sale.php?id=" +
+                  response.order_id +
+                  "&type=" +
+                  response.type,
+                "_blank"
+              );
+            } else if (result.isDenied) {
+              location.reload();
+            }
+          });
         }
         if (response.sts == "error") {
           sweeetalert(response.msg, response.sts, 1500);
