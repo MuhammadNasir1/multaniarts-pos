@@ -1733,8 +1733,8 @@ if (isset($_POST['action'])) {
 
 
 // Recieving Purchase Data Fetch
-if (isset($_POST['purc_id'])) {
-	$id = $dbc->real_escape_string($_POST['purc_id']);
+if (isset($_POST['recieve_purc_id'])) {
+	$id = $dbc->real_escape_string($_POST['recieve_purc_id']);
 
 	// Fetch data from the purchase table
 	$purchaseResult = mysqli_query($dbc, "SELECT * FROM purchase WHERE purchase_id = '$id'");
@@ -1760,6 +1760,37 @@ if (isset($_POST['purc_id'])) {
 	} else {
 		echo json_encode(['success' => false, 'data' => null, 'items' => []]);
 	}
-} else {
-	echo json_encode(['success' => false, 'data' => null, 'items' => []]);
+}
+
+
+
+// Dyeing Recieving Form
+
+if (
+	isset($_POST['rec_purchase_id'])
+) {
+	$data = [
+		'purchase_id' => $_POST['rec_purchase_id'],
+		'dyed_thaans' => $_POST['dyed_thaans'],
+		'color' => $_POST['color'],
+		'dyed_qty' => $_POST['dyed_qty'],
+		'cut_piece' => $_POST['cut_piece'],
+		'un_settled' => $_POST['un_settled'],
+		'to_location' => $_POST['to_location'],
+	];
+
+	if (insert_data($dbc, "dyeing", $data)) {
+		$response = [
+			'sts' => 'success',
+			'msg' => 'Data saved successfully',
+			'purchase_id' => $_POST['rec_purchase_id'],
+		];
+	} else {
+		$response = [
+			'sts' => 'warning',
+			'msg' => "Something went wrong: " . mysqli_error($dbc)
+		];
+	}
+
+	echo json_encode($response);
 }
