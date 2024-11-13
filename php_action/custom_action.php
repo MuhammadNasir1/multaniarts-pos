@@ -1734,16 +1734,32 @@ if (isset($_POST['action'])) {
 
 // Recieving Purchase Data Fetch
 if (isset($_POST['purc_id'])) {
-    $id = $dbc->real_escape_string($_POST['purc_id']);
-    
-   $result = mysqli_query($dbc, "SELECT * FROM purchase WHERE purchase_id = '$id'");
+	$id = $dbc->real_escape_string($_POST['purc_id']);
 
-    if ($result->num_rows > 0) {
-        $data = $result->fetch_assoc();
-        echo json_encode(['success' => true, 'data' => $data]);
-    } else {
-        echo json_encode(['success' => false, 'data' => null]);
-    }
+	// Fetch data from the purchase table
+	$purchaseResult = mysqli_query($dbc, "SELECT * FROM purchase WHERE purchase_id = '$id'");
+	$purchaseData = $purchaseResult->fetch_assoc();
+
+	// Fetch data from the purchase_items table and retrieve product names
+	$itemsResult = mysqli_query($dbc, "SELECT * FROM purchase_item WHERE purchase_id = '$id'");
+	$itemsData = [];
+	while ($row = $itemsResult->fetch_assoc()) {
+		$product_id = $row['product_id'];
+
+		// Fetch product name from the product table
+		$productResult = mysqli_query($dbc, "SELECT product_name FROM product WHERE product_id = '$product_id'");
+		$productData = $productResult->fetch_assoc();
+
+		// Add product name to the row
+		$row['product_name'] = $productData['product_name'];
+		$itemsData[] = $row;
+	}
+
+	if ($purchaseData) {
+		echo json_encode(['success' => true, 'data' => $purchaseData, 'items' => $itemsData]);
+	} else {
+		echo json_encode(['success' => false, 'data' => null, 'items' => []]);
+	}
 } else {
-    echo json_encode(['success' => false, 'data' => null]);
+	echo json_encode(['success' => false, 'data' => null, 'items' => []]);
 }

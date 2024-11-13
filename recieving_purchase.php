@@ -25,7 +25,7 @@
                     <?php } ?>
 
                     <form action="php_action/custom_action.php" method="POST" id="recieving_form">
-                        <input type="hidden" name="product_purchase_id" >
+                        <input type="hidden" name="product_purchase_id">
                         <input type="hidden" name="payment_type" id="payment_type" value="credit_purchase">
 
 
@@ -151,7 +151,40 @@
                                 <textarea placeholder="Remarks Here" autocomplete="off" class="form-control" name="purchase_narration" id="purchase_narration" cols="30" rows="3"></textarea>
                             </div>
                         </div> <!-- end of form-group -->
+                        <table class="table  saleTable" id="myDiv">
+                            <thead class="table-bordered">
+                                <tr>
+                                    <th>Product Name</th>
+                                    <th>Thaan</th>
+                                    <th>Gzanah</th>
+                                    <th>Unit</th>
+                                    <th>Rate</th>
+                                    <th>Quantity</th>
+                                    <th>Total Price</th>
+                                </tr>
+                            </thead>
+                            <tbody class="table table-bordered" id="purchase_product_tb">
 
+                                <tr id="product_idN_<?= $r['product_id'] ?>">
+                                    <input type="hidden" data-price="" data-quantity="<?= $r['quantity'] ?>" id="product_ids_" class="product_ids" name="product_ids[]" value="">
+                                    <input type="hidden" id="product_quantites_" name="product_quantites[]" value="">
+                                    <input type="hidden" id="product_rate_" name="product_rates[]" value="">
+                                    <input type="hidden" id="product_totalrate_" name="product_totalrates[]" value="">
+                                    <input type="hidden" id="pur_thaan_'" name="pur_thaan[]" value="">
+                                    <!-- <input type="hidden" id="pur_thaan_" name="pur_thaan[]" value=""> -->
+                                    <input type="hidden" id="pur_gzanah_" name="pur_gzanah[]" value="">
+                                    <input type="hidden" id="pur_unit_" name="pur_unit[]" value="">
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td> </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
 
                         <div class="row">
                             <div class="col-sm-6 offset-6">
@@ -161,6 +194,7 @@
                             </div>
                         </div>
                     </form>
+
                     <?php if (basename($_SERVER['REQUEST_URI']) == 'recieving_purchase.php') { ?>
                     </div>
                 </div> <!-- .row -->
@@ -171,11 +205,11 @@
 
 
 
-        </body>
-        
-        </html>
-        
-        <?php
+    </body>
+
+    </html>
+
+<?php
                         include_once 'includes/foot.php';
                     } ?>
 
@@ -191,7 +225,7 @@
             dataType: 'json',
             success: function(response) {
                 if (response.success) {
-                    console.log(response.data);
+                    // Populate fields with purchase data
                     $('#purchase_date').val(response.data.purchase_date);
                     $('#credit_order_client_name').val(response.data.client_name);
                     $('#purchase_for').val(response.data.purchase_for);
@@ -202,8 +236,49 @@
                     $('#pur_type').val(response.data.pur_type);
                     $('#pur_cargo').val(response.data.pur_cargo);
                     $('#purchase_narration').text(response.data.purchase_narration);
+
+                    let itemsHtml = '';
+
+                    // Check if there are any items
+                    if (response.items.length > 0) {
+                        response.items.forEach(function(item) {
+                            itemsHtml += `
+                        <tr>
+                            <input type="hidden" data-price="${item.rate}" data-quantity="${item.quantity}" class="product_ids" name="product_ids[]" value="${item.product_id}">
+                            <input type="hidden" name="product_quantites[]" value="${item.quantity}">
+                            <input type="hidden" name="product_rates[]" value="${item.rate}">
+                            <input type="hidden" name="product_totalrates[]" value="${item.rate * item.quantity}">
+                            <input type="hidden" name="pur_thaan[]" value="${item.pur_thaan}">
+                            <input type="hidden" name="pur_gzanah[]" value="${item.pur_gzanah}">
+                            <input type="hidden" name="pur_unit[]" value="${item.pur_unit}">
+                            <td>${item.product_name}</td>
+                            <td>${item.pur_thaan}</td>
+                            <td>${item.pur_gzanah}</td>
+                            <td>${item.pur_unit}</td>
+                            <td>${item.rate}</td>
+                            <td>${item.quantity}</td>
+                            <td>${(item.rate * item.quantity).toFixed(2)}</td>
+                        </tr>
+                    `;
+                        });
+                    } else {
+                        // Display "Data Not Found" if no items are available
+                        itemsHtml = `
+                    <tr>
+                        <td colspan="7" class="text-center">Data Not Found</td>
+                    </tr>
+                    `;
+                    }
+
+                    $('#purchase_product_tb').html(itemsHtml);
                 } else {
-                    console.log("No data found for this ID.");
+                    // If no data found, show "Data Not Found" in the table
+                    $('#purchase_product_tb').html(`
+                    <tr>
+                        <td colspan="7" class="text-center">Data Not Found</td>
+                    </tr>
+                `);
+                    // Clear other fields
                     $("#recieving_form").trigger('reset');
                     $("#purchase_narration").val('');
                 }
@@ -213,4 +288,14 @@
             }
         });
     }
+
+    $(document).ready(function() {
+        if ($("#next_increment").val() == "") {
+            $('#purchase_product_tb').html(`
+            <tr>
+                <td colspan="7" class="text-center">Data Not Found</td>
+            </tr>
+        `);
+        }
+    });
 </script>
