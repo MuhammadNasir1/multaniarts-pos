@@ -1,4 +1,4 @@
-<?php if (basename($_SERVER['REQUEST_URI']) == 'dyeing.php') { ?>
+<?php if (basename($_SERVER['REQUEST_URI']) == 'dyeing_recieving.php') { ?>
     <!DOCTYPE html>
     <html lang="en">
     <?php include_once 'includes/head.php';
@@ -19,7 +19,7 @@
 
                         <div class="row">
                             <div class="col-12 mx-auto h4">
-                                <b class="text-center card-text">Dyeing Issuance</b>
+                                <b class="text-center card-text">Dyeing Recieving</b>
 
                                 <a href="credit_purchase.php" class="btn btn-admin float-right btn-sm">Add New</a>
                             </div>
@@ -211,7 +211,7 @@
                             </div>
                         </div>
                     </form>
-                    <?php if (basename($_SERVER['REQUEST_URI']) == 'dyeing.php') { ?>
+                    <?php if (basename($_SERVER['REQUEST_URI']) == 'dyeing_recieving.php') { ?>
                     </div>
                 </div> <!-- .row -->
             </div> <!-- .container-fluid -->
