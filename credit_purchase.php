@@ -96,7 +96,7 @@
               <div class="col-md-2 mt-3">
                 <label>Location</label>
                 <!-- <input type="text" placeholder="Location Here" value="<?= @$fetchPurchase['pur_location'] ?>" autocomplete="off" class="form-control" name="pur_location"> -->
-                <select class="form-control searchableSelect" onchange="findLocationType(this.value)" name="pur_location" id="pur_location">
+                <!-- <select class="form-control searchableSelect" onchange="findLocationType(this.value)" name="pur_location" id="pur_location">
                   <?php
                   $location = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'dyeing'");
                   while ($d = mysqli_fetch_assoc($location)) {
@@ -127,6 +127,29 @@
                   ?>
                     <option value="<?= $d['customer_id'] ?>"><?= ucwords($d['customer_name']) ?> ( <?= ucwords($d['customer_type']) ?> )</option>
                   <?php } ?>
+                </select> -->
+                <select class="form-control searchableSelect" id="pur_location" name="pur_location" onchange="findLocationType(this.value)" aria-label="Username" aria-describedby="basic-addon1">
+                  <option value="">Select Account</option>
+
+
+                  <?php $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status = 1 AND (customer_type = 'dyeing' OR customer_type = 'shop' OR customer_type = 'shop' OR customer_type = 'packing' OR customer_type = 'printer') ORDER BY customer_type ASC;");
+                  $type2 = '';
+                  while ($r = mysqli_fetch_assoc($q)):
+                    $type = $r['customer_type'];
+                  ?>
+                    <?php if ($type != $type2): ?>
+                      <optgroup label="<?= $r['customer_type'] ?>">
+                      <?php endif ?>
+
+                      <option <?= @($voucher['customer_id2'] == $r['customer_id']) ? "selected" : "" ?> value="<?= $r['customer_id'] ?>"><?= $r['customer_name'] ?></option>
+
+                      <?php if ($type != $type2): ?>
+                      </optgroup>
+                    <?php endif ?>
+                  <?php $type2 = $r['customer_type'];
+                  endwhile; ?>
+
+
                 </select>
                 <input type="hidden" name="location_type" id="location_type">
               </div>

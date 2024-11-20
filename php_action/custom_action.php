@@ -1771,6 +1771,31 @@ if (isset($_POST['location_type_get'])) {
 }
 
 
+// Find Purchase Detail For customer
+
+if (isset($_POST['get_purchase_data'])) {
+	$id = $dbc->real_escape_string($_POST['get_purchase_data']);
+
+	// Fetch data from the purchase table
+	$customer_data = mysqli_query($dbc, "
+    SELECT * 
+    FROM purchase 
+    INNER JOIN purchase_item 
+    ON purchase.purchase_id = purchase_item.purchase_id 
+    WHERE purchase.pur_location = '$id'
+");
+
+	$customer = $customer_data->fetch_assoc();
+
+
+	if ($customer) {
+		echo json_encode(['success' => true, 'data' => $customer]);
+	} else {
+		echo json_encode(['success' => false, 'data' => null]);
+	}
+}
+
+
 
 // Dyeing Recieving Form
 

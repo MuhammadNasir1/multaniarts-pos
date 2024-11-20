@@ -49,60 +49,54 @@
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label>From Location</label>
-                                <select class="form-control searchableSelect" name="from_location" id="from_location">
-                                    <?php
-                                    $location = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'dyeing'");
-                                    while ($d = mysqli_fetch_assoc($location)) {
+                                <select class="form-control searchableSelect" id="form_location" name="form_location" onchange="findPurchaseData(this.value)" aria-label="Username" aria-describedby="basic-addon1">
+                                    <option value="">Select Account</option>
+
+
+                                    <?php $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status = 1 AND customer_type = 'dyeing' ORDER BY customer_type ASC;");
+                                    $type2 = '';
+                                    while ($r = mysqli_fetch_assoc($q)):
+                                        $type = $r['customer_type'];
                                     ?>
-                                        <option value="<?= $d['customer_id'] ?>"> <?= ucwords($d['customer_name']) ?> ( <?= ucwords($d['customer_type']) ?> )</option>
-                                    <?php } ?>
-                                    <?php
-                                    $location = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'printer'");
-                                    while ($d = mysqli_fetch_assoc($location)) {
-                                    ?>
-                                        <option value="<?= $d['customer_id'] ?>"><?= ucwords($d['customer_name']) ?> ( <?= ucwords($d['customer_type']) ?> )</option>
-                                    <?php } ?>
-                                    <?php
-                                    $location = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'packing'");
-                                    while ($d = mysqli_fetch_assoc($location)) {
-                                    ?>
-                                        <option value="<?= $d['customer_id'] ?>"><?= ucwords($d['customer_name']) ?> ( <?= ucwords($d['customer_type']) ?> )</option>
-                                    <?php } ?>
-                                    <?php
-                                    $location = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'embroidery'");
-                                    while ($d = mysqli_fetch_assoc($location)) {
-                                    ?>
-                                        <option value="<?= $d['customer_id'] ?>"><?= ucwords($d['customer_name']) ?> ( <?= ucwords($d['customer_type']) ?> )</option>
-                                    <?php } ?>
+                                        <?php if ($type != $type2): ?>
+                                            <optgroup label="<?= $r['customer_type'] ?>">
+                                            <?php endif ?>
+
+                                            <option <?= @($voucher['customer_id2'] == $r['customer_id']) ? "selected" : "" ?> value="<?= $r['customer_id'] ?>"><?= $r['customer_name'] ?></option>
+
+                                            <?php if ($type != $type2): ?>
+                                            </optgroup>
+                                        <?php endif ?>
+                                    <?php $type2 = $r['customer_type'];
+                                    endwhile; ?>
+
+
                                 </select>
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label>Issue To</label>
-                                <select class="form-control searchableSelect" name="to_location" id="to_location">
-                                    <?php
-                                    $location = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'dyeing'");
-                                    while ($d = mysqli_fetch_assoc($location)) {
+                                <select class="form-control searchableSelect" id="to_location" name="to_location" onchange="findLocationType(this.value)" aria-label="Username" aria-describedby="basic-addon1">
+                                    <option value="">Select Account</option>
+
+
+                                    <?php $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status = 1 AND (customer_type = 'dyeing' OR customer_type = 'shop' OR customer_type = 'shop' OR customer_type = 'packing' OR customer_type = 'printer') ORDER BY customer_type ASC;");
+                                    $type2 = '';
+                                    while ($r = mysqli_fetch_assoc($q)):
+                                        $type = $r['customer_type'];
                                     ?>
-                                        <option value="<?= $d['customer_id'] ?>"> <?= ucwords($d['customer_name']) ?> ( <?= ucwords($d['customer_type']) ?> )</option>
-                                    <?php } ?>
-                                    <?php
-                                    $location = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'printer'");
-                                    while ($d = mysqli_fetch_assoc($location)) {
-                                    ?>
-                                        <option value="<?= $d['customer_id'] ?>"><?= ucwords($d['customer_name']) ?> ( <?= ucwords($d['customer_type']) ?> )</option>
-                                    <?php } ?>
-                                    <?php
-                                    $location = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'packing'");
-                                    while ($d = mysqli_fetch_assoc($location)) {
-                                    ?>
-                                        <option value="<?= $d['customer_id'] ?>"><?= ucwords($d['customer_name']) ?> ( <?= ucwords($d['customer_type']) ?> )</option>
-                                    <?php } ?>
-                                    <?php
-                                    $location = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'embroidery'");
-                                    while ($d = mysqli_fetch_assoc($location)) {
-                                    ?>
-                                        <option value="<?= $d['customer_id'] ?>"><?= ucwords($d['customer_name']) ?> ( <?= ucwords($d['customer_type']) ?> )</option>
-                                    <?php } ?>
+                                        <?php if ($type != $type2): ?>
+                                            <optgroup label="<?= $r['customer_type'] ?>">
+                                            <?php endif ?>
+
+                                            <option <?= @($voucher['customer_id2'] == $r['customer_id']) ? "selected" : "" ?> value="<?= $r['customer_id'] ?>"><?= $r['customer_name'] ?></option>
+
+                                            <?php if ($type != $type2): ?>
+                                            </optgroup>
+                                        <?php endif ?>
+                                    <?php $type2 = $r['customer_type'];
+                                    endwhile; ?>
+
+
                                 </select>
                             </div>
                             <div class="col-md-2 mt-3">
@@ -219,6 +213,43 @@
             <!-- Button trigger modal -->
 
 
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#purchaseModal" id="purchaseModalBtn">
+                Launch demo modal
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="purchaseModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <table class="table table-bordered" id="purchaseDetailsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Field</th>
+                                        <th>Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Content will be dynamically added here -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
 
 
     </body>
@@ -228,3 +259,82 @@
 <?php
                         include_once 'includes/foot.php';
                     } ?>
+
+
+<script>
+    function findPurchaseData(value) {
+        $.ajax({
+            url: 'php_action/custom_action.php',
+            type: 'POST',
+            data: {
+                get_purchase_data: value
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    const data = response.data;
+
+                    // Clear previous table content
+                    $("#purchaseDetailsTable tbody").empty();
+
+                    // Add rows with key-value pairs
+                    const fieldsToShow = [{
+                            key: 'purchase_id',
+                            label: 'Purchase ID'
+                        },
+                        {
+                            key: 'purchase_date',
+                            label: 'Purchase Date'
+                        },
+                        {
+                            key: 'client_name',
+                            label: 'Client Name'
+                        },
+                        {
+                            key: 'client_contact',
+                            label: 'Client Contact'
+                        },
+                        {
+                            key: 'total_amount',
+                            label: 'Total Amount'
+                        },
+                        {
+                            key: 'discount',
+                            label: 'Discount'
+                        },
+                        {
+                            key: 'grand_total',
+                            label: 'Grand Total'
+                        },
+                        {
+                            key: 'paid',
+                            label: 'Paid'
+                        },
+                        {
+                            key: 'due',
+                            label: 'Due'
+                        }
+                    ];
+
+                    fieldsToShow.forEach(field => {
+                        const value = data[field.key] || "N/A";
+                        const row = `
+                <tr>
+                    <td>${field.label}</td>
+                    <td>${value}</td>
+                </tr>
+            `;
+                        $("#purchaseDetailsTable tbody").append(row);
+                    });
+
+                    // Open the modal
+                    $("#purchaseModalBtn").click();
+                }
+            },
+
+            error: function(xhr, status, error) {
+                console.error("AJAX Error: " + status + error);
+            }
+        });
+    }
+</script>
