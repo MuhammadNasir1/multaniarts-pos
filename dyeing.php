@@ -8,6 +8,13 @@
         $fetchPurchase = fetchRecord($dbc, "purchase", "purchase_id", base64_decode($_REQUEST['edit_purchase_id']));
     }
     ?>
+    <style>
+        #purchaseModal .modal-dialog {
+            max-width: fit-content;
+            width: auto;
+            margin: auto;
+        }
+    </style>
 
     <body class="horizontal light">
         <div class="wrapper">
@@ -232,8 +239,15 @@
                             <table class="table table-bordered" id="purchaseDetailsTable">
                                 <thead>
                                     <tr>
-                                        <th>Field</th>
-                                        <th>Value</th>
+                                        <th>Purchase ID</th>
+                                        <th>Purchase Date</th>
+                                        <th>Client Name</th>
+                                        <th>Client Contact</th>
+                                        <th>Total Amount</th>
+                                        <th>Discount</th>
+                                        <th>Grand Total</th>
+                                        <th>Paid</th>
+                                        <th>Due</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -241,6 +255,7 @@
                                 </tbody>
                             </table>
                         </div>
+
 
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -270,6 +285,7 @@
                 get_purchase_data: value
             },
             dataType: 'json',
+
             success: function(response) {
                 if (response.success) {
                     const data = response.data;
@@ -277,54 +293,22 @@
                     // Clear previous table content
                     $("#purchaseDetailsTable tbody").empty();
 
-                    // Add rows with key-value pairs
-                    const fieldsToShow = [{
-                            key: 'purchase_id',
-                            label: 'Purchase ID'
-                        },
-                        {
-                            key: 'purchase_date',
-                            label: 'Purchase Date'
-                        },
-                        {
-                            key: 'client_name',
-                            label: 'Client Name'
-                        },
-                        {
-                            key: 'client_contact',
-                            label: 'Client Contact'
-                        },
-                        {
-                            key: 'total_amount',
-                            label: 'Total Amount'
-                        },
-                        {
-                            key: 'discount',
-                            label: 'Discount'
-                        },
-                        {
-                            key: 'grand_total',
-                            label: 'Grand Total'
-                        },
-                        {
-                            key: 'paid',
-                            label: 'Paid'
-                        },
-                        {
-                            key: 'due',
-                            label: 'Due'
-                        }
-                    ];
-
-                    fieldsToShow.forEach(field => {
-                        const value = data[field.key] || "N/A";
-                        const row = `
+                    // Iterate through all rows of data
+                    data.forEach(row => {
+                        const rowHTML = `
                 <tr>
-                    <td>${field.label}</td>
-                    <td>${value}</td>
+                    <td>${row.purchase_id || "N/A"}</td>
+                    <td>${row.purchase_date || "N/A"}</td>
+                    <td>${row.client_name || "N/A"}</td>
+                    <td>${row.client_contact || "N/A"}</td>
+                    <td>${row.total_amount || "N/A"}</td>
+                    <td>${row.discount || "N/A"}</td>
+                    <td>${row.grand_total || "N/A"}</td>
+                    <td>${row.paid || "N/A"}</td>
+                    <td>${row.due || "N/A"}</td>
                 </tr>
             `;
-                        $("#purchaseDetailsTable tbody").append(row);
+                        $("#purchaseDetailsTable tbody").append(rowHTML);
                     });
 
                     // Open the modal
