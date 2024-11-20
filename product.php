@@ -89,18 +89,6 @@ $btn_name = isset($_REQUEST['edit_product_id']) ? "Update" : "Add";
                       <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#add_category_modal"> <i class="fa fa-plus"></i> </button>
                     </div>
                   </div>
-                  <div class="col-lg-2 col-sm-4 mt-3 px-3 mb-sm-0">
-                    <label for="">Rate</label>
-                    <input type="text" class="form-control" id="current_rate" placeholder=" Rate" name="current_rate" required value="">
-                  </div>
-                  <div class="col-lg-2 col-sm-4 mt-3 px-3 mb-sm-0">
-                    <label for="">15 Days Sale Rate</label>
-                    <input type="text" class="form-control" id="f_days" placeholder="15 Days Sale Rate" name="f_days" value="">
-                  </div>
-                  <div class="col-lg-2 col-sm-4 mt-3 px-3 mb-sm-0">
-                    <label for="">30 Days Sale Rate</label>
-                    <input type="text" class="form-control" id="t_days" placeholder="30 Days Sale Rate" name="t_days" value="">
-                  </div>
                   <div class="col-sm-3 mt-3 px-3 mb-sm-0">
                     <label for="">Product Alert on Quantity</label>
                     <input type="text" required class="form-control" value="<?= (empty($fetchproduct)) ? 5 : $fetchproduct['alert_at'] ?>" id="alert_at" placeholder="Product Stock Alert" name="alert_at">

@@ -504,12 +504,15 @@ $(document).ready(function () {
       },
     }); //ajax call
   }); //main
-  $("#get_product_code").on("keyup", function () {
-    var code = $("#get_product_code").val();
+  $("#get_product_name").on("change", function () {
+    // Fetch values at the start of the function
+    var code = $(this).val(); // Get the selected value
+    console.log("Product Code: ", code);
+
     var credit_sale_type = $("#credit_sale_type").val();
     var payment_type = $("#payment_type").val();
-    //   var podid=  $('#get_product_name :selected').val();
 
+    // First AJAX call
     $.ajax({
       type: "POST",
       url: "php_action/custom_action.php",
@@ -520,9 +523,17 @@ $(document).ready(function () {
       dataType: "text",
       success: function (msg) {
         var res = msg.trim();
+        console.log("Product List Response: ", res);
+
+        // Update the options of #get_product_name
         $("#get_product_name").empty().html(res);
       },
-    }); //ajax call }
+      error: function (xhr, status, error) {
+        console.error("Error in get_products_list AJAX: ", error);
+      },
+    });
+
+    // Second AJAX call
     $.ajax({
       type: "POST",
       url: "php_action/custom_action.php",
@@ -534,21 +545,19 @@ $(document).ready(function () {
       },
       dataType: "json",
       success: function (response) {
+        console.log("Price Response: ", response);
+
+        // Set values and update UI
         $("#get_product_price").val(response.price);
         $("#instockQty").text(response.qty);
-        console.log(response.qty);
 
-        // $("#get_product_quantity").attr("max", response.qty);
-
-        // Disable the button if the quantity is 0 or less
-        if (response.qty <= 0) {
-          $("#addProductPurchase").prop("disabled", true);
-        } else {
-          $("#addProductPurchase").prop("disabled", false);
-        }
+        // Enable or disable button based on stock
+        $("#addProductPurchase").prop("disabled", response.qty <= 0);
+      },
+      error: function (xhr, status, error) {
+        console.error("Error in getPrice AJAX: ", error);
       },
     });
-    //ajax call }
   });
 }); /*--------------end of-------------------------------------------------------*/
 function pending_bills(value) {
@@ -640,14 +649,15 @@ $("#get_product_name").on("change", function () {
     success: function (response) {
       $("#get_product_price").val(response.price);
       $("#instockQty").html(response.qty);
-      console.log(response.qty);
       if (
         payment_type == "cash_in_hand" ||
         payment_type == "credit_sale" ||
-        payment_type == "cash_sale"
+        payment_type == "cash_sale" ||
+        payment_type == "credit_purchase"
       ) {
+        console.log(response.qty);
         $("#get_product_quantity").attr("max", response.qty);
-        if (response.qty <= 0) {
+        if (response.qty < 0) {
           $("#addProductPurchase").prop("disabled", true);
         } else {
           $("#addProductPurchase").prop("disabled", false);
