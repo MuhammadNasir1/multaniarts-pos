@@ -200,7 +200,7 @@
               </div>
               <div class="col-sm-2">
                 <label>Rate</label>
-                <input type="number" min="0" <?= ($_SESSION['user_role'] == "admin") ? "" : "readonly" ?> class="form-control" id="get_product_price">
+                <input type="number" min="0" <?= ($_SESSION['user_role'] == "admin") ? "" : "readonly" ?> class="form-control" id="get_product_price" name="product_price">
               </div>
               <div class="col-sm-2">
                 <label>Thaan</label>
@@ -227,69 +227,20 @@
                   </select>
 
                 </div>
-                <div class="ml-3 mt-3">
-                  <button type="button" class="btn btn-success btn-sm mt-2 addProductPurchase" id="addProductPurchase"><i class="fa fa-plus"></i> <b>Add</b></button>
-                </div>
               </div>
             </div>
             <div class="row">
               <div class="col-12">
 
                 <table class="table  saleTable" id="myDiv">
-                  <thead class="table-bordered">
-                    <tr>
-                      <th>Product Name</th>
-                      <th>Thaan</th>
-                      <th>Gzanah</th>
-                      <th>Unit</th>
-                      <th>Rate</th>
-                      <th>Quantity</th>
-                      <th>Total Price</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody class="table table-bordered" id="purchase_product_tb">
-                    <?php if (isset($_REQUEST['edit_purchase_id'])) :
-                      $q = mysqli_query($dbc, "SELECT  product.*,brands.*,purchase_item.* FROM purchase_item INNER JOIN product ON product.product_id=purchase_item.product_id INNER JOIN brands ON product.brand_id=brands.brand_id   WHERE purchase_item.purchase_id='" . base64_decode($_REQUEST['edit_purchase_id']) . "'");
-
-                      while ($r = mysqli_fetch_assoc($q)) {
-
-                    ?>
-                        <tr id="product_idN_<?= $r['product_id'] ?>">
-                          <input type="hidden" data-price="<?= $r['rate'] ?>" data-quantity="<?= $r['quantity'] ?>" id="product_ids_<?= $r['product_id'] ?>" class="product_ids" name="product_ids[]" value="<?= $r['product_id'] ?>">
-                          <input type="hidden" id="product_quantites_<?= $r['product_id'] ?>" name="product_quantites[]" value="<?= $r['quantity'] ?>">
-                          <input type="hidden" id="product_rate_<?= $r['product_id'] ?>" name="product_rates[]" value="<?= $r['rate'] ?>">
-                          <input type="hidden" id="product_totalrate_<?= $r['product_id'] ?>" name="product_totalrates[]" value="<?= $r['rate'] ?>">
-                          <input type="hidden" id="pur_thaan_<?= $r['product_id'] ?>'" name="pur_thaan[]" value="<?= $r['pur_thaan'] ?>">
-                          <!-- <input type="hidden" id="pur_thaan_<?= $r['product_id'] ?>" name="pur_thaan[]" value="<?= $r['pur_thaan'] ?>"> -->
-                          <input type="hidden" id="pur_gzanah_<?= $r['product_id'] ?>" name="pur_gzanah[]" value="<?= $r['pur_gzanah'] ?>">
-                          <input type="hidden" id="pur_unit_<?= $r['product_id'] ?>" name="pur_unit[]" value="<?= $r['pur_unit'] ?>">
-                          <td><?= $r['product_name'] ?></td>
-                          <td><?= $r['pur_thaan'] ?></td>
-                          <td><?= $r['pur_gzanah'] ?></td>
-                          <td><?= $r['pur_unit'] ?></td>
-                          <td><?= $r['rate'] ?></td>
-                          <td><?= $r['quantity'] ?></td>
-                          <td><?= (float)$r['rate'] * (float)$r['quantity'] ?></?>
-                          </td>
-                          <td>
-
-                            <button type="button" class="delete-btn fa fa-trash text-danger" href="#"></button>
-                            <button type="button" onclick="editByid(<?= $r['product_id'] ?>,`<?= $r['pur_thaan'] ?>`,`<?= $r['pur_gzanah'] ?>`,`<?= $r['pur_unit'] ?>`,<?= $r['rate'] ?>,<?= $r['quantity'] ?>)" class=" delete-btn fa fa-edit text-success ml-2 "></button>
-
-                          </td>
-                        </tr>
-                    <?php }
-                    endif ?>
-                  </tbody>
-
                   <tfoot>
                     <tr>
                       <td colspan="4"></td>
 
                       <td class="table-bordered"> Sub Total :</td>
-                      <td class="table-bordered" id="product_total_amount"><?= @$fetchPurchase['total_amount'] ?></td>
-                      <td class="table-bordered"> Discount :</td>
+                      <td class="table-bordered" id="product_total_amount"></td>
+                      <input type="hidden" name="product_total_amount" class="form-control form-control-sm" id="product_total_amount_input">
+                      <td class=" table-bordered"> Discount :</td>
                       <td class="table-bordered row m-0 " id="getDiscount">
                         <div class="col-sm-6 pl-0 m-0 p-0">
                           <input onkeyup="getOrderTotal()" type="number" id="ordered_discount" class="form-control form-control-sm" value="<?= isset($fetchPurchase['discount']) ? @$fetchPurchase['discount'] : 0 ?>" min="0" max="100" name="ordered_discount">
@@ -302,15 +253,14 @@
                       <td colspan="4" class="border-none"></td>
                       <td class="table-bordered"> <strong>Grand Total :</strong> </td>
                       <td class="table-bordered" id="product_grand_total_amount"><?= @$fetchPurchase['grand_total'] ?></td>
+                      <input type="hidden" class="form-control form-control-sm" id="product_grand_amount_input" name="product_grand_amount_input">
                       <td class="table-bordered">Paid :</td>
                       <td class="table-bordered">
                         <div class="form-group row">
                           <div class="col-sm-6">
-                            <input type="number" min="0" class="form-control form-control-sm" id="paid_ammount" required onkeyup="getRemaingAmount()" name="paid_ammount" value="<?= @$fetchPurchase['paid'] ?>">
-
-
+                            <input type="number" min="0" class="form-control form-control-sm" id="paid_ammount" required onkeyup="getRemaingAmount()" name="paid_ammount">
                           </div>
-                          <div class="col-sm-6">
+                          <div class=" col-sm-6">
                             <div class="custom-control custom-switch">
                               <input type="checkbox" class="custom-control-input" id="full_payment_check">
                               <label class="custom-control-label" for="full_payment_check">Full Payment</label>

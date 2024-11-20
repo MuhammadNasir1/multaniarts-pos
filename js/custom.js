@@ -133,24 +133,7 @@ $(document).ready(function () {
           $("#purchase_product_tb").html("");
           $("#product_grand_total_amount").html("");
           $("#product_total_amount").html("");
-          // $("#productionModalButton").click();
-          // function generateRandomCode(length = 11) {
-          //   var characters = "0123456789";
-          //   var code = "";
-          //   for (var i = 0; i < length; i++) {
-          //     code += characters.charAt(
-          //       Math.floor(Math.random() * characters.length)
-          //     );
-          //   }
-          //   return code;
-          // }
-          // var randomCode = generateRandomCode();
-          // $("#production_lat_no").val(randomCode);
-          // $("#purchase_id").val(response.order_id);
 
-          // 	window.location.assign('print_order.php?order_id='+response.order_id);
-
-          $("#tableData").load(location.href + " #tableData");
           Swal.fire({
             title: response.msg,
             showDenyButton: true,
@@ -719,159 +702,6 @@ function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
 
-$("#addProductPurchase").on("click", function () {
-  var total_price = 0;
-  var payment_type = $("#payment_type").val();
-
-  var name = $("#get_product_name :selected").text();
-  var price = $("#get_product_price").val();
-  var thaan = $("#get_pur_thaan").val();
-  var gzanah = $("#get_pur_gzanah").val();
-  var unit = $("#get_pur_unit").val();
-  var id = $("#get_product_name :selected").val();
-  var product_quantity = $("#get_product_quantity").val();
-  product_quantity = parseInt(product_quantity);
-  var pro_type = $("#add_pro_type").val();
-  var max_qty = $("#get_product_quantity").attr("max");
-  max_qty = parseInt(max_qty);
-
-  if (!id) {
-    Swal.fire({
-      icon: "error",
-      title: "Oops...",
-      text: "Please select a product first!",
-    });
-    return;
-  }
-
-  if (!price || !thaan || !gzanah || !unit || !product_quantity) {
-    Swal.fire({
-      icon: "error",
-      title: "Oops...",
-      text: "Please fill out all fields!",
-    });
-    return;
-  }
-
-  if (payment_type == "cash_purchase" || payment_type == "credit_purchase") {
-    max_qty = getRandomInt(99999999999);
-  }
-
-  var GrandTotalAva = $("#remaining_ammount").val();
-  var ThisTotal = price * product_quantity + Number(GrandTotalAva);
-  var RThisPersonLIMIT = $("#R_LimitInput").val();
-
-  if (id != "") {
-    // Reset the input fields
-    $("#get_product_name").val(null).trigger("change");
-    $("#add_pro_type").val("add");
-    $("#get_product_price").val("");
-    $("#get_pur_thaan").val("");
-    $("#get_pur_gzanah").val("");
-    $("#get_pur_unit").val("");
-    $("#get_product_quantity").val("1");
-    $("#get_product_code").focus();
-    $("#instockQty").text("0");
-
-    total_price = parseFloat(price) * parseFloat(product_quantity);
-
-    // Append the product details to the table
-    $("#purchase_product_tb").append(
-      '<tr id="product_idN_' +
-        id +
-        '">\
-      <input type="hidden" data-price="' +
-        price +
-        '" data-quantity="' +
-        product_quantity +
-        '" id="product_ids_' +
-        id +
-        '" class="product_ids" name="product_ids[]" value="' +
-        id +
-        '">\
-      <input type="hidden" id="product_quantites_' +
-        id +
-        '" name="product_quantites[]" value="' +
-        product_quantity +
-        '">\
-      <input type="hidden" id="product_rate_' +
-        id +
-        '" name="product_rates[]" value="' +
-        price +
-        '">\
-      <input type="hidden" id="pur_thaan_' +
-        id +
-        '" name="pur_thaan[]" value="' +
-        thaan +
-        '">\
-      <input type="hidden" id="pur_gzanah_' +
-        id +
-        '" name="pur_gzanah[]" value="' +
-        gzanah +
-        '">\
-      <input type="hidden" id="pur_unit_' +
-        id +
-        '" name="pur_unit[]" value="' +
-        unit +
-        '">\
-      <input type="hidden" id="product_totalrate_' +
-        id +
-        '" name="product_totalrates[]" value="' +
-        total_price +
-        '">\
-      <td>' +
-        name +
-        "</td>\
-      <td>" +
-        thaan +
-        " </td>\
-      <td>" +
-        gzanah +
-        " </td>\
-      <td>" +
-        unit +
-        " </td>\
-      <td>" +
-        price +
-        "</td>\
-      <td>" +
-        product_quantity +
-        "</td>\
-      <td>" +
-        total_price +
-        '</td>\
-      <td>\
-        <button type="button" class="delete-btn fa fa-trash text-danger"></button>\
-        <button type="button" onclick="editByid(' +
-        id +
-        ",'" +
-        thaan +
-        "','" +
-        gzanah +
-        "','" +
-        unit +
-        "','" +
-        price +
-        "','" +
-        product_quantity +
-        '\')" class="delete-btn fa fa-edit text-success"></button>\
-      </td>\
-    </tr>'
-    );
-
-    getOrderTotal();
-  } else {
-    if (max_qty < product_quantity) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Cannot add quantity more than stock",
-        timer: 1500,
-      });
-    }
-  }
-});
-
 // Event delegation for delete buttons
 $(document).on("click", ".delete-btn", function () {
   $(this).closest("tr").remove(); // Remove the row
@@ -879,51 +709,123 @@ $(document).on("click", ".delete-btn", function () {
 });
 
 function getOrderTotal() {
-  var payment_type = $("#payment_type").val();
-  var total_bill = (grand_total = 0);
-  $(".product_ids").each(function () {
-    var quantity = $(this).data("quantity");
-    var rates = $(this).data("price");
-    //console.log(rates);
-    total_bill += parseFloat(rates) * parseFloat(quantity);
+  function calculateTotal() {
+    let rate = parseFloat($("#get_product_price").val()) || 0;
+    let quantity = parseFloat($("#get_product_quantity").val()) || 0;
+    let totalAmount = rate * quantity;
+
+    // Update Total Amount Fields
+    $("#product_total_amount").html(totalAmount.toFixed(2));
+    $("#product_total_amount_input").val(totalAmount.toFixed(2));
+
+    // Calculate Discount as Percentage
+    let discountPercentage = parseFloat($("#ordered_discount").val()) || 0;
+    let discountAmount = (totalAmount * discountPercentage) / 100;
+
+    // Calculate Total after Discount
+    let grandTotal = totalAmount - discountAmount;
+
+    // Add Freight Value to Grand Total
+    let freight = parseFloat($("#freight").val()) || 0;
+    grandTotal += freight;
+
+    // Ensure Grand Total doesn't go below zero
+    if (grandTotal < 0) grandTotal = 0;
+
+    // Update Grand Total, Discount, and Freight Fields
+    $("#product_grand_total_amount").html(grandTotal.toFixed(2));
+    $("#product_grand_amount_input").val(grandTotal.toFixed(2));
+    $("#product_discount_amount").html(discountAmount.toFixed(2)); // Show discount amount
+    $("#product_freight_amount").html(freight.toFixed(2)); // Show freight value if needed
+
+    getRemainingAmount(); // Call remaining amount calculation
+  }
+
+  // Initial Calculation on Page Load
+  calculateTotal();
+
+  // Event Listeners for Input Changes
+  $(
+    "#get_product_price, #get_product_quantity, #ordered_discount, #freight"
+  ).on("input", function () {
+    calculateTotal();
   });
-  var discount = $("#ordered_discount").val();
-  var freight = $("#freight").val();
-  discount = discount == "" ? (discount = 0) : parseFloat(discount);
-  if (
-    payment_type == "cash_in_hand" ||
-    payment_type == "credit_sale" ||
-    payment_type == "cash_puchase" ||
-    payment_type == "credit_purchase"
-  ) {
-    freight = freight == "" ? (freight = 0) : parseFloat(freight);
-  } else {
-    freight = 0;
-  }
-  //console.log(discount);
-  grand_total = freight + total_bill - total_bill * (discount / 100);
-  $("#product_total_amount").html(total_bill);
-  $("#product_grand_total_amount").html(grand_total);
-
-  if (payment_type == "cash_in_hand" || payment_type == "cash_purchase") {
-    $("#paid_ammount").val(grand_total);
-    $("#paid_ammount").attr("max", grand_total);
-    $("#paid_ammount").prop("required", true);
-    if (payment_type == "cash_in_hand") {
-      $("#full_payment_check").prop("checked", true);
-    }
-  } else {
-    $("#paid_ammount").val("0");
-    $("#paid_ammount").prop("required", false);
-  }
-  if (grand_total > 0) {
-    $("input[name='payment_account'] ").prop("required", true);
-  } else {
-    $("input[name='payment_account'] ").prop("required", false);
-  }
-
-  getRemaingAmount();
 }
+
+function getOrderTotal() {
+  function calculateTotal() {
+    let rate = parseFloat($("#get_product_price").val()) || 0;
+    let quantity = parseFloat($("#get_product_quantity").val()) || 0;
+    let totalAmount = rate * quantity;
+
+    // Update Total Amount Fields
+    $("#product_total_amount").html(totalAmount.toFixed(2));
+    $("#product_total_amount_input").val(totalAmount.toFixed(2));
+
+    // Calculate Discount as Percentage
+    let discountPercentage = parseFloat($("#ordered_discount").val()) || 0;
+    let discountAmount = (totalAmount * discountPercentage) / 100;
+
+    // Calculate Total after Discount
+    let grandTotal = totalAmount - discountAmount;
+
+    // Add Freight Value to Grand Total
+    let freight = parseFloat($("#freight").val()) || 0;
+    grandTotal += freight;
+
+    // Ensure Grand Total doesn't go below zero
+    if (grandTotal < 0) grandTotal = 0;
+
+    // Update Grand Total, Discount, and Freight Fields
+    $("#product_grand_total_amount").html(grandTotal.toFixed(2));
+    $("#product_grand_amount_input").val(grandTotal.toFixed(2));
+    $("#product_discount_amount").html(discountAmount.toFixed(2)); // Show discount amount
+    $("#product_freight_amount").html(freight.toFixed(2)); // Show freight value if needed
+
+    let paid_ammount = parseFloat($("#paid_ammount").val()) || 0;
+    let remainingAmount = $("#product_grand_amount_input").val() - paid_ammount;
+    $("#remaining_ammount").val(remainingAmount);
+
+    getRemainingAmount(); // Call remaining amount calculation
+  }
+
+  // Initial Calculation on Page Load
+  calculateTotal();
+
+  // Event Listeners for Input Changes
+  $(
+    "#get_product_price, #get_product_quantity, #ordered_discount, #freight,#paid_ammount"
+  ).on("input", function () {
+    calculateTotal();
+  });
+}
+
+// Function to initialize live calculation
+function setupLiveCalculation() {
+  // Bind input events to all relevant fields
+  const inputFields = [
+    "#get_product_price",
+    "#get_pur_thaan",
+    "#get_pur_gzanah",
+    "#get_product_quantity",
+    "#ordered_discount",
+    "#freight",
+    "#payment_type",
+  ];
+
+  // Attach event listeners
+  inputFields.forEach((selector) => {
+    $(selector).on("input change", function () {
+      getOrderTotal();
+    });
+  });
+}
+
+// Initialize live calculation on page load
+$(document).ready(function () {
+  setupLiveCalculation();
+  getOrderTotal(); // Initial calculation on page load
+});
 
 function editByid(id, thaan, gzanah, unit, price, product_quantity) {
   $(".searchableSelect").val(id);
