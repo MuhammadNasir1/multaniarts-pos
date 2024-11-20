@@ -121,6 +121,12 @@
                   ?>
                     <option value="<?= $d['customer_id'] ?>"><?= ucwords($d['customer_name']) ?> ( <?= ucwords($d['customer_type']) ?> )</option>
                   <?php } ?>
+                  <?php
+                  $location = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'shop'");
+                  while ($d = mysqli_fetch_assoc($location)) {
+                  ?>
+                    <option value="<?= $d['customer_id'] ?>"><?= ucwords($d['customer_name']) ?> ( <?= ucwords($d['customer_type']) ?> )</option>
+                  <?php } ?>
                 </select>
                 <input type="hidden" name="location_type" id="location_type">
               </div>
@@ -354,7 +360,7 @@
       url: 'php_action/custom_action.php',
       type: 'POST',
       data: {
-        location_type: value
+        location_type_get: value
       },
       dataType: 'json',
       success: function(response) {

@@ -972,11 +972,13 @@ if (isset($_REQUEST['cash_purchase_supplier'])) {
 
 					insert_data($dbc, 'purchase_item', $order_items);
 
-					if ($get_company['stock_manage'] == 1) {
-						$product_id = $_REQUEST['product_ids'][$x];
-						$quantity_instock = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT quantity_instock FROM  product WHERE product_id='" . $product_id . "' "));
-						$qty = (float)$quantity_instock['quantity_instock'] + $product_quantites;
-						$quantity_update = mysqli_query($dbc, "UPDATE product SET  quantity_instock='$qty' WHERE product_id='" . $product_id . "' ");
+					if ($_POST['location_type'] == 'shop') {
+						if ($get_company['stock_manage'] == 1) {
+							$product_id = $_REQUEST['product_ids'][$x];
+							$quantity_instock = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT quantity_instock FROM  product WHERE product_id='" . $product_id . "' "));
+							$qty = (float)$quantity_instock['quantity_instock'] + $product_quantites;
+							$quantity_update = mysqli_query($dbc, "UPDATE product SET  quantity_instock='$qty' WHERE product_id='" . $product_id . "' ");
+						}
 					}
 
 
@@ -1753,8 +1755,8 @@ if (isset($_POST['recieve_purc_id'])) {
 }
 
 // Find Location Type
-if (isset($_POST['location_type'])) {
-	$id = $dbc->real_escape_string($_POST['location_type']);
+if (isset($_POST['location_type_get'])) {
+	$id = $dbc->real_escape_string($_POST['location_type_get']);
 
 	// Fetch data from the purchase table
 	$customer_data = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_id = '$id'");

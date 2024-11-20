@@ -534,30 +534,30 @@ $(document).ready(function () {
     });
 
     // Second AJAX call
-    $.ajax({
-      type: "POST",
-      url: "php_action/custom_action.php",
-      data: {
-        getPrice: code,
-        type: "code",
-        credit_sale_type: credit_sale_type,
-        payment_type: payment_type,
-      },
-      dataType: "json",
-      success: function (response) {
-        console.log("Price Response: ", response);
+    // $.ajax({
+    //   type: "POST",
+    //   url: "php_action/custom_action.php",
+    //   data: {
+    //     getPrice: code,
+    //     type: "code",
+    //     credit_sale_type: credit_sale_type,
+    //     payment_type: payment_type,
+    //   },
+    //   dataType: "json",
+    //   success: function (response) {
+    //     console.log("Price Response: ", response);
 
-        // Set values and update UI
-        $("#get_product_price").val(response.price);
-        $("#instockQty").text(response.qty);
+    //     // Set values and update UI
+    //     $("#get_product_price").val(response.price);
+    //     $("#instockQty").text(response.qty);
 
-        // Enable or disable button based on stock
-        $("#addProductPurchase").prop("disabled", response.qty <= 0);
-      },
-      error: function (xhr, status, error) {
-        console.error("Error in getPrice AJAX: ", error);
-      },
-    });
+    //     // Enable or disable button based on stock
+    //     $("#addProductPurchase").prop("disabled", response.qty <= 0);
+    //   },
+    //   error: function (xhr, status, error) {
+    //     console.error("Error in getPrice AJAX: ", error);
+    //   },
+    // });
   });
 }); /*--------------end of-------------------------------------------------------*/
 function pending_bills(value) {
