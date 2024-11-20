@@ -758,41 +758,33 @@ function getOrderTotal() {
     let quantity = parseFloat($("#get_product_quantity").val()) || 0;
     let totalAmount = rate * quantity;
 
-    // Update Total Amount Fields
     $("#product_total_amount").html(totalAmount.toFixed(2));
     $("#product_total_amount_input").val(totalAmount.toFixed(2));
 
-    // Calculate Discount as Percentage
     let discountPercentage = parseFloat($("#ordered_discount").val()) || 0;
     let discountAmount = (totalAmount * discountPercentage) / 100;
 
-    // Calculate Total after Discount
     let grandTotal = totalAmount - discountAmount;
 
-    // Add Freight Value to Grand Total
     let freight = parseFloat($("#freight").val()) || 0;
     grandTotal += freight;
 
-    // Ensure Grand Total doesn't go below zero
     if (grandTotal < 0) grandTotal = 0;
 
-    // Update Grand Total, Discount, and Freight Fields
     $("#product_grand_total_amount").html(grandTotal.toFixed(2));
     $("#product_grand_amount_input").val(grandTotal.toFixed(2));
-    $("#product_discount_amount").html(discountAmount.toFixed(2)); // Show discount amount
-    $("#product_freight_amount").html(freight.toFixed(2)); // Show freight value if needed
+    $("#product_discount_amount").html(discountAmount.toFixed(2));
+    $("#product_freight_amount").html(freight.toFixed(2));
 
     let paid_ammount = parseFloat($("#paid_ammount").val()) || 0;
     let remainingAmount = $("#product_grand_amount_input").val() - paid_ammount;
     $("#remaining_ammount").val(remainingAmount);
 
-    getRemainingAmount(); // Call remaining amount calculation
+    getRemainingAmount();
   }
 
-  // Initial Calculation on Page Load
   calculateTotal();
 
-  // Event Listeners for Input Changes
   $(
     "#get_product_price, #get_product_quantity, #ordered_discount, #freight,#paid_ammount"
   ).on("input", function () {
