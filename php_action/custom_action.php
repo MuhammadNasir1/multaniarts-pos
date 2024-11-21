@@ -959,13 +959,13 @@ if (isset($_REQUEST['cash_purchase_supplier'])) {
 			// Add Data in 
 			$p_id = $_POST['next_increment'];
 			if ($_POST['location_type'] == 'dyeing') {
-				$insert_data = mysqli_query($dbc, "INSERT INTO `dyeing`(`purchase_id`, `status`) VALUES ('$p_id','sent')");
+				$insert_data = mysqli_query($dbc, "INSERT INTO `dyeing`(`purchase_id`, `status`,`entry_from`) VALUES ('$p_id','sent','purchase')");
 			} elseif ($_POST['location_type'] == 'printer') {
-				$insert_data = mysqli_query($dbc, "INSERT INTO `printing`(`purchase_id`, `status`) VALUES ('$p_id','sent')");
+				$insert_data = mysqli_query($dbc, "INSERT INTO `printing`(`purchase_id`, `statu,`entry_from`) VALUES ('$p_id','sent','purchase')");
 			} elseif ($_POST['location_type'] == 'packing') {
-				$insert_data = mysqli_query($dbc, "INSERT INTO `packing`(`purchase_id`, `status`) VALUES ('$p_id','sent')");
+				$insert_data = mysqli_query($dbc, "INSERT INTO `packing`(`purchase_id`, `status`,`entry_from`) VALUES ('$p_id','sent','purchase')");
 			} elseif ($_POST['location_type'] == 'embroidery') {
-				$insert_data = mysqli_query($dbc, "INSERT INTO `embroidery`(`purchase_id`, `status`) VALUES ('$p_id','sent')");
+				$insert_data = mysqli_query($dbc, "INSERT INTO `embroidery`(`purchase_id`, `status`,`entry_from`) VALUES ('$p_id','sent','purchase')");
 			}
 
 			// $total_grand = $total_ammount - $total_ammount * ((float)@$_REQUEST['ordered_discount'] / 100) + @$_REQUEST['freight'];
