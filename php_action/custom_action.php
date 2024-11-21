@@ -1588,9 +1588,9 @@ if (isset($_POST['action'])) {
 			$result && mysqli_num_rows($result) > 0
 		) {
 			$row = mysqli_fetch_assoc($result);
-			echo $row['stock']; // Return balance as response
+			echo $row['stock'];
 		} else {
-			echo "0"; // Return 0 if no balance is found
+			echo "0";
 		}
 	}
 
@@ -1696,21 +1696,17 @@ if (isset($_POST['action'])) {
 if (isset($_POST['recieve_purc_id'])) {
 	$id = $dbc->real_escape_string($_POST['recieve_purc_id']);
 
-	// Fetch data from the purchase table
 	$purchaseResult = mysqli_query($dbc, "SELECT * FROM purchase WHERE purchase_id = '$id'");
 	$purchaseData = $purchaseResult->fetch_assoc();
 
-	// Fetch data from the purchase_items table and retrieve product names
 	$itemsResult = mysqli_query($dbc, "SELECT * FROM purchase_item WHERE purchase_id = '$id'");
 	$itemsData = [];
 	while ($row = $itemsResult->fetch_assoc()) {
 		$product_id = $row['product_id'];
 
-		// Fetch product name from the product table
 		$productResult = mysqli_query($dbc, "SELECT product_name FROM product WHERE product_id = '$product_id'");
 		$productData = $productResult->fetch_assoc();
 
-		// Add product name to the row
 		$row['product_name'] = $productData['product_name'];
 		$itemsData[] = $row;
 	}
@@ -1726,7 +1722,6 @@ if (isset($_POST['recieve_purc_id'])) {
 if (isset($_POST['location_type_get'])) {
 	$id = $dbc->real_escape_string($_POST['location_type_get']);
 
-	// Fetch data from the purchase table
 	$customer_data = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_id = '$id'");
 	$customer = $customer_data->fetch_assoc();
 
@@ -1744,20 +1739,26 @@ if (isset($_POST['location_type_get'])) {
 if (isset($_POST['get_purchase_data'])) {
 	$id = $dbc->real_escape_string($_POST['get_purchase_data']);
 
-	// Fetch data from the purchase table
-	$customer_data = mysqli_query($dbc, "SELECT * FROM purchase WHERE pur_location = '$id'");
+	$customer_data = mysqli_query($dbc, "
+        SELECT purchase.*, product.product_name 
+        FROM purchase 
+        LEFT JOIN product 
+        ON purchase.product_id = product.product_id 
+        WHERE purchase.pur_location = '$id'
+    ");
 
 	$customers = [];
 	while ($row = $customer_data->fetch_assoc()) {
-		$customers[] = $row; // Add each row to the array
+		$customers[] = $row;
 	}
 
 	if (!empty($customers)) {
-		echo json_encode(['success' => true, 'data' => $customers]); // Return all rows
+		echo json_encode(['success' => true, 'data' => $customers]);
 	} else {
-		echo json_encode(['success' => false, 'data' => null]); // No data found
+		echo json_encode(['success' => false, 'data' => null]);
 	}
 }
+
 
 
 

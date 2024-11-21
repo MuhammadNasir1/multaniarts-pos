@@ -217,15 +217,12 @@
                 </div> <!-- .row -->
             </div> <!-- .container-fluid -->
             <!-- <button type="button" class="btn btn-danger d-none btn-sm m-1" id="productionModalButton" data-toggle="modal" data-target="#addProductionModal" onclick="getPurId(<?= $r['purchase_id'] ?>) , getRandomCode()">Production</button> -->
-            <!-- Button trigger modal -->
 
 
-            <!-- Button trigger modal -->
             <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#purchaseModal" id="purchaseModalBtn">
                 Launch demo modal
             </button>
 
-            <!-- Modal -->
             <div class="modal fade" id="purchaseModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
@@ -241,17 +238,16 @@
                                     <tr>
                                         <th>Purchase ID</th>
                                         <th>Purchase Date</th>
-                                        <th>Client Name</th>
-                                        <th>Client Contact</th>
-                                        <th>Total Amount</th>
-                                        <th>Discount</th>
+                                        <th>Product</th>
+                                        <th>Thaan</th>
+                                        <th>Gzanah</th>
+                                        <th>Quantity</th>
                                         <th>Grand Total</th>
                                         <th>Paid</th>
                                         <th>Due</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- Content will be dynamically added here -->
                                 </tbody>
                             </table>
                         </div>
@@ -290,28 +286,25 @@
                 if (response.success) {
                     const data = response.data;
 
-                    // Clear previous table content
                     $("#purchaseDetailsTable tbody").empty();
 
-                    // Iterate through all rows of data
                     data.forEach(row => {
                         const rowHTML = `
                 <tr>
-                    <td>${row.purchase_id || "N/A"}</td>
-                    <td>${row.purchase_date || "N/A"}</td>
-                    <td>${row.client_name || "N/A"}</td>
-                    <td>${row.client_contact || "N/A"}</td>
-                    <td>${row.total_amount || "N/A"}</td>
-                    <td>${row.discount || "N/A"}</td>
-                    <td>${row.grand_total || "N/A"}</td>
-                    <td>${row.paid || "N/A"}</td>
-                    <td>${row.due || "N/A"}</td>
+                    <td>${row.purchase_id || ""}</td>
+                    <td>${row.purchase_date || ""}</td>
+                    <td>${row.product_name || ""}</td>
+                    <td>${row.pur_thaan || ""}</td>
+                    <td>${row.pur_gzanah || ""}</td>
+                    <td>${row.quantity || ""}</td>
+                    <td>${row.grand_total || ""}</td>
+                    <td>${row.paid || ""}</td>
+                    <td>${row.due || ""}</td>
                 </tr>
             `;
                         $("#purchaseDetailsTable tbody").append(rowHTML);
                     });
 
-                    // Open the modal
                     $("#purchaseModalBtn").click();
                 }
             },
