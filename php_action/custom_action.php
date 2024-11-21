@@ -956,16 +956,36 @@ if (isset($_REQUEST['cash_purchase_supplier'])) {
 	if ($_REQUEST['product_purchase_id'] == "") {
 
 		if (insert_data($dbc, 'purchase', $data)) {
-			// Add Data in 
+
 			$p_id = $_POST['next_increment'];
+			$all_data = [
+				'purchase_id' => $p_id,
+				'done_by' => $_REQUEST['pur_location'],
+				'status' => 'sent',
+				'entry_from' => 'purchase',
+				'product_id' => $_REQUEST['product_id'],
+				'rate' => $_REQUEST['product_price'],
+				'thaan' => $_REQUEST['pur_thaan'],
+				'gzanah' => $_REQUEST['pur_gzanah'],
+				'quantity' => $_REQUEST['quantity'],
+				'unit' => $_REQUEST['pur_unit'],
+			];
+			// Add Data in 
 			if ($_POST['location_type'] == 'dyeing') {
-				$insert_data = mysqli_query($dbc, "INSERT INTO `dyeing`(`purchase_id`, `status`,`entry_from`) VALUES ('$p_id','sent','purchase')");
+				$insert_data = insert_data($dbc, 'dyeing', $all_data);
 			} elseif ($_POST['location_type'] == 'printer') {
-				$insert_data = mysqli_query($dbc, "INSERT INTO `printing`(`purchase_id`, `statu,`entry_from`) VALUES ('$p_id','sent','purchase')");
+				$insert_data = insert_data($dbc, 'printing', $all_data);
 			} elseif ($_POST['location_type'] == 'packing') {
-				$insert_data = mysqli_query($dbc, "INSERT INTO `packing`(`purchase_id`, `status`,`entry_from`) VALUES ('$p_id','sent','purchase')");
+				$insert_data = insert_data($dbc, 'packing', $all_data);
 			} elseif ($_POST['location_type'] == 'embroidery') {
-				$insert_data = mysqli_query($dbc, "INSERT INTO `embroidery`(`purchase_id`, `status`,`entry_from`) VALUES ('$p_id','sent','purchase')");
+				$insert_data = insert_data($dbc, 'embroidery', $all_data);
+			} elseif ($_POST['location_type'] == 'shop') {
+				if ($get_company['stock_manage'] == 1) {
+					$product_id = $_REQUEST['product_id'];
+					$quantity_instock = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT quantity_instock FROM  product WHERE product_id='" . $product_id . "' "));
+					$qty = (float)$quantity_instock['quantity_instock'] + $_REQUEST['quantity'];
+					$quantity_update = mysqli_query($dbc, "UPDATE product SET  quantity_instock='$qty' WHERE product_id='" . $product_id . "' ");
+				}
 			}
 
 			// $total_grand = $total_ammount - $total_ammount * ((float)@$_REQUEST['ordered_discount'] / 100) + @$_REQUEST['freight'];
