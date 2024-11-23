@@ -442,7 +442,8 @@ if (!empty($_REQUEST['action']) and $_REQUEST['action'] == "inventory_module") {
 if (isset($_REQUEST['get_products_list'])) {
 
 	if ($_REQUEST['type'] == "code") {
-		$q = mysqli_query($dbc, "SELECT * FROM product WHERE product_code LIKE '%" . $_REQUEST['get_products_list'] . "%' AND status=1 ");
+		// $q = mysqli_query($dbc, "SELECT * FROM product WHERE product_code LIKE '%" . $_REQUEST['get_products_list'] . "%' AND status=1 ");
+		$q = mysqli_query($dbc, "SELECT * FROM product WHERE product_id LIKE '%" . $_REQUEST['get_products_list'] . "%' AND status=1 ");
 		if (mysqli_num_rows($q) > 0) {
 			while ($r = mysqli_fetch_assoc($q)) {
 				echo '<option value="' . $r['product_id'] . '">' . $r['product_name'] . '</option>';
@@ -1814,7 +1815,7 @@ if (isset($_POST['dyeing_issuance_form'])) {
 
 	$data = [
 		'purchase_id' => $_POST['dyeing_issuance_purchase'],
-		'done_by' => $_POST['from_location'],
+		'done_by' => $_POST['to_location'],
 		'status' => 'sent',
 		'entry_from' => 'dyeing_issuance',
 		'product_id' => $_POST['product_id'],

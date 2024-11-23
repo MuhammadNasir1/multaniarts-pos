@@ -487,61 +487,61 @@ $(document).ready(function () {
       },
     }); //ajax call
   }); //main
-  $("#get_product_name").on("change", function () {
-    // Fetch values at the start of the function
-    var code = $(this).val(); // Get the selected value
-    console.log("Product Code: ", code);
+  // $("#get_product_name").on("change", function () {
+  //   // Fetch values at the start of the function
+  //   var code = $(this).val(); // Get the selected value
+  //   console.log("Product Code: ", code);
 
-    var credit_sale_type = $("#credit_sale_type").val();
-    var payment_type = $("#payment_type").val();
+  //   var credit_sale_type = $("#credit_sale_type").val();
+  //   var payment_type = $("#payment_type").val();
 
-    // First AJAX call
-    $.ajax({
-      type: "POST",
-      url: "php_action/custom_action.php",
-      data: {
-        get_products_list: code,
-        type: "code",
-      },
-      dataType: "text",
-      success: function (msg) {
-        var res = msg.trim();
-        console.log("Product List Response: ", res);
+  //   // First AJAX call
+  //   $.ajax({
+  //     type: "POST",
+  //     url: "php_action/custom_action.php",
+  //     data: {
+  //       get_products_list: code,
+  //       type: "code",
+  //     },
+  //     dataType: "text",
+  //     success: function (msg) {
+  //       var res = msg.trim();
+  //       console.log("Product List Response: ", res);
 
-        // Update the options of #get_product_name
-        $("#get_product_name").empty().html(res);
-      },
-      error: function (xhr, status, error) {
-        console.error("Error in get_products_list AJAX: ", error);
-      },
-    });
+  //       // Update the options of #get_product_name
+  //       $("#get_product_name").empty().html(res);
+  //     },
+  //     error: function (xhr, status, error) {
+  //       console.error("Error in get_products_list AJAX: ", error);
+  //     },
+  //   });
 
-    // Second AJAX call
-    // $.ajax({
-    //   type: "POST",
-    //   url: "php_action/custom_action.php",
-    //   data: {
-    //     getPrice: code,
-    //     type: "code",
-    //     credit_sale_type: credit_sale_type,
-    //     payment_type: payment_type,
-    //   },
-    //   dataType: "json",
-    //   success: function (response) {
-    //     console.log("Price Response: ", response);
+  //   // Second AJAX call
+  //   $.ajax({
+  //     type: "POST",
+  //     url: "php_action/custom_action.php",
+  //     data: {
+  //       getPrice: code,
+  //       type: "code",
+  //       credit_sale_type: credit_sale_type,
+  //       payment_type: payment_type,
+  //     },
+  //     dataType: "json",
+  //     success: function (response) {
+  //       // console.log("Price Response: ", response);
 
-    //     // Set values and update UI
-    //     $("#get_product_price").val(response.price);
-    //     $("#instockQty").text(response.qty);
+  //       // // Set values and update UI
+  //       // $("#get_product_price").val(response.price);
+  //       // $("#instockQty").text(response.qty);
 
-    //     // Enable or disable button based on stock
-    //     $("#addProductPurchase").prop("disabled", response.qty <= 0);
-    //   },
-    //   error: function (xhr, status, error) {
-    //     console.error("Error in getPrice AJAX: ", error);
-    //   },
-    // });
-  });
+  //       // Enable or disable button based on stock
+  //       // $("#addProductPurchase").prop("disabled", response.qty <= 0);
+  //     },
+  //     error: function (xhr, status, error) {
+  //       console.error("Error in getPrice AJAX: ", error);
+  //     },
+  //   });
+  // });
 }); /*--------------end of-------------------------------------------------------*/
 function pending_bills(value) {
   $.ajax({
