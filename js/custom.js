@@ -1364,19 +1364,30 @@ function cutt_voucher_duplicateRow() {
   $("#voucher_rows_container2").append(newRow);
 }
 
-function cutt_voucher_duplicateRow2() {
-  // Clone the last row instead of the first row to keep any changes to the last row intact
-  let newRow = $(".voucher_row:last").clone();
+$(document).ready(function () {
+  // Initialize the serial number for the first row on page load
+  $("#voucher_rows_container2 .voucher_row2:first")
+    .find("input[type='text'][readonly]")
+    .val(1);
+});
+
+function cutt_voucher_duplicateRow() {
+  // Clone the first row
+  let newRow = $(".voucher_row2:first").clone();
 
   // Clear input values in the cloned row
   newRow.find("input").val("");
   newRow.find("select").prop("selectedIndex", 0);
 
-  // Append the new row at the end of the container
-  $("#voucher_rows_container").append(newRow);
+  // Append the new row to the container
+  $("#voucher_rows_container2").append(newRow);
 
-  // After appending, update the visibility of delete buttons
-  updateDeleteButtonVisibility();
+  // Update serial numbers
+  $("#voucher_rows_container2 .voucher_row2").each(function (index) {
+    $(this)
+      .find("input[type='text'][readonly]")
+      .val(index + 1); // Update Sr value
+  });
 }
 
 function cutt_voucher_remove2(el) {
@@ -1384,6 +1395,14 @@ function cutt_voucher_remove2(el) {
   $(el).closest(".voucher_row").remove();
 }
 
+function updateSerialNumbers() {
+  // Update the serial numbers for all rows
+  $("#voucher_rows_container2 .voucher_row2").each(function (index) {
+    $(this)
+      .find("input[type='text'][readonly]")
+      .val(index + 1); // Update Sr value
+  });
+}
 function deying_voucher_remove3(el) {
   // Remove the row that the user clicked on
   $(el).closest(".row").remove();
@@ -1396,6 +1415,7 @@ function deying_voucher_remove4(el) {
 function cutt_voucher_remove(el) {
   // Remove the row that the user clicked on
   $(el).closest(".voucher_row2").remove();
+  updateSerialNumbers();
 }
 
 function deying_voucher_duplicateRow5() {

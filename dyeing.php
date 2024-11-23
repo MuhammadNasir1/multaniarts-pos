@@ -153,7 +153,7 @@
                                         </div>
                                         <div class="col-lg-1 m-0 p-0 pl-1">
                                             <label>Unit</label>
-                                            <input type="text" class="form-control thaan" name="unit_arr[]" placeholder="Thaan">
+                                            <input type="text" class="form-control thaan" name="unit_arr[]" placeholder="Thaan" id="unit_arr">
                                             <input type="hidden" name="unit">
                                         </div>
                                         <div class="col-lg-1 m-0 p-0 pl-1">
@@ -163,7 +163,7 @@
                                         </div>
                                         <div class="col-lg-1 m-0 p-0 pl-1">
                                             <label>Thaan</label>
-                                            <input type="text" class="form-control thaan" name="thaan_arr[]" placeholder="Thaan">
+                                            <input type="text" class="form-control thaan" name="thaan_arr[]" placeholder="Thaan" id="thaan_arr">
                                             <input type="hidden" name="thaan" id="thaan">
                                         </div>
                                         <div class="col-lg-1 m-0 p-0 pl-1">
@@ -173,7 +173,7 @@
                                         </div>
                                         <div class="col-lg-1 m-0 p-0 pl-1">
                                             <label>Qty</label>
-                                            <input type="text" class="form-control quantity" name="qty_arr[]" value="0" placeholder="qty">
+                                            <input type="text" class="form-control quantity" name="qty_arr[]" value="0" placeholder="qty" id="qty_arr">
                                             <input type="hidden" name="qty" id="qty">
                                         </div>
                                         <div class="col-lg-1 m-0 p-0 pl-1">
@@ -183,7 +183,7 @@
                                         </div>
                                         <div class="col-lg-1 m-0 p-0 pl-1">
                                             <label>Gzanah</label>
-                                            <input type="text" class="form-control gzanah" name="gzanah_arr[]" placeholder="Gzanah">
+                                            <input type="text" class="form-control gzanah" name="gzanah_arr[]" placeholder="Gzanah" id="gzanah_arr">
                                             <input type="hidden" name="gzanah" id="gzanah">
                                         </div>
 
@@ -371,6 +371,11 @@
                         .prop('selected', true);
 
                     $('#showProduct').append(option);
+                    $("#unit_arr").val(response.data.pur_type)
+                    $("#thaan_arr").val(response.data.pur_thaan)
+                    $("#qty_arr").val(response.data.quantity)
+                    $("#pur_type").val(response.data.pur_type)
+                    $("#gzanah_arr").val(response.data.pur_gzanah)
                     $("#detailModalClose").click();
                 }
             },
