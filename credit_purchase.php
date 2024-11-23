@@ -95,39 +95,7 @@
               </div>
               <div class="col-md-2 mt-3">
                 <label>Location</label>
-                <!-- <input type="text" placeholder="Location Here" value="<?= @$fetchPurchase['pur_location'] ?>" autocomplete="off" class="form-control" name="pur_location"> -->
-                <!-- <select class="form-control searchableSelect" onchange="findLocationType(this.value)" name="pur_location" id="pur_location">
-                  <?php
-                  $location = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'dyeing'");
-                  while ($d = mysqli_fetch_assoc($location)) {
-                  ?>
-                    <option value="<?= $d['customer_id'] ?>"> <?= ucwords($d['customer_name']) ?> ( <?= ucwords($d['customer_type']) ?> )</option>
-                  <?php } ?>
-                  <?php
-                  $location = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'printer'");
-                  while ($d = mysqli_fetch_assoc($location)) {
-                  ?>
-                    <option value="<?= $d['customer_id'] ?>"><?= ucwords($d['customer_name']) ?> ( <?= ucwords($d['customer_type']) ?> )</option>
-                  <?php } ?>
-                  <?php
-                  $location = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'packing'");
-                  while ($d = mysqli_fetch_assoc($location)) {
-                  ?>
-                    <option value="<?= $d['customer_id'] ?>"><?= ucwords($d['customer_name']) ?> ( <?= ucwords($d['customer_type']) ?> )</option>
-                  <?php } ?>
-                  <?php
-                  $location = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'embroidery'");
-                  while ($d = mysqli_fetch_assoc($location)) {
-                  ?>
-                    <option value="<?= $d['customer_id'] ?>"><?= ucwords($d['customer_name']) ?> ( <?= ucwords($d['customer_type']) ?> )</option>
-                  <?php } ?>
-                  <?php
-                  $location = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'shop'");
-                  while ($d = mysqli_fetch_assoc($location)) {
-                  ?>
-                    <option value="<?= $d['customer_id'] ?>"><?= ucwords($d['customer_name']) ?> ( <?= ucwords($d['customer_type']) ?> )</option>
-                  <?php } ?>
-                </select> -->
+
                 <select class="form-control searchableSelect" id="pur_location" name="pur_location" onchange="findLocationType(this.value)" aria-label="Username" aria-describedby="basic-addon1">
                   <option value="">Select Account</option>
 

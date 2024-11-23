@@ -78,9 +78,8 @@
                                         <?php endif ?>
                                     <?php $type2 = $r['customer_type'];
                                     endwhile; ?>
-
-
                                 </select>
+                                <input type="hidden" name="location_type" id="location_type">
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label>Issue To</label>
@@ -143,7 +142,7 @@
                                         </div>
                                         <div class="col-lg-1 m-0 p-0 pl-1">
                                             <label>Type</label>
-                                            <select class="form-control searchableSelect" name="pur_type_arr[]" id="pur_type">
+                                            <select class="form-control searchableSelect" name="pur_type_arr[]" id="pur_type_arr">
                                                 <option disabled>Select Type</option>
                                                 <option value="meter">Meter</option>
                                                 <option value="yard">Yard</option>
@@ -154,7 +153,7 @@
                                         <div class="col-lg-1 m-0 p-0 pl-1">
                                             <label>Unit</label>
                                             <input type="text" class="form-control thaan" name="unit_arr[]" placeholder="Thaan" id="unit_arr">
-                                            <input type="hidden" name="unit">
+                                            <input type="hidden" name="unit" id="unit">
                                         </div>
                                         <div class="col-lg-1 m-0 p-0 pl-1">
                                             <label>Color</label>
@@ -213,9 +212,9 @@
                                 </div>
                             </div>
                         </div>
-                        <hr>
+                        <!-- <hr>
                         <h3 class="text-center">Total: </h3>
-                        <hr>
+                        <hr> -->
                         <div class="row">
                             <div class="col-sm-6 offset-6">
 
@@ -282,6 +281,7 @@
 
 <script>
     function findPurchaseData(value) {
+        findLocationType(value);
         $.ajax({
             url: 'php_action/custom_action.php',
             type: 'POST',
@@ -372,10 +372,15 @@
 
                     $('#showProduct').append(option);
                     $("#unit_arr").val(response.data.pur_type)
+                    $("#unit").val(response.data.pur_type)
                     $("#thaan_arr").val(response.data.pur_thaan)
+                    $("#thaan").val(response.data.pur_thaan)
                     $("#qty_arr").val(response.data.quantity)
+                    $("#qty").val(response.data.quantity)
+                    $("#pur_type_arr").val(response.data.pur_type)
                     $("#pur_type").val(response.data.pur_type)
                     $("#gzanah_arr").val(response.data.pur_gzanah)
+                    $("#gzanah").val(response.data.pur_gzanah)
                     $("#detailModalClose").click();
                 }
             },
@@ -430,4 +435,23 @@
             });
         });
     });
+
+    function findLocationType(value) {
+        $.ajax({
+            url: 'php_action/custom_action.php',
+            type: 'POST',
+            data: {
+                location_type_get: value
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    $("#location_type").val(response.data.customer_type);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error: " + status + error);
+            }
+        });
+    }
 </script>

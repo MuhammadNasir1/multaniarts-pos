@@ -1834,6 +1834,9 @@ if (isset($_POST['dyeing_issuance_form'])) {
 		'product_details' => json_encode($json_data),
 	];
 
+
+
+
 	if (insert_data($dbc, "dyeing", $data)) {
 		$response = [
 			'sts' => 'success',
@@ -1843,7 +1846,7 @@ if (isset($_POST['dyeing_issuance_form'])) {
 	} else {
 		$response = [
 			'sts' => 'warning',
-			'msg' => "Something went wrong: " . mysqli_error($dbc)
+			'msg' => "Something went wrong: " . mysqli_error($dbc),
 		];
 	}
 
