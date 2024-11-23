@@ -36,9 +36,11 @@
                     <div class="card-body">
                     <?php } ?>
 
-                    <form action="php_action/custom_action.php" method="POST" id="sale_order_fm">
+                    <form action="php_action/custom_action.php" method="POST" id="dyeing_issuance">
                         <input type="hidden" name="product_purchase_id" value="<?= @empty($_REQUEST['edit_purchase_id']) ? "" : base64_decode($_REQUEST['edit_purchase_id']) ?>">
                         <input type="hidden" name="payment_type" id="payment_type" value="credit_purchase">
+                        <input type="hidden" name="dyeing_issuance_form" value="dyeing_issuance_from">
+                        <input type="hidden" name="dyeing_issuance_purchase" id="dyeing_issuance_purchase">
 
 
                         <div class="row form-group">
@@ -56,11 +58,11 @@
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label>From Location</label>
-                                <select class="form-control searchableSelect" id="form_location" name="form_location" onchange="findPurchaseData(this.value)" aria-label="Username" aria-describedby="basic-addon1">
+                                <select class="form-control searchableSelect" id="form_location" name="from_location" onchange="findPurchaseData(this.value)" aria-label="Username" aria-describedby="basic-addon1">
                                     <option value="">Select Account</option>
 
 
-                                    <?php $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status = 1 AND customer_type = 'dyeing' ORDER BY customer_type ASC;");
+                                    <?php $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status = 1 AND (customer_type = 'dyeing' OR customer_type = 'shop' OR customer_type = 'shop' OR customer_type = 'packing' OR customer_type = 'printer') ORDER BY customer_type ASC;");
                                     $type2 = '';
                                     while ($r = mysqli_fetch_assoc($q)):
                                         $type = $r['customer_type'];
@@ -82,11 +84,11 @@
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label>Issue To</label>
-                                <select class="form-control searchableSelect" id="to_location" name="to_location" onchange="findLocationType(this.value)" aria-label="Username" aria-describedby="basic-addon1">
+                                <select class="form-control searchableSelect" id="to_location" name="to_location" onchange="findLocationType(this.value)">
                                     <option value="">Select Account</option>
 
 
-                                    <?php $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status = 1 AND (customer_type = 'dyeing' OR customer_type = 'shop' OR customer_type = 'shop' OR customer_type = 'packing' OR customer_type = 'printer') ORDER BY customer_type ASC;");
+                                    <?php $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status = 1 AND customer_type = 'dyeing' ORDER BY customer_type ASC;");
                                     $type2 = '';
                                     while ($r = mysqli_fetch_assoc($q)):
                                         $type = $r['customer_type'];
@@ -132,54 +134,64 @@
                                                 <input type="text" class="form-control thaan" readonly value="">
                                             </div>
                                             <div class="col-9 m-0 p-0 pl-1">
-                                                <label for="cutting_from_product">Quality</label>
-                                                <select class="form-control searchableSelect" name="cutting_from_product[]">
+                                                <label for="showProduct">Quality</label>
+                                                <select class="form-control searchableSelect" name="from_product[]" id="showProduct">
                                                     <option value="">Select Product</option>
                                                 </select>
+                                                <input type="hidden" name="product_id" id="product_id">
                                             </div>
                                         </div>
                                         <div class="col-lg-1 m-0 p-0 pl-1">
                                             <label>Type</label>
-                                            <select class="form-control searchableSelect" name="pur_type" id="pur_type">
+                                            <select class="form-control searchableSelect" name="pur_type_arr[]" id="pur_type">
                                                 <option disabled>Select Type</option>
                                                 <option value="meter">Meter</option>
                                                 <option value="yard">Yard</option>
                                                 <option value="others">Suit</option>
                                             </select>
+                                            <input type="hidden" name="pur_type" id="pur_type">
                                         </div>
                                         <div class="col-lg-1 m-0 p-0 pl-1">
                                             <label>Unit</label>
-                                            <input type="text" class="form-control thaan" name="unit[]" placeholder="Thaan">
+                                            <input type="text" class="form-control thaan" name="unit_arr[]" placeholder="Thaan">
+                                            <input type="hidden" name="unit">
                                         </div>
                                         <div class="col-lg-1 m-0 p-0 pl-1">
                                             <label>Color</label>
-                                            <input type="text" class="form-control thaan" name="color[]" placeholder="Color">
+                                            <input type="text" class="form-control thaan" name="color_arr[]" placeholder="Color">
+                                            <input type="hidden" name="color" id="product_id">
                                         </div>
                                         <div class="col-lg-1 m-0 p-0 pl-1">
                                             <label>Thaan</label>
-                                            <input type="text" class="form-control thaan" name="thaan[]" placeholder="Thaan">
+                                            <input type="text" class="form-control thaan" name="thaan_arr[]" placeholder="Thaan">
+                                            <input type="hidden" name="thaan" id="thaan">
                                         </div>
                                         <div class="col-lg-1 m-0 p-0 pl-1">
                                             <label>Pur Thaan</label>
-                                            <input type="text" class="form-control thaan" name="pur_thaan[]" placeholder="Pur Thaan">
+                                            <input type="text" class="form-control thaan" name="pur_thaan_arr[]" placeholder="Pur Thaan">
+                                            <input type="hidden" name="pur_thaan" id="pur_thaan">
                                         </div>
                                         <div class="col-lg-1 m-0 p-0 pl-1">
                                             <label>Qty</label>
-                                            <input type="text" class="form-control quantity" name="qty[]" value="0" placeholder="qty">
+                                            <input type="text" class="form-control quantity" name="qty_arr[]" value="0" placeholder="qty">
+                                            <input type="hidden" name="qty" id="qty">
                                         </div>
                                         <div class="col-lg-1 m-0 p-0 pl-1">
                                             <label>Suit</label>
-                                            <input type="text" class="form-control thaan" name="suit[]" placeholder="Suit">
+                                            <input type="text" class="form-control thaan" name="suit_arr[]" placeholder="Suit">
+                                            <input type="hidden" name="suit" id="suit">
                                         </div>
                                         <div class="col-lg-1 m-0 p-0 pl-1">
                                             <label>Gzanah</label>
-                                            <input type="text" class="form-control gzanah" name="gzanah[]" placeholder="Gzanah">
+                                            <input type="text" class="form-control gzanah" name="gzanah_arr[]" placeholder="Gzanah">
+                                            <input type="hidden" name="gzanah" id="gzanah">
                                         </div>
 
                                         <div class="col-lg-1 m-0 p-0 pl-1">
                                             <div class="form-group mb-0">
                                                 <label>Lot No</label>
-                                                <input type="text" class="form-control" id="lot_no" name="lot_no[]" placeholder="Lot No" required>
+                                                <input type="text" class="form-control" id="lot_no" name="lot_no_arr[]" placeholder="Lot No" required>
+                                                <input type="hidden" name="lot_no" id="lot_no">
                                             </div>
                                         </div>
 
@@ -229,7 +241,7 @@
                         <div class="modal-header">
                             <h5 class="modal-title" id="exampleModalLongTitle">Purchase Details</h5>
                             <input type="text" id="tableSearchInput" class="form-control ml-3" placeholder="Search Here" style="width: 50%;">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="detailModalClose">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
@@ -246,17 +258,12 @@
                                         <th>Grand Total</th>
                                         <th>Paid</th>
                                         <th>Due</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                 </tbody>
                             </table>
-                        </div>
-
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary">Save changes</button>
                         </div>
                     </div>
                 </div>
@@ -301,6 +308,9 @@
                     <td>${row.grand_total || ""}</td>
                     <td>${row.paid || ""}</td>
                     <td>${row.due || ""}</td>
+                    <td> 
+                  <button type="button" class="btn btn-primary btn-sm" name="selected_purchase_id" id="selected_purchase_id" value="${row.purchase_id || ""}" onclick="getPurchase(this.value)">Apply</button>
+                    </td>
                 </tr>
             `;
                         $("#purchaseDetailsTable tbody").append(rowHTML);
@@ -320,6 +330,98 @@
             var value = $(this).val().toLowerCase();
             $('#purchaseDetailsTable tbody tr').filter(function() {
                 $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            });
+        });
+    });
+    $(document).ready(function() {
+        // Listen for input events on all main inputs inside the row
+        $('.row').on('input change', 'input, select', function() {
+            // Get the value of the main input
+            let mainValue = $(this).val();
+
+            // Find the hidden input field associated with the current main input
+            let hiddenInput = $(this).siblings('input[type="hidden"]');
+
+            // Set the value of the hidden input
+            hiddenInput.val(mainValue);
+        });
+    });
+
+
+    function getPurchase(purchaseId) {
+        $.ajax({
+            url: 'php_action/custom_action.php',
+            type: 'POST',
+            data: {
+                get_selected_purchase: purchaseId
+            },
+            dataType: 'json',
+
+            success: function(response) {
+                if (response.success) {
+                    $("#dyeing_issuance_purchase").val(purchaseId);
+                    $('#showProduct').html('<option value="">Select Product</option>');
+                    $('#showProduct').html('<option value="">Select Product</option>');
+
+                    const product = response.product;
+                    $("#product_id").val(product.product_id);
+                    const option = $('<option></option>')
+                        .val(product.product_id)
+                        .text(`${product.product_name} - ${product.product_code}`)
+                        .prop('selected', true);
+
+                    $('#showProduct').append(option);
+                    $("#detailModalClose").click();
+                }
+            },
+
+            error: function(xhr, status, error) {
+                console.error("AJAX Error: " + status + error);
+            }
+        });
+    }
+    $(document).ready(function() {
+        $('#dyeing_issuance').on('submit', function(event) {
+            event.preventDefault();
+
+            var formData = $(this).serialize();
+
+            $.ajax({
+                type: 'POST',
+                url: 'php_action/custom_action.php',
+                data: formData,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.sts === 'success') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.msg,
+                            showConfirmButton: false,
+                            timer: 2000
+                        }).then((result) => {
+                            location.reload();
+                        });
+
+                        $('#dyeing_issuance')[0].reset();
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Warning',
+                            text: response.msg,
+                            showConfirmButton: true,
+                        });
+                    }
+                },
+                error: function() {
+                    // Display an error alert if AJAX fails
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while submitting the form.',
+                        showConfirmButton: true,
+                    });
+                }
             });
         });
     });

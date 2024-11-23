@@ -1779,10 +1779,75 @@ if (isset($_POST['get_purchase_data'])) {
 	}
 }
 
+// Get Selected Purchase Data 
 
+if (isset($_POST['get_selected_purchase'])) {
+	$id = $dbc->real_escape_string($_POST['get_selected_purchase']);
 
+	$purchase_data = mysqli_query($dbc, "SELECT * FROM purchase WHERE purchase_id = '$id'");
+	$purchase = $purchase_data->fetch_assoc();
 
+	$p_id = $purchase['product_id'];
+	$product_data = mysqli_query($dbc, "SELECT * FROM product WHERE product_id = '$p_id'");
+	$product = $product_data->fetch_assoc();
 
+	if ($purchase && $product) {
+		echo json_encode(['success' => true, 'data' => $purchase, 'product' => $product]);
+	} else {
+		echo json_encode(['success' => false, 'data' => null]);
+	}
+}
+
+if (isset($_POST['dyeing_issuance_form'])) {
+	$json_data = [
+		"from_product" => $_POST['from_product'],
+		"pur_type_arr" => $_POST['pur_type_arr'],
+		"unit_arr" => $_POST['unit_arr'],
+		"color_arr" => $_POST['color_arr'],
+		"thaan_arr" => $_POST['thaan_arr'],
+		"pur_thaan_arr" => $_POST['pur_thaan_arr'],
+		"qty_arr" => $_POST['qty_arr'],
+		"suit_arr" => $_POST['suit_arr'],
+		"gzanah_arr" => $_POST['gzanah_arr'],
+		"lot_no_arr" => $_POST['lot_no_arr'],
+	];
+
+	$data = [
+		'purchase_id' => $_POST['dyeing_issuance_purchase'],
+		'done_by' => $_POST['from_location'],
+		'status' => 'sent',
+		'entry_from' => 'dyeing_issuance',
+		'product_id' => $_POST['product_id'],
+		'thaan' => $_POST['thaan'],
+		'gzanah' => $_POST['gzanah'],
+		'quantity' => $_POST['qty'],
+		'unit' => $_POST['unit'],
+		'transaction_id' => $_POST['transaction'],
+		'issuance_date' => $_POST['issuance_date'],
+		'gate_pass' => $_POST['gate_pass'],
+		'from_location' => $_POST['from_location'],
+		'to_location' => $_POST['to_location'],
+		'pandi' => $_POST['pandi'],
+		'bilty_no' => $_POST['bilty_no'],
+		'remarks' => $_POST['purchase_narration'],
+		'product_details' => json_encode($json_data),
+	];
+
+	if (insert_data($dbc, "dyeing", $data)) {
+		$response = [
+			'sts' => 'success',
+			'msg' => 'Data saved successfully',
+			'purchase_id' => $_POST['dyeing_issuance_purchase'],
+		];
+	} else {
+		$response = [
+			'sts' => 'warning',
+			'msg' => "Something went wrong: " . mysqli_error($dbc)
+		];
+	}
+
+	echo json_encode($response);
+}
 // Dyeing Recieving Form
 
 if (
