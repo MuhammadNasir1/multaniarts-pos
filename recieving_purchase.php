@@ -255,9 +255,7 @@
                         </div>
                         <div class="row mt-3">
                             <div class="col-sm-6 offset-6">
-
                                 <button class="btn btn-admin float-right " name="sale_order_btn" value="print" type="submit" id="sale_order_btn">Recieve and Print</button>
-
                             </div>
                         </div>
                     </form>

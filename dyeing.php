@@ -203,6 +203,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="row m-0 p-0 my-4 justify-content-end">
                             <div class="col-lg-1">
                                 <div id="cutt_voucher_btn">
@@ -212,9 +213,18 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- <hr>
-                        <h3 class="text-center">Total: </h3>
-                        <hr> -->
+                        <hr>
+                        <div class="row">
+                            <div class="col-6 text-center">
+                                <h3 class="text-center">Rate: <span id="rate"></span></h3>
+                                <input type="hidden" name="rate" id="rateInput">
+                            </div>
+                            <div class="col-6 text-center">
+                                <h3 class="text-center">Total: <span id="total_amount"></span></h3>
+                                <input type="hidden" name="total_amount" id="totalAmountInput">
+                            </div>
+                        </div>
+                        <hr>
                         <div class="row">
                             <div class="col-sm-6 offset-6">
 
@@ -347,6 +357,22 @@
         });
     });
 
+    $(document).ready(function() {
+        function calculateTotal() {
+            let rate = parseFloat($('#rateInput').val());
+
+            let quantity = parseFloat($('#qty_arr').val());
+
+            let total = rate * (quantity || 0);
+
+            $('#total_amount').text(total.toFixed(2));
+            $('#totalAmountInput').val(total.toFixed(2));
+        }
+
+        $('#total_amount').text(0);
+        $('#totalAmountInput').val(0);
+        $('#qty_arr').on('input', calculateTotal);
+    });
 
     function getPurchase(purchaseId) {
         $.ajax({
@@ -381,6 +407,11 @@
                     $("#pur_type").val(response.data.pur_type)
                     $("#gzanah_arr").val(response.data.pur_gzanah)
                     $("#gzanah").val(response.data.pur_gzanah)
+                    $("#rate").text(response.data.pur_rate)
+                    $("#rateInput").val(response.data.pur_rate)
+                    $("#total_amount").text(response.data.pur_rate * response.data.quantity);
+                    $("#totalAmountInput").val(response.data.pur_rate * response.data.quantity);
+
                     $("#detailModalClose").click();
                 }
             },
