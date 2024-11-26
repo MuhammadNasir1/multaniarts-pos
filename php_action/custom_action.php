@@ -970,6 +970,7 @@ if (isset($_REQUEST['cash_purchase_supplier'])) {
 				'thaan' => $_REQUEST['pur_thaan'],
 				'gzanah' => $_REQUEST['pur_gzanah'],
 				'quantity' => $_REQUEST['quantity'],
+				'quantity_instock' => $_REQUEST['quantity'],
 				'unit' => $_REQUEST['pur_unit'],
 			];
 			// Add Data in 
@@ -1889,7 +1890,47 @@ if (isset($_POST['dyeing_issuance_form'])) {
 		'product_details' => json_encode($json_data),
 	];
 
+	if ($_POST['location_type'] == 'dyeing') {
+		$t = 'dyeing';
+	} elseif ($_POST['location_type'] == 'printer') {
+		$t = 'printer';
+	} elseif ($_POST['location_type'] == 'packing') {
+		$t = 'packing';
+	} elseif ($_POST['location_type'] == 'embroidery') {
+		$t = 'embroidery';
+	} elseif ($_POST['location_type'] == 'shop') {
+		$t = $_POST['location_type'];
+		$product_id = $_POST['product_id'];
+		$requested_quantity = (float) $_POST['qty'];
 
+		$query = "SELECT quantity_instock FROM product WHERE product_id='$product_id'";
+		$result = mysqli_query($dbc, $query);
+		$quantity_instock = mysqli_fetch_assoc($result);
+
+		if ($quantity_instock && $quantity_instock['quantity_instock'] >= $requested_quantity) {
+			$new_qty_product = (float) $quantity_instock['quantity_instock'] - $requested_quantity;
+
+			$product_update = mysqli_query($dbc, "UPDATE product SET quantity_instock='$new_qty_product' WHERE product_id='$product_id'");
+
+			if ($product_update) {
+				$dyeing_query = "SELECT quantity_instock FROM dyeing WHERE product_id='$product_id'";
+				$dyeing_result = mysqli_query($dbc, $dyeing_query);
+				$dyeing_quantity_instock = mysqli_fetch_assoc($dyeing_result);
+
+				if ($dyeing_quantity_instock && $dyeing_quantity_instock['quantity_instock'] >= $requested_quantity) {
+					$new_qty_dyeing = (float) $dyeing_quantity_instock['quantity_instock'] - $requested_quantity;
+
+					$dyeing_update = mysqli_query($dbc, "UPDATE dyeing SET quantity_instock='$new_qty_dyeing' WHERE product_id='$product_id'");
+
+					if ($dyeing_update) {
+						echo "Quantity updated successfully in both tables.";
+					}
+				}
+			}
+		} else {
+			echo "Insufficient quantity in product table.";
+		}
+	}
 
 
 	if (insert_data($dbc, "dyeing", $data)) {
@@ -1897,6 +1938,7 @@ if (isset($_POST['dyeing_issuance_form'])) {
 			'sts' => 'success',
 			'msg' => 'Dyeing Issued successfully',
 			'purchase_id' => $_POST['dyeing_issuance_purchase'],
+			'tab' => $t,
 		];
 	} else {
 		$response = [
@@ -1907,6 +1949,7 @@ if (isset($_POST['dyeing_issuance_form'])) {
 
 	echo json_encode($response);
 }
+
 if (isset($_POST['dyeing_recieving'])) {
 	$json_data = [
 		"from_product" => $_POST['from_product'],

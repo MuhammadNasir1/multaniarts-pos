@@ -79,7 +79,7 @@
                                     <?php $type2 = $r['customer_type'];
                                     endwhile; ?>
                                 </select>
-                                <input type="hidden" name="location_type" id="location_type">
+                                <input type="hidden" name="location_type" id="get_location_type">
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label>Issue To</label>
@@ -424,6 +424,7 @@
     $(document).ready(function() {
         $('#dyeing_issuance').on('submit', function(event) {
             event.preventDefault();
+            let get_location = $("get_location_type").val();
 
             var formData = $(this).serialize();
 
@@ -477,7 +478,7 @@
             dataType: 'json',
             success: function(response) {
                 if (response.success) {
-                    $("#location_type").val(response.data.customer_type);
+                    $("#get_location_type").val(response.data.customer_type);
                 }
             },
             error: function(xhr, status, error) {

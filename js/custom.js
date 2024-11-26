@@ -639,7 +639,7 @@ $("#get_product_name").on("change", function () {
         payment_type == "credit_purchase"
       ) {
         console.log(response.qty);
-        $("#get_product_quantity").attr("max", response.qty);
+        // $("#get_product_quantity").attr("max", response.qty);
         if (response.qty < 0) {
           $("#addProductPurchase").prop("disabled", true);
         } else {
