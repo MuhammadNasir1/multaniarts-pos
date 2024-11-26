@@ -1920,6 +1920,7 @@ function getStock(value) {
         // $("#get_location_type").val(response.data.customer_type);
         console.log(response.data);
         $("#from_account_bl").text(response.data.quantity_instock);
+        $("#qty_arr").attr("max", response.data.quantity_instock);
       }
     },
     error: function (xhr, status, error) {

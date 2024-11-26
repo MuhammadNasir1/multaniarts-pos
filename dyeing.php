@@ -189,7 +189,7 @@
                                         </div>
                                         <div class="col-lg-1 m-0 p-0 pl-1">
                                             <label>Qty</label>
-                                            <input type="text" class="form-control quantity" name="qty_arr[]" value="0" placeholder="qty" id="qty_arr">
+                                            <input type="number" class="form-control quantity" name="qty_arr[]" value="0" placeholder="qty" id="qty_arr">
                                             <input type="hidden" name="qty" id="qty">
                                         </div>
                                         <div class="col-lg-1 m-0 p-0 pl-1">
