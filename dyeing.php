@@ -128,15 +128,32 @@
                                     <div class="row mt-3 m-0 p-0">
 
                                         <div class="col-lg-2 m-0 p-0 pl-1 row">
-                                            <div class="col-3 m-0 p-0 pl-1">
+                                            <div class="col-2 m-0 p-0 pl-1">
                                                 <label>Sr</label>
                                                 <input type="text" class="form-control thaan" readonly value="">
                                             </div>
-                                            <div class="col-9 m-0 p-0 pl-1">
+                                            <div class="col-10  m-0 p-0 pl-1">
                                                 <label for="showProduct">Quality</label>
-                                                <select class="form-control searchableSelect" name="from_product[]" id="showProduct">
-                                                    <option value="">Select Product</option>
-                                                </select>
+                                                <div class="input-group">
+                                                    <select class="form-control searchableSelect" name="from_product[]" id="showProduct" onchange="getStock(this.value)">
+                                                        <option value="">Select Product</option>
+
+                                                        <?php
+                                                        $result = mysqli_query($dbc, "SELECT * FROM product WHERE status=1 ");
+                                                        while ($row = mysqli_fetch_array($result)) {
+                                                            $getBrand = fetchRecord($dbc, "brands", "brand_id", $row['brand_id']);
+                                                            $getCat = fetchRecord($dbc, "categories", "categories_id", $row['category_id']);
+                                                        ?>
+
+                                                            <option data-price="<?= $row["current_rate"] ?>" <?= empty($r['product_id']) ? "" : "selected" ?> value="<?= $row["product_id"] ?>">
+                                                                <?= $row["product_name"] ?> (<?= @$getCat["categories_name"] ?>) </option>
+
+                                                        <?php   } ?>
+                                                    </select>
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text" id="basic-addon1">Stock :<span id="from_account_bl">0</span> </span>
+                                                    </div>
+                                                </div>
                                                 <input type="hidden" name="product_id" id="product_id">
                                             </div>
                                         </div>
@@ -279,7 +296,7 @@
             </div>
 
 
-
+            <script src="./js/custom.js"></script>
     </body>
 
     </html>
@@ -386,17 +403,13 @@
             success: function(response) {
                 if (response.success) {
                     $("#dyeing_issuance_purchase").val(purchaseId);
-                    $('#showProduct').html('<option value="">Select Product</option>');
-                    $('#showProduct').html('<option value="">Select Product</option>');
 
                     const product = response.product;
-                    $("#product_id").val(product.product_id);
-                    const option = $('<option></option>')
-                        .val(product.product_id)
-                        .text(`${product.product_name} - ${product.product_code}`)
-                        .prop('selected', true);
+                    $('#showProduct').val(''); // Clear any pre-selected value
 
-                    $('#showProduct').append(option);
+                    const productId = response.product.product_id;
+
+                    $('#showProduct').val(productId).change();
                     $("#unit_arr").val(response.data.pur_type)
                     $("#unit").val(response.data.pur_type)
                     $("#thaan_arr").val(response.data.pur_thaan)

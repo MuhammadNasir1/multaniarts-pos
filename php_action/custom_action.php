@@ -2036,3 +2036,20 @@ if (
 
 	echo json_encode($response);
 }
+
+// Get Stock Function
+
+if (isset($_POST['get_stock'])) {
+	$id = $dbc->real_escape_string($_POST['get_stock']);
+
+	$productData = mysqli_query($dbc, "SELECT * FROM product WHERE product_id = '$id'");
+	$product = $productData->fetch_assoc();
+
+
+
+	if ($product) {
+		echo json_encode(['success' => true, 'data' => $product]);
+	} else {
+		echo json_encode(['success' => false, 'data' => null]);
+	}
+}
