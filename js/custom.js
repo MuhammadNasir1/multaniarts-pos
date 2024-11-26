@@ -1921,6 +1921,7 @@ function getStock(value) {
         console.log(response.data);
         $("#from_account_bl").text(response.data.quantity_instock);
         $("#qty_arr").attr("max", response.data.quantity_instock);
+        $("#product_id").val($("#showProduct").val());
       }
     },
     error: function (xhr, status, error) {

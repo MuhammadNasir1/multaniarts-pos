@@ -83,7 +83,7 @@
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label>Issue To</label>
-                                <select class="form-control searchableSelect" id="to_location" name="to_location" onchange="findLocationType(this.value)">
+                                <select class="form-control searchableSelect" id="to_location" name="to_location">
                                     <option value="">Select Account</option>
 
 
@@ -453,7 +453,7 @@
                             title: 'Success',
                             text: response.msg,
                             showConfirmButton: false,
-                            timer: 2000
+                            timer: 12000
                         }).then((result) => {
                             location.reload();
                         });

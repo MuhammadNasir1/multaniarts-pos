@@ -1899,37 +1899,16 @@ if (isset($_POST['dyeing_issuance_form'])) {
 	} elseif ($_POST['location_type'] == 'embroidery') {
 		$t = 'embroidery';
 	} elseif ($_POST['location_type'] == 'shop') {
-		$t = $_POST['location_type'];
 		$product_id = $_POST['product_id'];
 		$requested_quantity = (float) $_POST['qty'];
 
-		$query = "SELECT quantity_instock FROM product WHERE product_id='$product_id'";
+		$query = "SELECT * FROM product WHERE product_id='$product_id'";
 		$result = mysqli_query($dbc, $query);
-		$quantity_instock = mysqli_fetch_assoc($result);
+		$quantity_instock = $result->fetch_assoc();
 
-		if ($quantity_instock && $quantity_instock['quantity_instock'] >= $requested_quantity) {
-			$new_qty_product = (float) $quantity_instock['quantity_instock'] - $requested_quantity;
-
-			$product_update = mysqli_query($dbc, "UPDATE product SET quantity_instock='$new_qty_product' WHERE product_id='$product_id'");
-
-			if ($product_update) {
-				$dyeing_query = "SELECT quantity_instock FROM dyeing WHERE product_id='$product_id'";
-				$dyeing_result = mysqli_query($dbc, $dyeing_query);
-				$dyeing_quantity_instock = mysqli_fetch_assoc($dyeing_result);
-
-				if ($dyeing_quantity_instock && $dyeing_quantity_instock['quantity_instock'] >= $requested_quantity) {
-					$new_qty_dyeing = (float) $dyeing_quantity_instock['quantity_instock'] - $requested_quantity;
-
-					$dyeing_update = mysqli_query($dbc, "UPDATE dyeing SET quantity_instock='$new_qty_dyeing' WHERE product_id='$product_id'");
-
-					if ($dyeing_update) {
-						echo "Quantity updated successfully in both tables.";
-					}
-				}
-			}
-		} else {
-			echo "Insufficient quantity in product table.";
-		}
+		$new_qty = (float) $quantity_instock['quantity_instock'] - $requested_quantity;
+		$quantity_update = mysqli_query($dbc, "UPDATE product SET quantity_instock='$new_qty' WHERE product_id='$product_id'");
+		$t = $_POST['location_type'];
 	}
 
 
