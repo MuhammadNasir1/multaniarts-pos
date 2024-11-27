@@ -135,7 +135,7 @@
                                             <div class="col-10  m-0 p-0 pl-1">
                                                 <label for="showProduct">Quality</label>
                                                 <div class="input-group">
-                                                    <select class="form-control searchableSelect" name="from_product[]" id="showProduct" onchange="getStock(this.value)">
+                                                    <select class="form-control searchableSelect" disabled name="from_product[]" id="showProduct" onchange="getStock(this.value)">
                                                         <option value="">Select Product</option>
 
                                                         <?php
@@ -350,10 +350,8 @@
                         `;
                         });
 
-                        // Append all rows at once
                         tbody.append(rowsHTML);
                     } else {
-                        // No data case
                         tbody.html(`
                         <tr>
                             <td class="text-center" colspan="10">No Data Found</td>
@@ -440,6 +438,7 @@
 
                     const productId = response.product.product_id;
 
+                    $('#showProduct').removeAttr("disabled");
                     $('#showProduct').val(productId).change();
                     $("#unit_arr").val(response.data.pur_type)
                     $("#unit").val(response.data.pur_type)
