@@ -1878,6 +1878,7 @@ if (isset($_POST['dyeing_issuance_form'])) {
 		'thaan' => $_POST['thaan'],
 		'gzanah' => $_POST['gzanah'],
 		'quantity' => $_POST['qty'],
+		'quantity_instock' => $_POST['qty'],
 		'unit' => $_POST['unit'],
 		'transaction_id' => $_POST['transaction'],
 		'issuance_date' => $_POST['issuance_date'],
@@ -1945,7 +1946,7 @@ if (isset($_POST['dyeing_recieving'])) {
 
 	$data = [
 		'purchase_id' => $_POST['dyeing_issuance_purchase'],
-		'done_by' => $_POST['to_location'],
+		'done_by' => $_POST['from_location'],
 		'status' => 'received',
 		'entry_from' => 'dyeing_receiving',
 		'recievied_dyeing' => $_POST['recievied_dyeing'],
@@ -1967,7 +1968,28 @@ if (isset($_POST['dyeing_recieving'])) {
 		'product_details' => json_encode($json_data),
 	];
 
+	$dyeing_id = $_POST['recievied_dyeing'];
+	$requested_quantity = (float) $_POST['qty'];
 
+	$query = "SELECT * FROM dyeing WHERE dyeing_id='$dyeing_id'";
+	$result = mysqli_query($dbc, $query);
+	$quantity_instock = $result->fetch_assoc();
+
+	$new_qty = (float) $quantity_instock['quantity_instock'] - $requested_quantity;
+	$quantity_update = mysqli_query($dbc, "UPDATE dyeing SET quantity_instock='$new_qty' WHERE dyeing_id='$dyeing_id'");
+
+
+	// if ($_POST['location_type'] == 'dyeing') {
+	// 	$t = 'dyeing';
+	// } elseif ($_POST['location_type'] == 'printer') {
+	// 	$t = 'printer';
+	// } elseif ($_POST['location_type'] == 'packing') {
+	// 	$t = 'packing';
+	// } elseif ($_POST['location_type'] == 'embroidery') {
+	// 	$t = 'embroidery';
+	// } elseif ($_POST['location_type'] == 'shop') {
+	// 	$t = $_POST['location_type'];
+	// }
 
 
 	if (insert_data($dbc, "dyeing", $data)) {
@@ -2030,5 +2052,31 @@ if (isset($_POST['get_stock'])) {
 		echo json_encode(['success' => true, 'data' => $product]);
 	} else {
 		echo json_encode(['success' => false, 'data' => null]);
+	}
+}
+if (isset($_POST['get_dyer_stock']) && isset($_POST['done_by'])) {
+	$id = $dbc->real_escape_string($_POST['get_dyer_stock']);
+	$doneById = $dbc->real_escape_string($_POST['done_by']);
+
+	$query = "
+        SELECT SUM(quantity_instock) AS total_quantity 
+        FROM dyeing 
+        WHERE product_id = '$id' 
+        AND status = 'sent' 
+        AND done_by = '$doneById'
+    ";
+
+	$result = mysqli_query($dbc, $query);
+
+	if ($result) {
+		$data = $result->fetch_assoc();
+
+		if ($data['total_quantity'] !== null) {
+			echo json_encode(['success' => true, 'total_quantity' => $data['total_quantity'], 'done_by' => $doneById]);
+		} else {
+			echo json_encode(['success' => false, 'total_quantity' => 0, 'done_by' => $doneById]);
+		}
+	} else {
+		echo json_encode(['success' => false, 'message' => 'Query failed']);
 	}
 }
