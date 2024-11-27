@@ -318,40 +318,71 @@
             dataType: 'json',
 
             success: function(response) {
+                const tbody = $("#purchaseDetailsTable tbody");
+                tbody.empty();
+
                 if (response.success) {
                     const data = response.data;
 
-                    $("#purchaseDetailsTable tbody").empty();
+                    if (data.length > 0) {
+                        let rowsHTML = "";
 
-                    data.forEach(row => {
-                        const rowHTML = `
-                <tr>
-                    <td>${row.purchase_id || ""}</td>
-                    <td>${row.purchase_date || ""}</td>
-                    <td>${row.product_name || ""}</td>
-                    <td>${row.pur_thaan || ""}</td>
-                    <td>${row.pur_gzanah || ""}</td>
-                    <td>${row.quantity || ""}</td>
-                    <td>${row.grand_total || ""}</td>
-                    <td>${row.paid || ""}</td>
-                    <td>${row.due || ""}</td>
-                    <td> 
-                  <button type="button" class="btn btn-primary btn-sm" name="selected_purchase_id" id="selected_purchase_id" value="${row.purchase_id || ""}" onclick="getPurchase(this.value)">Apply</button>
-                    </td>
-                </tr>
-            `;
-                        $("#purchaseDetailsTable tbody").append(rowHTML);
-                    });
+                        data.forEach(row => {
+                            rowsHTML += `
+                        <tr>
+                            <td>${row.purchase_id || ""}</td>
+                            <td>${row.purchase_date || ""}</td>
+                            <td>${row.product_name || ""}</td>
+                            <td>${row.pur_thaan || ""}</td>
+                            <td>${row.pur_gzanah || ""}</td>
+                            <td>${row.quantity || ""}</td>
+                            <td>${row.grand_total || ""}</td>
+                            <td>${row.paid || ""}</td>
+                            <td>${row.due || ""}</td>
+                            <td> 
+                                <button type="button" class="btn btn-primary btn-sm" 
+                                    name="selected_purchase_id" 
+                                    id="selected_purchase_id" 
+                                    value="${row.purchase_id || ""}" 
+                                    onclick="getPurchase(this.value)">Apply</button>
+                            </td>
+                        </tr>
+                        `;
+                        });
 
+                        // Append all rows at once
+                        tbody.append(rowsHTML);
+                    } else {
+                        // No data case
+                        tbody.html(`
+                        <tr>
+                            <td class="text-center" colspan="10">No Data Found</td>
+                        </tr>
+                    `);
+                    }
+
+                    $("#purchaseModalBtn").click();
+                } else {
+                    tbody.html(`
+                    <tr>
+                    <td class="text-center" colspan="10">Data Not Found</td>
+                    </tr>
+                    `);
                     $("#purchaseModalBtn").click();
                 }
             },
 
             error: function(xhr, status, error) {
-                console.error("AJAX Error: " + status + error);
+                console.error("AJAX Error: " + status + " " + error);
+                $("#purchaseDetailsTable tbody").html(`
+                <tr>
+                    <td class="text-center text-danger" colspan="10">Error fetching data</td>
+                </tr>
+            `);
             }
         });
     }
+
     $(document).ready(function() {
         $('#tableSearchInput').on('keyup', function() {
             var value = $(this).val().toLowerCase();

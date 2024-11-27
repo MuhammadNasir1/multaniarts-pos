@@ -267,7 +267,7 @@
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLongTitle">Purchase Details</h5>
+                            <h5 class="modal-title" id="exampleModalLongTitle">Dyeing Details</h5>
                             <input type="text" id="tableSearchInput" class="form-control ml-3" placeholder="Search Here" style="width: 50%;">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="detailModalClose">
                                 <span aria-hidden="true">&times;</span>
@@ -324,36 +324,50 @@
 
                     $("#purchaseDetailsTable tbody").empty();
 
-                    data.forEach(row => {
-                        const rowHTML = `
-                <tr>
-                    <td>${row.purchase_id || ""}</td>
-                    <td>${row.issuance_date || ""}</td>
-                    <td>${row.product_name || ""}</td>
-                    <td>${row.thaan || ""}</td>
-                    <td>${row.gzanah || ""}</td>
-                    <td>${row.quantity || ""}</td>
-                    <td>${row.rate || ""}</td>
-                    <td>${row.total_amount || ""}</td>
-                    <td> 
-                  <button type="button" class="btn btn-primary btn-sm" name="selected_purchase_id" id="selected_purchase_id" value="${row.dyeing_id || ""}" onclick="getPurchase(this.value)">Apply</button>
-                    </td>
-                </tr>
-            `;
-                        $("#purchaseDetailsTable tbody").append(rowHTML);
+                    let rowsHTML = "";
 
+                    data.forEach(row => {
+                        rowsHTML += `
+                    <tr>
+                        <td>${row.purchase_id || ""}</td>
+                        <td>${row.issuance_date || ""}</td>
+                        <td>${row.product_name || ""}</td>
+                        <td>${row.thaan || ""}</td>
+                        <td>${row.gzanah || ""}</td>
+                        <td>${row.quantity || ""}</td>
+                        <td>${row.rate || ""}</td>
+                        <td>${row.total_amount || ""}</td>
+                        <td>
+                            <button type="button" class="btn btn-primary btn-sm" 
+                                name="selected_purchase_id" 
+                                id="selected_purchase_id" 
+                                value="${row.dyeing_id || ""}" 
+                                onclick="getPurchase(this.value)">Apply</button>
+                        </td>
+                    </tr>
+                    `;
                     });
 
-                    $("#purchaseModalBtn").click();
+                    $("#purchaseDetailsTable tbody").append(rowsHTML);
+
+                } else {
+                    const noDataHTML = `
+                <tr>
+                    <td class="text-center" colspan="9">Data Not Found</td>
+                </tr>
+                `;
+                    $("#purchaseDetailsTable tbody").html(noDataHTML);
                 }
 
+                $("#purchaseModalBtn").click();
             },
 
             error: function(xhr, status, error) {
-                console.error("AJAX Error: " + status + error);
+                console.error("AJAX Error: " + status + " " + error);
             }
         });
     }
+
     $(document).ready(function() {
         $('#tableSearchInput').on('keyup', function() {
             var value = $(this).val().toLowerCase();
@@ -450,10 +464,10 @@
                             showConfirmButton: false,
                             timer: 2000
                         }).then((result) => {
-                            // location.reload();
+                            location.reload();
                         });
 
-                        // $('#dyeing_recieving')[0].reset();
+                        $('#dyeing_recieving')[0].reset();
                     } else {
                         Swal.fire({
                             icon: 'warning',
