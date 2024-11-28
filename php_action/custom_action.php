@@ -340,14 +340,14 @@ if (!empty($_REQUEST['action']) and $_REQUEST['action'] == "product_module") {
 		if (insert_data($dbc, "product", $data_array)) {
 			$last_id = mysqli_insert_id($dbc);
 
-			if ($_FILES['product_image']['tmp_name']) {
-				upload_pic($_FILES['product_image'], '../img/uploads/');
-				$product_image = $_SESSION['pic_name'];
-				$data_image = [
-					'product_image' => $product_image,
-				];
-				update_data($dbc, "product", $data_image, "product_id", $last_id);
-			}
+			// if ($_FILES['product_image']['tmp_name']) {
+			// 	upload_pic($_FILES['product_image'], '../img/uploads/');
+			// 	$product_image = $_SESSION['pic_name'];
+			// 	$data_image = [
+			// 		'product_image' => $product_image,
+			// 	];
+			// 	update_data($dbc, "product", $data_image, "product_id", $last_id);
+			// }
 
 
 			$response = [
@@ -972,6 +972,9 @@ if (isset($_REQUEST['cash_purchase_supplier'])) {
 				'quantity' => $_REQUEST['quantity'],
 				'quantity_instock' => $_REQUEST['quantity'],
 				'unit' => $_REQUEST['pur_unit'],
+				'total_amount' => $_REQUEST['product_grand_amount_input'],
+				'issuance_date' => $_REQUEST['purchase_date'],
+				'to_location' => $_REQUEST['pur_location'],
 			];
 			// Add Data in 
 			if ($_POST['location_type'] == 'dyeing') {
@@ -1788,7 +1791,6 @@ if (isset($_POST['get_purchase_data'])) {
 if (isset($_POST['get_dyeing_data'])) {
 	$id = $dbc->real_escape_string($_POST['get_dyeing_data']);
 
-	// Optimized query to join tables and eliminate duplicates
 	$query = "
         SELECT 
             product.*, 
@@ -1979,17 +1981,21 @@ if (isset($_POST['dyeing_recieving'])) {
 	$quantity_update = mysqli_query($dbc, "UPDATE dyeing SET quantity_instock='$new_qty' WHERE dyeing_id='$dyeing_id'");
 
 
-	// if ($_POST['location_type'] == 'dyeing') {
-	// 	$t = 'dyeing';
-	// } elseif ($_POST['location_type'] == 'printer') {
-	// 	$t = 'printer';
-	// } elseif ($_POST['location_type'] == 'packing') {
-	// 	$t = 'packing';
-	// } elseif ($_POST['location_type'] == 'embroidery') {
-	// 	$t = 'embroidery';
-	// } elseif ($_POST['location_type'] == 'shop') {
-	// 	$t = $_POST['location_type'];
-	// }
+	if ($_POST['location_type'] == 'dyeing') {
+		$t = 'dyeing';
+	} elseif ($_POST['location_type'] == 'printer') {
+		$t = 'printer';
+	} elseif ($_POST['location_type'] == 'packing') {
+		$t = 'packing';
+	} elseif ($_POST['location_type'] == 'embroidery') {
+		$t = 'embroidery';
+	} elseif ($_POST['location_type'] == 'shop') {
+		$t = $_POST['location_type'];
+		$product_id = $_REQUEST['product_id'];
+		$quantity_instock = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT quantity_instock FROM  product WHERE product_id='" . $product_id . "' "));
+		$qty = (float)@$quantity_instock['quantity_instock'] + @$_REQUEST['qty'];
+		$quantity_update = mysqli_query($dbc, "UPDATE product SET  quantity_instock='$qty' WHERE product_id='" . $product_id . "' ");
+	}
 
 
 	if (insert_data($dbc, "dyeing", $data)) {

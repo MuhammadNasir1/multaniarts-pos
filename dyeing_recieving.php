@@ -142,14 +142,14 @@
                                                         <option value="">Select Product</option>
 
                                                         <?php
-                                                        $result = mysqli_query($dbc, "SELECT * FROM product WHERE status=1 ");
+                                                        $result = mysqli_query($dbc, "SELECT * FROM product WHERE status=1 and brand_id = 'dyed' ");
                                                         while ($row = mysqli_fetch_array($result)) {
                                                             $getBrand = fetchRecord($dbc, "brands", "brand_id", $row['brand_id']);
                                                             $getCat = fetchRecord($dbc, "categories", "categories_id", $row['category_id']);
                                                         ?>
 
                                                             <option data-price="<?= $row["current_rate"] ?>" <?= empty($r['product_id']) ? "" : "selected" ?> value="<?= $row["product_id"] ?>">
-                                                                <?= $row["product_name"] ?> (<?= @$getCat["categories_name"] ?>) </option>
+                                                                <?= ucwords($row["product_name"]) ?> (<?= ucwords(@$getCat["categories_name"]) ?>) </option>
 
                                                         <?php   } ?>
                                                     </select>
@@ -214,16 +214,16 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-lg-1 col-md-2 col-sm-4 col-xs-4 add_remove">
+                                        <!-- <div class="col-lg-1 col-md-2 col-sm-4 col-xs-4 add_remove">
                                             <button type="button" class="outline_none mt-4 border-0 bg-white" onclick="cutt_voucher_remove(this)">
                                                 <img title="Remove Row" src="img/remove.png" width="30px" alt="remove sign">
                                             </button>
-                                        </div>
+                                        </div> -->
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="row m-0 p-0 my-4 justify-content-end">
+                        <div class="row m-0 p-0 my-4 justify-content-end d-none">
                             <div class="col-lg-1">
                                 <div id="cutt_voucher_btn">
                                     <button type="button" class="outline_none border-0 bg-white" onclick="cutt_voucher_duplicateRow()">
@@ -420,7 +420,7 @@
 
                     const productId = response.product.product_id;
 
-                    $('#showProduct').val(productId).change();
+                    $('#showProduct').change();
                     $("#unit_arr").val(response.data.unit).change();
                     $("#dyeing_issuance_purchase").val(response.data.purchase_id);
                     $("#recievied_dyeing").val(response.data.dyeing_id);
@@ -508,4 +508,8 @@
             }
         });
     }
+    $(document).on("change", "#showProduct", function() {
+        const selectedValue = $(this).val();
+        $("#product_id").val(selectedValue);
+    });
 </script>

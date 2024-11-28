@@ -139,7 +139,7 @@
                                                         <option value="">Select Product</option>
 
                                                         <?php
-                                                        $result = mysqli_query($dbc, "SELECT * FROM product WHERE status=1 ");
+                                                        $result = mysqli_query($dbc, "SELECT * FROM product WHERE status=1  AND brand_id = 'cora'");
                                                         while ($row = mysqli_fetch_array($result)) {
                                                             $getBrand = fetchRecord($dbc, "brands", "brand_id", $row['brand_id']);
                                                             $getCat = fetchRecord($dbc, "categories", "categories_id", $row['category_id']);
@@ -211,17 +211,17 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-lg-1 col-md-2 col-sm-4 col-xs-4 add_remove">
+                                        <!-- <div class="col-lg-1 col-md-2 col-sm-4 col-xs-4 add_remove">
                                             <button type="button" class="outline_none mt-4 border-0 bg-white" onclick="cutt_voucher_remove(this)">
                                                 <img title="Remove Row" src="img/remove.png" width="30px" alt="remove sign">
                                             </button>
-                                        </div>
+                                        </div> -->
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="row m-0 p-0 my-4 justify-content-end">
+                        <div class="row m-0 p-0 my-4 justify-content-end d-none">
                             <div class="col-lg-1">
                                 <div id="cutt_voucher_btn">
                                     <button type="button" class="outline_none border-0 bg-white" onclick="cutt_voucher_duplicateRow()">

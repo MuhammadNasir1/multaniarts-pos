@@ -43,38 +43,43 @@ $btn_name = isset($_REQUEST['edit_product_id']) ? "Update" : "Add";
 
 
                 <div class="form-group row">
-                  <div class="col-lg-3 col-sm-4 mt-3 px-3 mb-3 mb-sm-0">
+                  <div class="col-lg-2 col-sm-4 mt-3 px-3 mb-3 mb-sm-0">
                     <label for="">Product Name</label>
                     <input type="text" class="form-control" id="product_name" placeholder="Product Name" name="product_name" required value="<?= @$fetchproduct['product_name'] ?>">
                   </div>
-                  <div class="col-lg-3 col-sm-4 mt-3 px-3 mb-sm-0">
+                  <div class="col-lg-2 col-sm-4 mt-3 px-3 mb-sm-0">
                     <label for="">Product Code</label>
                     <input type="text" class="form-control" id="product_code" placeholder="Product Code" name="product_code" required value="<?= @$fetchproduct['product_code'] ?>">
                   </div>
-                  <div class="col-lg-3 col-sm-4 mt-3 w-100 px-3 mb-sm-0 d-flex">
+                  <div class="col-lg-2 col-sm-4 mt-3 w-100 px-3 mb-sm-0 d-flex">
                     <div class="w-100">
-                      <label for="">Product Brand</label>
-                      <select class="form-control w-100  tableData" required name="brand_id" id="tableData" size="1">
-                        <option value="">Select Brand</option>
-                        <?php
-                        $result = mysqli_query($dbc, "select * from brands");
-                        while ($row = mysqli_fetch_array($result)) {
-                        ?>
+                      <label for="">Product Type</label>
+                      <select class="form-control w-100 searchableSelect  tableData" required name="brand_id" id="tableData" size="1">
+                        <option value="">Select Type</option>
+                        <!-- <?php
+                              $result = mysqli_query($dbc, "select * from brands");
+                              while ($row = mysqli_fetch_array($result)) {
+                              ?>
 
                           <option <?= @($fetchproduct['brand_id'] != $row["brand_id"]) ? "" : "selected" ?> value="<?= $row["brand_id"] ?>"><?= $row["brand_name"] ?></option>
 
-                        <?php   } ?>
+                        <?php   } ?> -->
+                        <option value="cora">Cora Kapra</option>
+                        <option value="dyed">Dyed Product</option>
+                        <option value="printed">Printed Product</option>
+                        <option value="cutted">Cutted Product</option>
+                        <option value="suit">Suit Product</option>
                       </select>
                     </div>
-                    <div class="pl-3">
+                    <!-- <div class="pl-3">
                       <label class="invisible d-block">.</label>
                       <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#add_brand_modal"> <i class="fa fa-plus"></i> </button>
-                    </div>
+                    </div> -->
                   </div>
-                  <div class="col-lg-3 col-sm-4 mt-3 px-3 mb-sm-0 d-flex">
+                  <div class="col-lg-2 col-sm-4 mt-3 px-3 mb-sm-0 d-flex">
                     <div class="w-100">
                       <label for="">Product Category</label>
-                      <select class="form-control w-100 " required name="category_id" id="tableData1" size="1">
+                      <select class="form-control w-100" required name="category_id" id="tableData1" size="1">
                         <option value="">Select Category</option>
                         <?php
                         $result = mysqli_query($dbc, "select * from categories");
@@ -89,23 +94,23 @@ $btn_name = isset($_REQUEST['edit_product_id']) ? "Update" : "Add";
                       <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#add_category_modal"> <i class="fa fa-plus"></i> </button>
                     </div>
                   </div>
-                  <div class="col-sm-3 mt-3 px-3 mb-sm-0">
+                  <div class="col-sm-2 mt-3 px-3 mb-sm-0">
                     <label for="">Product Alert on Quantity</label>
                     <input type="text" required class="form-control" value="<?= (empty($fetchproduct)) ? 5 : $fetchproduct['alert_at'] ?>" id="alert_at" placeholder="Product Stock Alert" name="alert_at">
                   </div>
-                  <div class="col-sm-3 mt-3 px-3 mb-sm-0">
+                  <!-- <div class="col-sm-2 mt-3 px-3 mb-sm-0">
                     <label>Product Image</label>
 
                     <input type="file" class="form-control" id="product_image" name="product_image" accept="image/*">
-                  </div>
-                  <div class="col-sm-3 mt-3 px-3 mb-sm-0">
+                  </div> -->
+                  <div class="col-sm-2 mt-3 px-3 mb-sm-0">
                     <label for="">Status</label>
                     <select class="form-control" required name="availability" id="availability">
                       <option value="1">Available</option>
                       <option value="0">Not Available</option>
                     </select>
                   </div>
-                  <div class="col-sm-3 mt-3 px-3 mb-sm-0">
+                  <div class="col-sm-12 mt-3 px-3 mb-sm-0">
                     <label for="">Product Description</label>
                     <textarea class="form-control" name="product_description" placeholder="Product Description"><?= @$fetchproduct['product_description'] ?></textarea>
                   </div>
