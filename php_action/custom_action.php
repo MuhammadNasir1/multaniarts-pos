@@ -1770,7 +1770,11 @@ if (isset($_POST['get_purchase_data'])) {
         FROM purchase 
         LEFT JOIN product ON purchase.product_id = product.product_id 
         WHERE purchase.pur_location = '$id' 
-          AND purchase.purchase_id NOT IN (SELECT purchase_id FROM dyeing)
+          AND purchase.purchase_id NOT IN (
+              SELECT purchase_id 
+              FROM dyeing 
+              WHERE status = 'sent' And entry_from = 'purchase'
+          )
     ");
 
 	$customers = [];
@@ -1784,6 +1788,7 @@ if (isset($_POST['get_purchase_data'])) {
 		echo json_encode(['success' => false, 'data' => null]);
 	}
 }
+
 
 
 if (isset($_POST['get_dyeing_data'])) {
