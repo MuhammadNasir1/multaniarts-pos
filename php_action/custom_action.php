@@ -1765,14 +1765,12 @@ if (isset($_POST['location_type_get'])) {
 if (isset($_POST['get_purchase_data'])) {
 	$id = $dbc->real_escape_string($_POST['get_purchase_data']);
 
-
-
 	$customer_data = mysqli_query($dbc, "
         SELECT purchase.*, product.product_name 
         FROM purchase 
-        LEFT JOIN product 
-        ON purchase.product_id = product.product_id 
-        WHERE purchase.pur_location = '$id'
+        LEFT JOIN product ON purchase.product_id = product.product_id 
+        WHERE purchase.pur_location = '$id' 
+          AND purchase.purchase_id NOT IN (SELECT purchase_id FROM dyeing)
     ");
 
 	$customers = [];
