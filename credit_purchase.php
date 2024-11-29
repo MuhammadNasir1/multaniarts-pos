@@ -56,18 +56,24 @@
                     <?php
                     $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status =1 AND customer_type='supplier'");
                     while ($r = mysqli_fetch_assoc($q)) {
+                      $customer_name = ucwords(strtolower($r['customer_name']));
                     ?>
-                      <option <?= @($fetchPurchase['customer_account'] == $r['customer_id']) ? "selected" : "" ?> data-id="<?= $r['customer_id'] ?>" data-contact="<?= $r['customer_phone'] ?>" value="<?= $r['customer_name'] ?>"><?= $r['customer_name'] ?></option>
-                    <?php   } ?>
+                      <option <?= @($fetchPurchase['customer_account'] == $r['customer_id']) ? "selected" : "" ?>
+                        data-id="<?= $r['customer_id'] ?>"
+                        data-contact="<?= $r['customer_phone'] ?>"
+                        value="<?= $customer_name ?>">
+                        <?= $customer_name ?>
+                      </option>
+                    <?php } ?>
                   </select>
                   <div class="input-group-prepend">
-                    <span class="input-group-text" id="basic-addon1">Balance : <span id="customer_account_exp">0</span> </span>
+                    <span class="input-group-text" id="basic-addon1">Balance : <span id="customer_account_exp">0</span></span>
                   </div>
                 </div>
                 <input type="hidden" name="customer_account" id="customer_account" value="<?= @$fetchPurchase['customer_account'] ?>">
                 <input type="hidden" name="client_contact" id="client_contact" value="<?= @$fetchPurchase['client_contact'] ?>">
-
               </div>
+
               <div class="col-sm-1">
                 <br>
                 <a href="customers.php?type=supplier" class="btn btn-admin2 btn-sm mt-2">Add</a>
