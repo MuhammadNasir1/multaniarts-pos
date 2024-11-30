@@ -51,7 +51,7 @@
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label>Date</label>
-                                <input type="date" name="issuance_date" id="issuance_date" value="" class="form-control">
+                                <input type="date" name="issuance_date" required id="issuance_date" value="" class="form-control">
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label>Gate Pass #</label>
@@ -59,7 +59,7 @@
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label>From Location</label>
-                                <select class="form-control searchableSelect" id="form_location" name="from_location" onchange="findPurchaseData(this.value)" aria-label="Username" aria-describedby="basic-addon1">
+                                <select class="form-control searchableSelect" required id="form_location" name="from_location" onchange="findPurchaseData(this.value)" aria-label="Username" aria-describedby="basic-addon1">
 
                                     <option value="">Select Account</option>
 
@@ -87,7 +87,7 @@
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label>Issue To</label>
-                                <select class="form-control searchableSelect" id="to_location" name="to_location" onchange="findLocationType(this.value)">
+                                <select class="form-control searchableSelect" required id="to_location" name="to_location" onchange="findLocationType(this.value)">
                                     <option value="">Select Account</option>
 
 
@@ -138,7 +138,7 @@
                                             <div class="col-9 m-0 p-0 pl-1">
                                                 <label for="showProduct">Quality</label>
                                                 <div class="input-group">
-                                                    <select class="form-control searchableSelect" name="from_product[]" id="showProduct" onchange="getDyerStock(this.value)">
+                                                    <select class="form-control searchableSelect" required name="from_product[]" id="showProduct" onchange="getDyerStock(this.value)">
                                                         <option value="">Select Product</option>
 
                                                         <?php
@@ -191,19 +191,19 @@
                                             <input type="hidden" name="pur_thaan" id="pur_thaan">
                                         </div>
                                         <div class="col-lg-1 m-0 p-0 pl-1">
+                                            <label>Gzanah</label>
+                                            <input type="text" class="form-control gzanah" name="gzanah_arr[]" placeholder="Gzanah" id="gzanah_arr">
+                                            <input type="hidden" name="gzanah" id="gzanah">
+                                        </div>
+                                        <div class="col-lg-1 m-0 p-0 pl-1">
                                             <label>Qty</label>
-                                            <input type="text" class="form-control quantity" name="qty_arr[]" value="0" placeholder="qty" id="qty_arr">
+                                            <input type="text" class="form-control quantity" required name="qty_arr[]" value="0" placeholder="qty" id="qty_arr">
                                             <input type="hidden" name="qty" id="qty">
                                         </div>
                                         <div class="col-lg-1 m-0 p-0 pl-1">
                                             <label>Suit</label>
                                             <input type="text" class="form-control thaan" name="suit_arr[]" placeholder="Suit">
                                             <input type="hidden" name="suit" id="suit">
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label>Gzanah</label>
-                                            <input type="text" class="form-control gzanah" name="gzanah_arr[]" placeholder="Gzanah" id="gzanah_arr">
-                                            <input type="hidden" name="gzanah" id="gzanah">
                                         </div>
 
                                         <div class="col-lg-1 m-0 p-0 pl-1">

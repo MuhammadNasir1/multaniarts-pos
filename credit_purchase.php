@@ -46,12 +46,12 @@
               </div>
               <div class="col-md-2">
                 <label>Purchase Date</label>
-                <input type="date" name="purchase_date" id="purchase_date" value="<?= @empty($_REQUEST['edit_order_id']) ? date('Y-m-d') : $fetchPurchase['purchase_date'] ?>" class="form-control">
+                <input type="date" name="purchase_date" required id="purchase_date" value="<?= @empty($_REQUEST['edit_order_id']) ? date('Y-m-d') : $fetchPurchase['purchase_date'] ?>" class="form-control">
               </div>
               <div class="col-sm-4">
                 <label>Select Supplier</label>
                 <div class="input-group">
-                  <select class="form-control searchableSelect" name="cash_purchase_supplier" id="credit_order_client_name" required onchange="getBalance(this.value,'customer_account_exp')" aria-label="Username" aria-describedby="basic-addon1">
+                  <select class="form-control searchableSelect" aria-required="true" name="cash_purchase_supplier" id="credit_order_client_name" required onchange="getBalance(this.value,'customer_account_exp')" aria-label="Username" aria-describedby="basic-addon1">
                     <option value="">Select Supplier</option>
                     <?php
                     $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status =1 AND customer_type='supplier'");
@@ -96,7 +96,7 @@
               <div class="col-md-2 mt-3">
                 <label>Location</label>
 
-                <select class="form-control searchableSelect" id="pur_location" name="pur_location" onchange="findLocationType(this.value)" aria-label="Username" aria-describedby="basic-addon1">
+                <select class="form-control searchableSelect" required id="pur_location" name="pur_location" onchange="findLocationType(this.value)" aria-label="Username" aria-describedby="basic-addon1">
                   <option value="">Select Account</option>
 
 
@@ -146,7 +146,7 @@
                 <div>
                   <label>Products ( <span class="text-center w-100">instock: <span id="instockQty">0</span></span> )</label>
                   <input type="hidden" id="add_pro_type" value="add">
-                  <select class="form-control searchableSelect" id="get_product_name" name="product_id">
+                  <select class="form-control searchableSelect" required id="get_product_name" name="product_id">
                     <option value="">Select Product</option>
                     <?php
                     $result = mysqli_query($dbc, "SELECT * FROM product WHERE status=1 ");
@@ -168,7 +168,7 @@
               </div>
               <div class="col-sm-2">
                 <label>Rate</label>
-                <input type="number" min="0" <?= ($_SESSION['user_role'] == "admin") ? "" : "readonly" ?> class="form-control" id="get_product_price" name="product_price">
+                <input type="number" required min="0" <?= ($_SESSION['user_role'] == "admin") ? "" : "readonly" ?> class="form-control" id="get_product_price" name="product_price">
               </div>
               <div class="col-sm-2">
                 <label>Thaan</label>
@@ -180,14 +180,14 @@
               </div>
               <div class="col-sm-2">
                 <label>Quantity</label>
-                <input type="number" class="form-control" id="get_product_quantity" value="1" min="1" name="quantity">
+                <input type="number" class="form-control" required id="get_product_quantity" value="1" min="1" name="quantity">
               </div>
 
               <div class="col-sm-2  d-flex align-items-center">
                 <div>
                   <label>Unit</label>
                   <!-- <input type="text" placeholder="Unit Here" value="" autocomplete="off" class="form-control " name="pur_unit" id="get_pur_unit"> -->
-                  <select class="form-control searchableSelect" name="pur_unit" id="get_pur_unit">
+                  <select class="form-control searchableSelect" required name="pur_unit" id="get_pur_unit">
                     <option disabled>Select Type</option>
                     <option value="meter" <?= @($fetchPurchase['pur_unit'] == 'meter') ? "selected" : "" ?>>Meter</option>
                     <option value="yard" <?= @($fetchPurchase['pur_unit'] == 'yard') ? "selected" : "" ?>>Yard</option>
