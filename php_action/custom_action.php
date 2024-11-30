@@ -1935,26 +1935,289 @@ if (isset($_POST['dyeing_issuance_form'])) {
 	echo json_encode($response);
 }
 
-if (isset($_POST['dyeing_recieving'])) {
-	$json_data = [
-		"from_product" => $_POST['from_product'],
-		"pur_type_arr" => $_POST['pur_type_arr'],
-		"unit_arr" => $_POST['unit_arr'],
-		"color_arr" => $_POST['color_arr'],
-		"thaan_arr" => $_POST['thaan_arr'],
-		"pur_thaan_arr" => $_POST['pur_thaan_arr'],
-		"qty_arr" => $_POST['qty_arr'],
-		"suit_arr" => $_POST['suit_arr'],
-		"gzanah_arr" => $_POST['gzanah_arr'],
-		"lot_no_arr" => $_POST['lot_no_arr'],
-	];
+// if (isset($_POST['dyeing_recieving'])) {
+// 	$json_data = [
+// 		"from_product" => $_POST['from_product'],
+// 		"pur_type_arr" => $_POST['pur_type_arr'],
+// 		"unit_arr" => $_POST['unit_arr'],
+// 		"color_arr" => $_POST['color_arr'],
+// 		"thaan_arr" => $_POST['thaan_arr'],
+// 		"pur_thaan_arr" => $_POST['pur_thaan_arr'],
+// 		"qty_arr" => $_POST['qty_arr'],
+// 		"suit_arr" => $_POST['suit_arr'],
+// 		"gzanah_arr" => $_POST['gzanah_arr'],
+// 		"lot_no_arr" => $_POST['lot_no_arr'],
+// 	];
 
+// 	$data = [
+// 		'purchase_id' => $_POST['dyeing_issuance_purchase'],
+// 		'done_by' => $_POST['from_location'],
+// 		'status' => 'received',
+// 		'entry_from' => 'dyeing_receiving',
+// 		'recievied_dyeing' => $_POST['recievied_dyeing'],
+// 		'product_id' => $_POST['product_id'],
+// 		'rate' => $_POST['rate'],
+// 		'total_amount' => $_POST['total_amount'],
+// 		'thaan' => $_POST['thaan'],
+// 		'gzanah' => $_POST['gzanah'],
+// 		'quantity' => $_POST['qty'],
+// 		'unit' => $_POST['unit'],
+// 		'transaction_id' => $_POST['transaction'],
+// 		'issuance_date' => $_POST['issuance_date'],
+// 		'gate_pass' => $_POST['gate_pass'],
+// 		'from_location' => $_POST['from_location'],
+// 		'to_location' => $_POST['to_location'],
+// 		'pandi' => $_POST['pandi'],
+// 		'bilty_no' => $_POST['bilty_no'],
+// 		'remarks' => $_POST['purchase_narration'],
+// 		'product_details' => json_encode($json_data),
+// 	];
+
+// 	$dyeing_id = $_POST['recievied_dyeing'];
+// 	$requested_quantity = (float) $_POST['qty'];
+
+// 	$query = "SELECT * FROM dyeing WHERE dyeing_id='$dyeing_id'";
+// 	$result = mysqli_query($dbc, $query);
+// 	$quantity_instock = $result->fetch_assoc();
+
+// 	$new_qty = (float) $quantity_instock['quantity_instock'] - $requested_quantity;
+// 	$quantity_update = mysqli_query($dbc, "UPDATE dyeing SET quantity_instock='$new_qty' WHERE dyeing_id='$dyeing_id'");
+
+
+// 	if ($_POST['location_type'] == 'dyeing') {
+// 		$t = 'dyeing';
+// 	} elseif ($_POST['location_type'] == 'printer') {
+// 		$data = [
+// 			'purchase_id' => $_POST['dyeing_issuance_purchase'],
+// 			'done_by' => $_POST['from_location'],
+// 			'status' => 'sent',
+// 			'entry_from' => 'dyeing_receiving',
+// 			'recievied_printing' => $_POST['recievied_dyeing'],
+// 			'product_id' => $_POST['product_id'],
+// 			'rate' => $_POST['rate'],
+// 			'total_amount' => $_POST['total_amount'],
+// 			'thaan' => $_POST['thaan'],
+// 			'gzanah' => $_POST['gzanah'],
+// 			'quantity' => $_POST['qty'],
+// 			'unit' => $_POST['unit'],
+// 			'transaction_id' => $_POST['transaction'],
+// 			'issuance_date' => $_POST['issuance_date'],
+// 			'gate_pass' => $_POST['gate_pass'],
+// 			'from_location' => $_POST['from_location'],
+// 			'to_location' => $_POST['to_location'],
+// 			'pandi' => $_POST['pandi'],
+// 			'bilty_no' => $_POST['bilty_no'],
+// 			'remarks' => $_POST['purchase_narration'],
+// 			'product_details' => json_encode($json_data),
+// 		];
+// 		$t = 'printer';
+// 		$insert_data = insert_data($dbc, "printing", $data);
+// 	} elseif ($_POST['location_type'] == 'packing') {
+// 		$t = 'packing';
+// 		$data = [
+// 			'purchase_id' => $_POST['dyeing_issuance_purchase'],
+// 			'done_by' => $_POST['from_location'],
+// 			'status' => 'sent',
+// 			'entry_from' => 'dyeing_receiving',
+// 			'recievied_packing' => $_POST['recievied_dyeing'],
+// 			'product_id' => $_POST['product_id'],
+// 			'rate' => $_POST['rate'],
+// 			'total_amount' => $_POST['total_amount'],
+// 			'thaan' => $_POST['thaan'],
+// 			'gzanah' => $_POST['gzanah'],
+// 			'quantity' => $_POST['qty'],
+// 			'unit' => $_POST['unit'],
+// 			'transaction_id' => $_POST['transaction'],
+// 			'issuance_date' => $_POST['issuance_date'],
+// 			'gate_pass' => $_POST['gate_pass'],
+// 			'from_location' => $_POST['from_location'],
+// 			'to_location' => $_POST['to_location'],
+// 			'pandi' => $_POST['pandi'],
+// 			'bilty_no' => $_POST['bilty_no'],
+// 			'remarks' => $_POST['purchase_narration'],
+// 			'product_details' => json_encode($json_data),
+// 		];
+// 		$insert_data = insert_data($dbc, "packing", $data);
+// 	} elseif ($_POST['location_type'] == 'embroidery') {
+// 		$t = 'embroidery';
+// 		$data = [
+// 			'purchase_id' => $_POST['dyeing_issuance_purchase'],
+// 			'done_by' => $_POST['from_location'],
+// 			'status' => 'sent',
+// 			'entry_from' => 'dyeing_receiving',
+// 			'recievied_embroidery' => $_POST['recievied_dyeing'],
+// 			'product_id' => $_POST['product_id'],
+// 			'rate' => $_POST['rate'],
+// 			'total_amount' => $_POST['total_amount'],
+// 			'thaan' => $_POST['thaan'],
+// 			'gzanah' => $_POST['gzanah'],
+// 			'quantity' => $_POST['qty'],
+// 			'unit' => $_POST['unit'],
+// 			'transaction_id' => $_POST['transaction'],
+// 			'issuance_date' => $_POST['issuance_date'],
+// 			'gate_pass' => $_POST['gate_pass'],
+// 			'from_location' => $_POST['from_location'],
+// 			'to_location' => $_POST['to_location'],
+// 			'pandi' => $_POST['pandi'],
+// 			'bilty_no' => $_POST['bilty_no'],
+// 			'remarks' => $_POST['purchase_narration'],
+// 			'product_details' => json_encode($json_data),
+// 		];
+// 		$insert_data = insert_data($dbc, "embroidery", $data);
+// 	} elseif ($_POST['location_type'] == 'shop') {
+// 		$t = $_POST['location_type'];
+// 		$product_id = $_REQUEST['product_id'];
+// 		$quantity_instock = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT quantity_instock FROM  product WHERE product_id='" . $product_id . "' "));
+// 		$qty = (float)@$quantity_instock['quantity_instock'] + @$_REQUEST['qty'];
+// 		$quantity_update = mysqli_query($dbc, "UPDATE product SET  quantity_instock='$qty' WHERE product_id='" . $product_id . "' ");
+// 	}
+
+
+// 	if (insert_data($dbc, "dyeing", $data)) {
+// 		$response = [
+// 			'sts' => 'success',
+// 			'msg' => 'Dyeing Received successfully',
+// 			'dyeing_id' => $_POST['dyeing_issuance_purchase'],
+// 		];
+// 	} else {
+// 		$response = [
+// 			'sts' => 'warning',
+// 			'msg' => "Something went wrong: " . mysqli_error($dbc),
+// 		];
+// 	}
+
+// 	echo json_encode($response);
+// }
+// if (isset($_POST['dyeing_recieving'])) {
+// 	$json_data = [
+// 		"from_product" => $_POST['from_product'],
+// 		"pur_type_arr" => $_POST['pur_type_arr'],
+// 		"unit_arr" => $_POST['unit_arr'],
+// 		"color_arr" => $_POST['color_arr'],
+// 		"thaan_arr" => $_POST['thaan_arr'],
+// 		"pur_thaan_arr" => $_POST['pur_thaan_arr'],
+// 		"qty_arr" => $_POST['qty_arr'],
+// 		"suit_arr" => $_POST['suit_arr'],
+// 		"gzanah_arr" => $_POST['gzanah_arr'],
+// 		"lot_no_arr" => $_POST['lot_no_arr'],
+// 	];
+
+// 	// Common data
+// 	$data = [
+// 		'purchase_id' => $_POST['dyeing_issuance_purchase'],
+// 		'done_by' => $_POST['from_location'],
+// 		'entry_from' => 'dyeing_receiving',
+// 		'product_id' => $_POST['product_id'],
+// 		'rate' => $_POST['rate'],
+// 		'total_amount' => $_POST['total_amount'],
+// 		'thaan' => $_POST['thaan'],
+// 		'gzanah' => $_POST['gzanah'],
+// 		'quantity' => $_POST['qty'],
+// 		'unit' => $_POST['unit'],
+// 		'transaction_id' => $_POST['transaction'],
+// 		'issuance_date' => $_POST['issuance_date'],
+// 		'gate_pass' => $_POST['gate_pass'],
+// 		'from_location' => $_POST['from_location'],
+// 		'to_location' => $_POST['to_location'],
+// 		'pandi' => $_POST['pandi'],
+// 		'bilty_no' => $_POST['bilty_no'],
+// 		'remarks' => $_POST['purchase_narration'],
+// 		'product_details' => json_encode($json_data),
+// 	];
+
+// 	$location_type = $_POST['location_type'];
+// 	$dyeing_id = $_POST['recievied_dyeing'];
+// 	$requested_quantity = (float)$_POST['qty'];
+
+// 	// Update quantity in stock for dyeing
+// 	$query = "SELECT * FROM dyeing WHERE dyeing_id='$dyeing_id'";
+// 	$result = mysqli_query($dbc, $query);
+// 	$quantity_instock = $result->fetch_assoc();
+// 	$new_qty = (float)$quantity_instock['quantity_instock'] - $requested_quantity;
+// 	mysqli_query($dbc, "UPDATE dyeing SET quantity_instock='$new_qty' WHERE dyeing_id='$dyeing_id'");
+
+// 	// Dynamic mapping for status and target table
+// 	$location_mapping = [
+// 		'dyeing' => ['status' => 'received', 'table' => 'dyeing', 'received_column' => 'recievied_dyeing'],
+// 		'printer' => ['status' => 'sent', 'table' => 'printing', 'received_column' => 'recievied_printing'],
+// 		'packing' => ['status' => 'sent', 'table' => 'packing', 'received_column' => 'recievied_packing'],
+// 		'embroidery' => ['status' => 'sent', 'table' => 'embroidery', 'received_column' => 'recievied_embroidery'],
+// 		'shop' => ['status' => 'received', 'table' => 'product', 'received_column' => null],
+// 	];
+
+// 	if (array_key_exists($location_type, $location_mapping)) {
+// 		$mapping = $location_mapping[$location_type];
+// 		$data['status'] = $mapping['status'];
+// 		if ($mapping['received_column']) {
+// 			$data[$mapping['received_column']] = $dyeing_id;
+// 		}
+
+// 		if ($location_type === 'shop') {
+// 			// Special handling for shop
+// 			$product_id = $_POST['product_id'];
+// 			$quantity_instock = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT quantity_instock FROM product WHERE product_id='$product_id'"));
+// 			$new_qty = (float)$quantity_instock['quantity_instock'] + $requested_quantity;
+// 			mysqli_query($dbc, "UPDATE product SET quantity_instock='$new_qty' WHERE product_id='$product_id'");
+// 		} else {
+// 			// Insert data for other locations
+// 			insert_data($dbc, $mapping['table'], $data);
+// 		}
+// 	}
+
+// 	// Insert main data into dyeing table
+// 	if (insert_data($dbc, "dyeing", $data)) {
+// 		$response = [
+// 			'sts' => 'success',
+// 			'msg' => 'Dyeing Received successfully',
+// 			'dyeing_id' => $_POST['dyeing_issuance_purchase'],
+// 		];
+// 	} else {
+// 		$response = [
+// 			'sts' => 'warning',
+// 			'msg' => "Something went wrong: " . mysqli_error($dbc),
+// 		];
+// 	}
+
+// 	echo json_encode($response);
+// }
+
+// // Dyeing Recieving Form
+
+// if (
+// 	isset($_POST['rec_purchase_id'])
+// ) {
+// 	$data = [
+// 		'purchase_id' => $_POST['rec_purchase_id'],
+// 		'dyed_thaans' => $_POST['dyed_thaans'],
+// 		'color' => $_POST['color'],
+// 		'dyed_qty' => $_POST['dyed_qty'],
+// 		'cut_piece' => $_POST['cut_piece'],
+// 		'un_settled' => $_POST['un_settled'],
+// 		'to_location' => $_POST['to_location'],
+// 	];
+
+// 	if (insert_data($dbc, "dyeing", $data)) {
+// 		$response = [
+// 			'sts' => 'success',
+// 			'msg' => 'Data saved successfully',
+// 			'purchase_id' => $_POST['rec_purchase_id'],
+// 		];
+// 	} else {
+// 		$response = [
+// 			'sts' => 'warning',
+// 			'msg' => "Something went wrong: " . mysqli_error($dbc)
+// 		];
+// 	}
+
+// 	echo json_encode($response);
+// }
+
+if (isset($_POST['dyeing_recieving'])) {
+	// Common data array for dyeing table
 	$data = [
 		'purchase_id' => $_POST['dyeing_issuance_purchase'],
 		'done_by' => $_POST['from_location'],
-		'status' => 'received',
 		'entry_from' => 'dyeing_receiving',
-		'recievied_dyeing' => $_POST['recievied_dyeing'],
 		'product_id' => $_POST['product_id'],
 		'rate' => $_POST['rate'],
 		'total_amount' => $_POST['total_amount'],
@@ -1970,80 +2233,77 @@ if (isset($_POST['dyeing_recieving'])) {
 		'pandi' => $_POST['pandi'],
 		'bilty_no' => $_POST['bilty_no'],
 		'remarks' => $_POST['purchase_narration'],
-		'product_details' => json_encode($json_data),
+		'product_details' => json_encode([
+			"from_product" => $_POST['from_product'],
+			"pur_type_arr" => $_POST['pur_type_arr'],
+			"unit_arr" => $_POST['unit_arr'],
+			"color_arr" => $_POST['color_arr'],
+			"thaan_arr" => $_POST['thaan_arr'],
+			"pur_thaan_arr" => $_POST['pur_thaan_arr'],
+			"qty_arr" => $_POST['qty_arr'],
+			"suit_arr" => $_POST['suit_arr'],
+			"gzanah_arr" => $_POST['gzanah_arr'],
+			"lot_no_arr" => $_POST['lot_no_arr'],
+		]),
 	];
 
-	$dyeing_id = $_POST['recievied_dyeing'];
-	$requested_quantity = (float) $_POST['qty'];
+	$dynamic_data = [
+		'status' => 'sent',
+		'recievied_dyeing' => $_POST['recievied_dyeing'],
+	];
+	$dyeing_data = array_merge(
+		$data,
+		$dynamic_data
+	);
 
-	$query = "SELECT * FROM dyeing WHERE dyeing_id='$dyeing_id'";
-	$result = mysqli_query($dbc, $query);
-	$quantity_instock = $result->fetch_assoc();
+	// Insert into the dyeing table first
+	if (!insert_data($dbc, "dyeing", $dynamic_data)) {
+		$response = [
+			'sts' => 'warning',
+			'msg' => "Error inserting into dyeing table: " . mysqli_error($dbc),
+		];
+		echo json_encode($response);
+		exit;
+	}
 
-	$new_qty = (float) $quantity_instock['quantity_instock'] - $requested_quantity;
-	$quantity_update = mysqli_query($dbc, "UPDATE dyeing SET quantity_instock='$new_qty' WHERE dyeing_id='$dyeing_id'");
-
-
-	if ($_POST['location_type'] == 'dyeing') {
-		$t = 'dyeing';
-	} elseif ($_POST['location_type'] == 'printer') {
-		$t = 'printer';
+	// Additional logic for other tables based on location_type
+	if ($_POST['location_type'] == 'printer') {
+		$dynamic_data = [
+			'status' => 'sent',
+			'recievied_printing' => $_POST['recievied_dyeing'],
+			'quantity_instock' => $_POST['qty'],
+		];
+		$printer_data = array_merge($data, $dynamic_data);
+		insert_data($dbc, "printing", $printer_data);
 	} elseif ($_POST['location_type'] == 'packing') {
-		$t = 'packing';
+		$dynamic_data = [
+			'status' => 'sent',
+			'recievied_packing' => $_POST['recievied_dyeing'],
+			'quantity_instock' => $_POST['qty'],
+		];
+		$packing_data = array_merge($data, $dynamic_data);
+		insert_data($dbc, "packing", $packing_data);
 	} elseif ($_POST['location_type'] == 'embroidery') {
-		$t = 'embroidery';
+		$dynamic_data = [
+			'status' => 'sent',
+			'recievied_embroidery' => $_POST['recievied_dyeing'],
+			'quantity_instock' => $_POST['qty'],
+		];
+		$embroidery_data = array_merge($data, $dynamic_data);
+		insert_data($dbc, "embroidery", $embroidery_data);
 	} elseif ($_POST['location_type'] == 'shop') {
-		$t = $_POST['location_type'];
 		$product_id = $_REQUEST['product_id'];
-		$quantity_instock = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT quantity_instock FROM  product WHERE product_id='" . $product_id . "' "));
-		$qty = (float)@$quantity_instock['quantity_instock'] + @$_REQUEST['qty'];
-		$quantity_update = mysqli_query($dbc, "UPDATE product SET  quantity_instock='$qty' WHERE product_id='" . $product_id . "' ");
+		$quantity_instock = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT quantity_instock FROM product WHERE product_id='" . $product_id . "' "));
+		$new_qty = (float)@$quantity_instock['quantity_instock'] + @$_REQUEST['qty'];
+		mysqli_query($dbc, "UPDATE product SET quantity_instock='$new_qty' WHERE product_id='" . $product_id . "' ");
 	}
 
-
-	if (insert_data($dbc, "dyeing", $data)) {
-		$response = [
-			'sts' => 'success',
-			'msg' => 'Dyeing Received successfully',
-			'dyeing_id' => $_POST['dyeing_issuance_purchase'],
-		];
-	} else {
-		$response = [
-			'sts' => 'warning',
-			'msg' => "Something went wrong: " . mysqli_error($dbc),
-		];
-	}
-
-	echo json_encode($response);
-}
-// Dyeing Recieving Form
-
-if (
-	isset($_POST['rec_purchase_id'])
-) {
-	$data = [
-		'purchase_id' => $_POST['rec_purchase_id'],
-		'dyed_thaans' => $_POST['dyed_thaans'],
-		'color' => $_POST['color'],
-		'dyed_qty' => $_POST['dyed_qty'],
-		'cut_piece' => $_POST['cut_piece'],
-		'un_settled' => $_POST['un_settled'],
-		'to_location' => $_POST['to_location'],
+	// Final response
+	$response = [
+		'sts' => 'success',
+		'msg' => 'Dyeing Received successfully',
+		'dyeing_id' => $_POST['dyeing_issuance_purchase'],
 	];
-
-	if (insert_data($dbc, "dyeing", $data)) {
-		$response = [
-			'sts' => 'success',
-			'msg' => 'Data saved successfully',
-			'purchase_id' => $_POST['rec_purchase_id'],
-		];
-	} else {
-		$response = [
-			'sts' => 'warning',
-			'msg' => "Something went wrong: " . mysqli_error($dbc)
-		];
-	}
-
 	echo json_encode($response);
 }
 
