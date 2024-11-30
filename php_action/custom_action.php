@@ -328,10 +328,8 @@ if (!empty($_REQUEST['action']) and $_REQUEST['action'] == "product_module") {
 		'product_code' => @$_REQUEST['product_code'],
 		'brand_id' => @$_REQUEST['brand_id'],
 		'category_id' => @$_REQUEST['category_id'],
-		'current_rate' => @$_REQUEST['current_rate'],
+		'current_rate' => 0,
 		'product_description' => @$_REQUEST['product_description'],
-		't_days' => @$_REQUEST['t_days'],
-		'f_days' => @$_REQUEST['f_days'],
 		'alert_at' => @$_REQUEST['alert_at'],
 		'availability' => @$_REQUEST['availability'],
 		'purchase_rate' => $purchase_rate,
@@ -342,14 +340,14 @@ if (!empty($_REQUEST['action']) and $_REQUEST['action'] == "product_module") {
 		if (insert_data($dbc, "product", $data_array)) {
 			$last_id = mysqli_insert_id($dbc);
 
-			if ($_FILES['product_image']['tmp_name']) {
-				upload_pic($_FILES['product_image'], '../img/uploads/');
-				$product_image = $_SESSION['pic_name'];
-				$data_image = [
-					'product_image' => $product_image,
-				];
-				update_data($dbc, "product", $data_image, "product_id", $last_id);
-			}
+			// if ($_FILES['product_image']['tmp_name']) {
+			// 	upload_pic($_FILES['product_image'], '../img/uploads/');
+			// 	$product_image = $_SESSION['pic_name'];
+			// 	$data_image = [
+			// 		'product_image' => $product_image,
+			// 	];
+			// 	update_data($dbc, "product", $data_image, "product_id", $last_id);
+			// }
 
 
 			$response = [
@@ -444,7 +442,8 @@ if (!empty($_REQUEST['action']) and $_REQUEST['action'] == "inventory_module") {
 if (isset($_REQUEST['get_products_list'])) {
 
 	if ($_REQUEST['type'] == "code") {
-		$q = mysqli_query($dbc, "SELECT * FROM product WHERE product_code LIKE '%" . $_REQUEST['get_products_list'] . "%' AND status=1 ");
+		// $q = mysqli_query($dbc, "SELECT * FROM product WHERE product_code LIKE '%" . $_REQUEST['get_products_list'] . "%' AND status=1 ");
+		$q = mysqli_query($dbc, "SELECT * FROM product WHERE product_id LIKE '%" . $_REQUEST['get_products_list'] . "%' AND status=1 ");
 		if (mysqli_num_rows($q) > 0) {
 			while ($r = mysqli_fetch_assoc($q)) {
 				echo '<option value="' . $r['product_id'] . '">' . $r['product_name'] . '</option>';
@@ -467,35 +466,15 @@ if (isset($_REQUEST['getPrice'])) {
 	} else {
 		$record = fetchRecord($dbc, "product", "product_code", $_REQUEST['getPrice']);
 	}
-	if (isset($_REQUEST['credit_sale_type'])  and $_REQUEST['credit_sale_type'] == "15days") {
-		$price = $record['f_days'];
-	} elseif (isset($_REQUEST['credit_sale_type'])  and $_REQUEST['credit_sale_type'] == "30days") {
-		$price = $record['t_days'];
-	} else {
-		if ($_REQUEST['payment_type'] == "credit_purchase" or $_REQUEST['payment_type'] == "cash_purchase") {
-			$price = $record['purchase_rate'];
-			if ($price == 0 or $price == '0') {
-				$q = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM purchase_item WHERE product_id = '$record[product_id]' AND rate != 0  ORDER BY purchase_item_id DESC "));
-				$price = $q['rate'];
-			} else {
-				$price = $record['purchase_rate'];
-			}
-		} else {
-			$price = $record['current_rate'];
-		}
-	}
-
 
 	$response = [
-		"price" => @$price,
 		"qty" => @(float)$record['quantity_instock'],
 		"sts" => "success",
-		"type" => @$_REQUEST['credit_sale_type'],
 	];
-
 
 	echo json_encode($response);
 }
+
 
 /*---------------------- cash sale-order   -------------------------------------------------------------------*/
 if (isset($_REQUEST['sale_order_client_name'])) {
@@ -943,240 +922,247 @@ if (isset($_REQUEST['getProductDetailsBycode'])) {
 }
 /*---------------------- cash purchase   -------------------------------------------------------------------*/
 if (isset($_REQUEST['cash_purchase_supplier'])) {
-	if (!empty($_REQUEST['product_ids'])) {
-		# code...
-		$total_ammount = $total_grand = 0;
-		$get_company = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM company ORDER BY id DESC LIMIT 1"));
+	// if (!empty($_REQUEST['product_ids'])) {
+	# code...
+	$total_ammount = $total_grand = 0;
+	$get_company = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM company ORDER BY id DESC LIMIT 1"));
 
-		$data = [
-			'purchase_date' => $_REQUEST['purchase_date'],
-			'client_name' => @$_REQUEST['cash_purchase_supplier'],
-			'client_contact' => @$_REQUEST['client_contact'],
-			'purchase_narration' => @$_REQUEST['purchase_narration'],
-			'payment_account' => @$_REQUEST['payment_account'],
-			'customer_account' => @$_REQUEST['customer_account'],
-			'paid' => $_REQUEST['paid_ammount'],
-			'payment_status' => 1,
-			'payment_type' => $_REQUEST['payment_type'],
-			'pur_freight' => $_REQUEST['freight'],
-			'purchase_for' => $_REQUEST['purchase_for'],
-			'bill_no' => $_REQUEST['bill_no'],
-			'gate_pass' => $_REQUEST['gate_pass'],
-			'bilty_no' => $_REQUEST['bilty_no'],
-			'pur_location' => $_REQUEST['pur_location'],
-			'pur_cargo' => $_REQUEST['pur_cargo'],
-			'pur_type' => $_REQUEST['pur_type'],
-		];
+	$data = [
+		'purchase_date' => $_REQUEST['purchase_date'],
+		'client_name' => @$_REQUEST['cash_purchase_supplier'],
+		'client_contact' => @$_REQUEST['client_contact'],
+		'purchase_narration' => @$_REQUEST['purchase_narration'],
+		'payment_account' => @$_REQUEST['payment_account'],
+		'customer_account' => @$_REQUEST['customer_account'],
+		'paid' => @$_REQUEST['paid_ammount'],
+		'total_amount' => $_REQUEST['product_total_amount'],
+		'grand_total' => $_REQUEST['product_grand_amount_input'],
+		'payment_status' => 1,
+		'payment_type' => $_REQUEST['payment_type'],
+		'pur_freight' => @$_REQUEST['freight'],
+		'purchase_for' => $_REQUEST['purchase_for'],
+		'bill_no' => $_REQUEST['bill_no'],
+		'gate_pass' => $_REQUEST['gate_pass'],
+		'bilty_no' => $_REQUEST['bilty_no'],
+		'pur_location' => $_REQUEST['pur_location'],
+		'pur_cargo' => $_REQUEST['pur_cargo'],
+		'pur_type' => $_REQUEST['pur_type'],
+		'product_id' => $_REQUEST['product_id'],
+		'pur_thaan' => $_REQUEST['pur_thaan'],
+		'pur_rate' => $_REQUEST['product_price'],
+		'pur_gzanah' => $_REQUEST['pur_gzanah'],
+		'quantity' => $_REQUEST['quantity'],
+		'discount' => $_REQUEST['ordered_discount'],
+		'due' => $_REQUEST['remaining_ammount']
+	];
+	if ($_REQUEST['product_purchase_id'] == "") {
 
-		if ($_REQUEST['product_purchase_id'] == "") {
+		if (insert_data($dbc, 'purchase', $data)) {
 
-			if (insert_data($dbc, 'purchase', $data)) {
-				$last_id = mysqli_insert_id($dbc);
+			$p_id = $_POST['next_increment'];
+			$all_data = [
+				'purchase_id' => $p_id,
+				'done_by' => $_REQUEST['pur_location'],
+				'status' => 'sent',
+				'entry_from' => 'purchase',
+				'product_id' => $_REQUEST['product_id'],
+				'rate' => $_REQUEST['product_price'],
+				'thaan' => $_REQUEST['pur_thaan'],
+				'gzanah' => $_REQUEST['pur_gzanah'],
+				'quantity' => $_REQUEST['quantity'],
+				'quantity_instock' => $_REQUEST['quantity'],
+				'unit' => $_REQUEST['pur_unit'],
+				'total_amount' => $_REQUEST['product_grand_amount_input'],
+				'issuance_date' => $_REQUEST['purchase_date'],
+				'to_location' => $_REQUEST['pur_location'],
+			];
+			// Add Data in 
+			if ($_POST['location_type'] == 'dyeing') {
+				$insert_data = insert_data($dbc, 'dyeing', $all_data);
+			} elseif ($_POST['location_type'] == 'printer') {
+				$insert_data = insert_data($dbc, 'printing', $all_data);
+			} elseif ($_POST['location_type'] == 'packing') {
+				$insert_data = insert_data($dbc, 'packing', $all_data);
+			} elseif ($_POST['location_type'] == 'embroidery') {
+				$insert_data = insert_data($dbc, 'embroidery', $all_data);
+			} elseif ($_POST['location_type'] == 'shop') {
+				if ($get_company['stock_manage'] == 1) {
+					$product_id = $_REQUEST['product_id'];
+					$quantity_instock = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT quantity_instock FROM  product WHERE product_id='" . $product_id . "' "));
+					$qty = (float)$quantity_instock['quantity_instock'] + $_REQUEST['quantity'];
+					$quantity_update = mysqli_query($dbc, "UPDATE product SET  quantity_instock='$qty' WHERE product_id='" . $product_id . "' ");
+				}
+			}
 
-				$x = 0;
-				foreach ($_REQUEST['product_ids'] as $key => $value) {
-					$total = $qty = 0;
-					$product_quantites = (float)$_REQUEST['product_quantites'][$x];
-					$product_rates = (float)$_REQUEST['product_rates'][$x];
-					$total = (float)$product_quantites * $product_rates;
-					$total_ammount += (float)$total;
+			// $total_grand = $total_ammount - $total_ammount * ((float)@$_REQUEST['ordered_discount'] / 100) + @$_REQUEST['freight'];
 
-					$order_items = [
-						'product_id' => $_REQUEST['product_ids'][$x],
-						'rate' => $product_rates,
-						'total' => $total,
-						'purchase_id' => $last_id,
-						'quantity' => $product_quantites,
-						'purchase_item_status' => 1,
-						'pur_thaan' => $_REQUEST['pur_thaan'][$x],
-						'pur_gzanah' => $_REQUEST['pur_gzanah'][$x],
-						'pur_unit' => $_REQUEST['pur_unit'][$x],
-					];
+			// $due_amount = (float)$total_grand - @(float)$_REQUEST['paid_ammount'];
+			// if ($_REQUEST['payment_type'] == "credit_purchase") :
+			// 	if ($due_amount > 0) {
+			// 		$debit = [
+			// 			'debit' => 0,
+			// 			'credit' => $due_amount,
+			// 			'customer_id' => @$_REQUEST['customer_account'],
+			// 			'transaction_from' => 'purchase',
+			// 			'transaction_type' => $_REQUEST['payment_type'],
+			// 			'transaction_remarks' => "purchased on  purchased id#" . $last_id,
+			// 			'transaction_date' => $_REQUEST['purchase_date'],
+			// 		];
+			// 		insert_data($dbc, 'transactions', $debit);
+			// 		$transaction_id = mysqli_insert_id($dbc);
+			// 	}
+			// endif;
+			// $paidAmount = @(float)$_REQUEST['paid_ammount'];
+			// if ($paidAmount > 0) {
+			// 	$credit = [
+			// 		'credit' => 0,
+			// 		'debit' => @$_REQUEST['paid_ammount'],
+			// 		'customer_id' => @$_REQUEST['payment_account'],
+			// 		'transaction_from' => 'purchase',
+			// 		'transaction_type' => $_REQUEST['payment_type'],
+			// 		'transaction_remarks' => "purchased by purchased id#" . $last_id,
+			// 		'transaction_date' => $_REQUEST['purchase_date'],
+			// 	];
+			// 	insert_data($dbc, 'transactions', $credit);
+			// 	$transaction_paid_id = mysqli_insert_id($dbc);
+			// }
 
-					insert_data($dbc, 'purchase_item', $order_items);
+			// $newOrder = [
+			// 	'total_amount' => $total_ammount,
+			// 	'discount' => @$_REQUEST['ordered_discount'],
+			// 	'grand_total' => @$total_grand,
+			// 	'due' => $due_amount,
+			// 	'transaction_paid_id' => @$transaction_paid_id,
+			// 	'transaction_id' => @$transaction_id,
+			// ];
+			// if (update_data($dbc, 'purchase', $newOrder, 'purchase_id', $last_id)) {
+			// 	# code...
+			// 	//echo "<script>alert('company Updated....!')</script>";
+			// 	$msg = "Purchase Has been Added";
+			// 	$sts = 'success';
+			// } else {
+			// 	$msg = mysqli_error($dbc);
+			// 	$sts = "danger";
+			// }
+			$msg = "Purchase Has been Added";
+			$sts = 'success';
+		} else {
+			$msg = mysqli_error($dbc);
+			$sts = "danger";
+		}
+	} else {
+		if (update_data($dbc, 'purchase', $data, 'purchase_id', $_REQUEST['product_purchase_id'])) {
+			$last_id = $_REQUEST['product_purchase_id'];
 
-					if ($get_company['stock_manage'] == 1) {
-						$product_id = $_REQUEST['product_ids'][$x];
-						$quantity_instock = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT quantity_instock FROM  product WHERE product_id='" . $product_id . "' "));
-						$qty = (float)$quantity_instock['quantity_instock'] + $product_quantites;
-						$quantity_update = mysqli_query($dbc, "UPDATE product SET  quantity_instock='$qty' WHERE product_id='" . $product_id . "' ");
-					}
+
+			if ($get_company['stock_manage'] == 1) {
+				$proQ = get($dbc, "purchase_item WHERE purchase_id='" . $last_id . "' ");
+
+				while ($proR = mysqli_fetch_assoc($proQ)) {
+					$newqty = 0;
+					$quantity_instock = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT quantity_instock FROM  product WHERE product_id='" . $proR['product_id'] . "' "));
+					$newqty = (float)$quantity_instock['quantity_instock'] - (float)$proR['quantity'];
+					$quantity_update = mysqli_query($dbc, query: "UPDATE product SET  quantity_instock='$newqty' WHERE product_id='" . $proR['product_id'] . "' ");
+				}
+			}
+			deleteFromTable($dbc, "purchase_item", 'purchase_id', $_REQUEST['product_purchase_id']);
+			$x = 0;
+			foreach ($_REQUEST['product_ids'] as $key => $value) {
 
 
+				$total = $qty = 0;
+				$product_quantites = (float)$_REQUEST['product_quantites'][$x];
+				$product_rates = (float)$_REQUEST['product_rates'][$x];
+				$total = $product_quantites * $product_rates;
+				$total_ammount += (float)$total;
+				$purchase_item = [
+					'product_id' => $_REQUEST['product_ids'][$x],
+					'rate' => $product_rates,
+					'total' => $total,
+					'purchase_id' => $_REQUEST['product_purchase_id'],
+					'quantity' => $product_quantites,
+					'purchase_item_status' => 1,
+					'pur_thaan' => $_REQUEST['pur_thaan'][$x],
+					'pur_gzanah' => $_REQUEST['pur_gzanah'][$x],
+					'pur_unit' => $_REQUEST['pur_unit'][$x],
+				];
 
-					$x++;
-				} //end of foreach
-				$total_grand = $total_ammount - $total_ammount * ((float)$_REQUEST['ordered_discount'] / 100) + $_REQUEST['freight'];
+				//update_data($dbc,'order_item', $order_items , 'purchase_id',$_REQUEST['product_purchase_id']);
+				insert_data($dbc, 'purchase_item', $purchase_item);
 
-				$due_amount = (float)$total_grand - @(float)$_REQUEST['paid_ammount'];
-				if ($_REQUEST['payment_type'] == "credit_purchase") :
-					if ($due_amount > 0) {
-						$debit = [
-							'debit' => 0,
-							'credit' => $due_amount,
-							'customer_id' => @$_REQUEST['customer_account'],
-							'transaction_from' => 'purchase',
-							'transaction_type' => $_REQUEST['payment_type'],
-							'transaction_remarks' => "purchased on  purchased id#" . $last_id,
-							'transaction_date' => $_REQUEST['purchase_date'],
-						];
-						insert_data($dbc, 'transactions', $debit);
-						$transaction_id = mysqli_insert_id($dbc);
-					}
-				endif;
-				$paidAmount = @(float)$_REQUEST['paid_ammount'];
-				if ($paidAmount > 0) {
-					$credit = [
-						'credit' => 0,
-						'debit' => @$_REQUEST['paid_ammount'],
-						'customer_id' => @$_REQUEST['payment_account'],
+				if ($get_company['stock_manage'] == 1) {
+					$product_id = $_REQUEST['product_ids'][$x];
+					$quantity_instock = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT quantity_instock FROM  product WHERE product_id='" . $product_id . "' "));
+					$qty = (float)$quantity_instock['quantity_instock'] + $product_quantites;
+					$quantity_update = mysqli_query($dbc, "UPDATE product SET  quantity_instock='$qty' WHERE product_id='" . $product_id . "' ");
+				}
+
+				$x++;
+			} //end of foreach
+			$total_grand = $total_ammount - $total_ammount * ((float)$_REQUEST['ordered_discount'] / 100);
+			$due_amount = (float)$total_grand - @(float)$_REQUEST['paid_ammount'];
+
+
+			$transactions = fetchRecord($dbc, "purchase", "purchase_id", $_REQUEST['product_purchase_id']);
+			@deleteFromTable($dbc, "transactions", 'transaction_id', $transactions['transaction_id']);
+			@deleteFromTable($dbc, "transactions", 'transaction_id', $transactions['transaction_paid_id']);
+
+
+			if ($_REQUEST['payment_type'] == "credit_purchase") :
+				if ($due_amount > 0) {
+					$debit = [
+						'debit' => 0,
+						'credit' => $due_amount,
+						'customer_id' => @$_REQUEST['customer_account'],
 						'transaction_from' => 'purchase',
 						'transaction_type' => $_REQUEST['payment_type'],
-						'transaction_remarks' => "purchased by purchased id#" . $last_id,
+						'transaction_remarks' => "purchased on  purchased id#" . $last_id,
 						'transaction_date' => $_REQUEST['purchase_date'],
 					];
-					insert_data($dbc, 'transactions', $credit);
-					$transaction_paid_id = mysqli_insert_id($dbc);
+					insert_data($dbc, 'transactions', $debit);
+					$transaction_id = mysqli_insert_id($dbc);
 				}
-
-				$newOrder = [
-
-					'total_amount' => $total_ammount,
-					'discount' => $_REQUEST['ordered_discount'],
-					'grand_total' => $total_grand,
-					'due' => $due_amount,
-					'transaction_paid_id' => @$transaction_paid_id,
-					'transaction_id' => @$transaction_id,
+			endif;
+			$paidAmount = @(float)$_REQUEST['paid_ammount'];
+			if ($paidAmount > 0) {
+				$credit = [
+					'debit' => @$_REQUEST['paid_ammount'],
+					'credit' => 0,
+					'customer_id' => @$_REQUEST['payment_account'],
+					'transaction_from' => 'purchase',
+					'transaction_type' => $_REQUEST['payment_type'],
+					'transaction_remarks' => "purchased by purchased id#" . $last_id,
+					'transaction_date' => $_REQUEST['purchase_date'],
 				];
-				if (update_data($dbc, 'purchase', $newOrder, 'purchase_id', $last_id)) {
-					# code...
-					//echo "<script>alert('company Updated....!')</script>";
-					$msg = "Purchase Has been Added";
-					$sts = 'success';
-				} else {
-					$msg = mysqli_error($dbc);
-					$sts = "danger";
-				}
+				insert_data($dbc, 'transactions', $credit);
+				$transaction_paid_id = mysqli_insert_id($dbc);
+			}
+
+			$newOrder = [
+
+				'total_amount' => $total_ammount,
+				'discount' => $_REQUEST['ordered_discount'],
+				'grand_total' => $total_grand,
+				'due' => $due_amount,
+				'transaction_paid_id' => @$transaction_paid_id,
+				'transaction_id' => @$transaction_id,
+			];
+
+			if (update_data($dbc, 'purchase', $newOrder, 'purchase_id', $_REQUEST['product_purchase_id'])) {
+				# code...
+				//echo "<script>alert('company Updated....!')</script>";
+				$msg = "Purchase Has been Updated";
+				$sts = 'success';
 			} else {
 				$msg = mysqli_error($dbc);
 				$sts = "danger";
 			}
 		} else {
-			if (update_data($dbc, 'purchase', $data, 'purchase_id', $_REQUEST['product_purchase_id'])) {
-				$last_id = $_REQUEST['product_purchase_id'];
-
-
-				if ($get_company['stock_manage'] == 1) {
-					$proQ = get($dbc, "purchase_item WHERE purchase_id='" . $last_id . "' ");
-
-					while ($proR = mysqli_fetch_assoc($proQ)) {
-						$newqty = 0;
-						$quantity_instock = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT quantity_instock FROM  product WHERE product_id='" . $proR['product_id'] . "' "));
-						$newqty = (float)$quantity_instock['quantity_instock'] - (float)$proR['quantity'];
-						$quantity_update = mysqli_query($dbc, "UPDATE product SET  quantity_instock='$newqty' WHERE product_id='" . $proR['product_id'] . "' ");
-					}
-				}
-				deleteFromTable($dbc, "purchase_item", 'purchase_id', $_REQUEST['product_purchase_id']);
-				$x = 0;
-				foreach ($_REQUEST['product_ids'] as $key => $value) {
-
-
-					$total = $qty = 0;
-					$product_quantites = (float)$_REQUEST['product_quantites'][$x];
-					$product_rates = (float)$_REQUEST['product_rates'][$x];
-					$total = $product_quantites * $product_rates;
-					$total_ammount += (float)$total;
-					$purchase_item = [
-						'product_id' => $_REQUEST['product_ids'][$x],
-						'rate' => $product_rates,
-						'total' => $total,
-						'purchase_id' => $_REQUEST['product_purchase_id'],
-						'quantity' => $product_quantites,
-						'purchase_item_status' => 1,
-						'pur_thaan' => $_REQUEST['pur_thaan'][$x],
-						'pur_gzanah' => $_REQUEST['pur_gzanah'][$x],
-						'pur_unit' => $_REQUEST['pur_unit'][$x],
-					];
-
-					//update_data($dbc,'order_item', $order_items , 'purchase_id',$_REQUEST['product_purchase_id']);
-					insert_data($dbc, 'purchase_item', $purchase_item);
-
-					if ($get_company['stock_manage'] == 1) {
-						$product_id = $_REQUEST['product_ids'][$x];
-						$quantity_instock = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT quantity_instock FROM  product WHERE product_id='" . $product_id . "' "));
-						$qty = (float)$quantity_instock['quantity_instock'] + $product_quantites;
-						$quantity_update = mysqli_query($dbc, "UPDATE product SET  quantity_instock='$qty' WHERE product_id='" . $product_id . "' ");
-					}
-
-					$x++;
-				} //end of foreach
-				$total_grand = $total_ammount - $total_ammount * ((float)$_REQUEST['ordered_discount'] / 100);
-				$due_amount = (float)$total_grand - @(float)$_REQUEST['paid_ammount'];
-
-
-				$transactions = fetchRecord($dbc, "purchase", "purchase_id", $_REQUEST['product_purchase_id']);
-				@deleteFromTable($dbc, "transactions", 'transaction_id', $transactions['transaction_id']);
-				@deleteFromTable($dbc, "transactions", 'transaction_id', $transactions['transaction_paid_id']);
-
-
-				if ($_REQUEST['payment_type'] == "credit_purchase") :
-					if ($due_amount > 0) {
-						$debit = [
-							'debit' => 0,
-							'credit' => $due_amount,
-							'customer_id' => @$_REQUEST['customer_account'],
-							'transaction_from' => 'purchase',
-							'transaction_type' => $_REQUEST['payment_type'],
-							'transaction_remarks' => "purchased on  purchased id#" . $last_id,
-							'transaction_date' => $_REQUEST['purchase_date'],
-						];
-						insert_data($dbc, 'transactions', $debit);
-						$transaction_id = mysqli_insert_id($dbc);
-					}
-				endif;
-				$paidAmount = @(float)$_REQUEST['paid_ammount'];
-				if ($paidAmount > 0) {
-					$credit = [
-						'debit' => @$_REQUEST['paid_ammount'],
-						'credit' => 0,
-						'customer_id' => @$_REQUEST['payment_account'],
-						'transaction_from' => 'purchase',
-						'transaction_type' => $_REQUEST['payment_type'],
-						'transaction_remarks' => "purchased by purchased id#" . $last_id,
-						'transaction_date' => $_REQUEST['purchase_date'],
-					];
-					insert_data($dbc, 'transactions', $credit);
-					$transaction_paid_id = mysqli_insert_id($dbc);
-				}
-
-				$newOrder = [
-
-					'total_amount' => $total_ammount,
-					'discount' => $_REQUEST['ordered_discount'],
-					'grand_total' => $total_grand,
-					'due' => $due_amount,
-					'transaction_paid_id' => @$transaction_paid_id,
-					'transaction_id' => @$transaction_id,
-				];
-
-				if (update_data($dbc, 'purchase', $newOrder, 'purchase_id', $_REQUEST['product_purchase_id'])) {
-					# code...
-					//echo "<script>alert('company Updated....!')</script>";
-					$msg = "Purchase Has been Updated";
-					$sts = 'success';
-				} else {
-					$msg = mysqli_error($dbc);
-					$sts = "danger";
-				}
-			} else {
-				$msg = mysqli_error($dbc);
-				$sts = "danger";
-			}
+			$msg = mysqli_error($dbc);
+			$sts = "danger";
 		}
-	} else {
-		$msg = "Please Add Any Product";
-		$sts = 'error';
 	}
+
 	echo json_encode(['msg' => $msg, 'sts' => $sts, 'order_id' => @$last_id, 'type' => "purchase", 'subtype' => $_REQUEST['payment_type']]);
 }
 /*---------------------- credit Purchase-order  end -------------------------------------------------------------------*/
@@ -1628,9 +1614,9 @@ if (isset($_POST['action'])) {
 			$result && mysqli_num_rows($result) > 0
 		) {
 			$row = mysqli_fetch_assoc($result);
-			echo $row['stock']; // Return balance as response
+			echo $row['stock'];
 		} else {
-			echo "0"; // Return 0 if no balance is found
+			echo "0";
 		}
 	}
 
@@ -1736,21 +1722,17 @@ if (isset($_POST['action'])) {
 if (isset($_POST['recieve_purc_id'])) {
 	$id = $dbc->real_escape_string($_POST['recieve_purc_id']);
 
-	// Fetch data from the purchase table
 	$purchaseResult = mysqli_query($dbc, "SELECT * FROM purchase WHERE purchase_id = '$id'");
 	$purchaseData = $purchaseResult->fetch_assoc();
 
-	// Fetch data from the purchase_items table and retrieve product names
 	$itemsResult = mysqli_query($dbc, "SELECT * FROM purchase_item WHERE purchase_id = '$id'");
 	$itemsData = [];
 	while ($row = $itemsResult->fetch_assoc()) {
 		$product_id = $row['product_id'];
 
-		// Fetch product name from the product table
 		$productResult = mysqli_query($dbc, "SELECT product_name FROM product WHERE product_id = '$product_id'");
 		$productData = $productResult->fetch_assoc();
 
-		// Add product name to the row
 		$row['product_name'] = $productData['product_name'];
 		$itemsData[] = $row;
 	}
@@ -1762,8 +1744,278 @@ if (isset($_POST['recieve_purc_id'])) {
 	}
 }
 
+// Find Location Type
+if (isset($_POST['location_type_get'])) {
+	$id = $dbc->real_escape_string($_POST['location_type_get']);
+
+	$customer_data = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_id = '$id'");
+	$customer = $customer_data->fetch_assoc();
 
 
+	if ($customer) {
+		echo json_encode(['success' => true, 'data' => $customer]);
+	} else {
+		echo json_encode(['success' => false, 'data' => null]);
+	}
+}
+
+
+// Find Purchase Detail For customer
+
+if (isset($_POST['get_purchase_data'])) {
+	$id = $dbc->real_escape_string($_POST['get_purchase_data']);
+
+	$customer_data = mysqli_query($dbc, "
+        SELECT purchase.*, product.product_name 
+        FROM purchase 
+        LEFT JOIN product ON purchase.product_id = product.product_id 
+        WHERE purchase.pur_location = '$id' 
+          AND purchase.purchase_id NOT IN (
+              SELECT purchase_id 
+              FROM dyeing 
+              WHERE status = 'sent' And entry_from = 'purchase'
+          )
+    ");
+
+	$customers = [];
+	while ($row = $customer_data->fetch_assoc()) {
+		$customers[] = $row;
+	}
+
+	if (!empty($customers)) {
+		echo json_encode(['success' => true, 'data' => $customers]);
+	} else {
+		echo json_encode(['success' => false, 'data' => null]);
+	}
+}
+
+
+
+if (isset($_POST['get_dyeing_data'])) {
+	$id = $dbc->real_escape_string($_POST['get_dyeing_data']);
+
+	$query = "
+        SELECT 
+            product.*, 
+            dyeing.*
+        FROM dyeing
+        INNER JOIN product 
+        ON product.product_id = dyeing.product_id
+        WHERE dyeing.to_location = '$id' 
+        AND dyeing.status = 'sent'
+    ";
+
+	$result = mysqli_query($dbc, $query);
+
+	$customers = [];
+	while ($row = $result->fetch_assoc()) {
+		$customers[] = $row;
+	}
+
+	if (!empty($customers)) {
+		echo json_encode(['success' => true, 'data' => $customers]);
+	} else {
+		echo json_encode(['success' => false, 'data' => null]);
+	}
+}
+
+
+
+
+// Get Selected Purchase Data 
+
+if (isset($_POST['get_selected_purchase'])) {
+	$id = $dbc->real_escape_string($_POST['get_selected_purchase']);
+
+	$purchase_data = mysqli_query($dbc, "SELECT * FROM purchase WHERE purchase_id = '$id'");
+	$purchase = $purchase_data->fetch_assoc();
+
+	$p_id = $purchase['product_id'];
+	$product_data = mysqli_query($dbc, "SELECT * FROM product WHERE product_id = '$p_id'");
+	$product = $product_data->fetch_assoc();
+
+	if ($purchase && $product) {
+		echo json_encode(['success' => true, 'data' => $purchase, 'product' => $product]);
+	} else {
+		echo json_encode(['success' => false, 'data' => null]);
+	}
+}
+
+if (isset($_POST['get_selected_dyeing'])) {
+	$id = $dbc->real_escape_string($_POST['get_selected_dyeing']);
+
+	$purchase_data = mysqli_query($dbc, "SELECT * FROM dyeing WHERE dyeing_id = '$id'");
+	$purchase = $purchase_data->fetch_assoc();
+
+	$p_id = $purchase['product_id'];
+	$product_data = mysqli_query($dbc, "SELECT * FROM product WHERE product_id = '$p_id'");
+	$product = $product_data->fetch_assoc();
+
+	if ($purchase && $product) {
+		echo json_encode(['success' => true, 'data' => $purchase, 'product' => $product]);
+	} else {
+		echo json_encode(['success' => false, 'data' => null]);
+	}
+}
+
+if (isset($_POST['dyeing_issuance_form'])) {
+	$json_data = [
+		"from_product" => $_POST['from_product'],
+		"pur_type_arr" => $_POST['pur_type_arr'],
+		"unit_arr" => $_POST['unit_arr'],
+		"color_arr" => $_POST['color_arr'],
+		"thaan_arr" => $_POST['thaan_arr'],
+		"pur_thaan_arr" => $_POST['pur_thaan_arr'],
+		"qty_arr" => $_POST['qty_arr'],
+		"suit_arr" => $_POST['suit_arr'],
+		"gzanah_arr" => $_POST['gzanah_arr'],
+		"lot_no_arr" => $_POST['lot_no_arr'],
+	];
+
+	$data = [
+		'purchase_id' => $_POST['dyeing_issuance_purchase'],
+		'done_by' => $_POST['to_location'],
+		'status' => 'sent',
+		'entry_from' => 'dyeing_issuance',
+		'product_id' => $_POST['product_id'],
+		'rate' => $_POST['rate'],
+		'total_amount' => $_POST['total_amount'],
+		'thaan' => $_POST['thaan'],
+		'gzanah' => $_POST['gzanah'],
+		'quantity' => $_POST['qty'],
+		'quantity_instock' => $_POST['qty'],
+		'unit' => $_POST['unit'],
+		'transaction_id' => $_POST['transaction'],
+		'issuance_date' => $_POST['issuance_date'],
+		'gate_pass' => $_POST['gate_pass'],
+		'from_location' => $_POST['from_location'],
+		'to_location' => $_POST['to_location'],
+		'pandi' => $_POST['pandi'],
+		'bilty_no' => $_POST['bilty_no'],
+		'remarks' => $_POST['purchase_narration'],
+		'product_details' => json_encode($json_data),
+	];
+
+	if ($_POST['location_type'] == 'dyeing') {
+		$t = 'dyeing';
+	} elseif ($_POST['location_type'] == 'printer') {
+		$t = 'printer';
+	} elseif ($_POST['location_type'] == 'packing') {
+		$t = 'packing';
+	} elseif ($_POST['location_type'] == 'embroidery') {
+		$t = 'embroidery';
+	} elseif ($_POST['location_type'] == 'shop') {
+		$product_id = $_POST['product_id'];
+		$requested_quantity = (float) $_POST['qty'];
+
+		$query = "SELECT * FROM product WHERE product_id='$product_id'";
+		$result = mysqli_query($dbc, $query);
+		$quantity_instock = $result->fetch_assoc();
+
+		$new_qty = (float) $quantity_instock['quantity_instock'] - $requested_quantity;
+		$quantity_update = mysqli_query($dbc, "UPDATE product SET quantity_instock='$new_qty' WHERE product_id='$product_id'");
+		$t = $_POST['location_type'];
+	}
+
+
+	if (insert_data($dbc, "dyeing", $data)) {
+		$response = [
+			'sts' => 'success',
+			'msg' => 'Dyeing Issued successfully',
+			'purchase_id' => $_POST['dyeing_issuance_purchase'],
+			'tab' => $t,
+		];
+	} else {
+		$response = [
+			'sts' => 'warning',
+			'msg' => "Something went wrong: " . mysqli_error($dbc),
+		];
+	}
+
+	echo json_encode($response);
+}
+
+if (isset($_POST['dyeing_recieving'])) {
+	$json_data = [
+		"from_product" => $_POST['from_product'],
+		"pur_type_arr" => $_POST['pur_type_arr'],
+		"unit_arr" => $_POST['unit_arr'],
+		"color_arr" => $_POST['color_arr'],
+		"thaan_arr" => $_POST['thaan_arr'],
+		"pur_thaan_arr" => $_POST['pur_thaan_arr'],
+		"qty_arr" => $_POST['qty_arr'],
+		"suit_arr" => $_POST['suit_arr'],
+		"gzanah_arr" => $_POST['gzanah_arr'],
+		"lot_no_arr" => $_POST['lot_no_arr'],
+	];
+
+	$data = [
+		'purchase_id' => $_POST['dyeing_issuance_purchase'],
+		'done_by' => $_POST['from_location'],
+		'status' => 'received',
+		'entry_from' => 'dyeing_receiving',
+		'recievied_dyeing' => $_POST['recievied_dyeing'],
+		'product_id' => $_POST['product_id'],
+		'rate' => $_POST['rate'],
+		'total_amount' => $_POST['total_amount'],
+		'thaan' => $_POST['thaan'],
+		'gzanah' => $_POST['gzanah'],
+		'quantity' => $_POST['qty'],
+		'unit' => $_POST['unit'],
+		'transaction_id' => $_POST['transaction'],
+		'issuance_date' => $_POST['issuance_date'],
+		'gate_pass' => $_POST['gate_pass'],
+		'from_location' => $_POST['from_location'],
+		'to_location' => $_POST['to_location'],
+		'pandi' => $_POST['pandi'],
+		'bilty_no' => $_POST['bilty_no'],
+		'remarks' => $_POST['purchase_narration'],
+		'product_details' => json_encode($json_data),
+	];
+
+	$dyeing_id = $_POST['recievied_dyeing'];
+	$requested_quantity = (float) $_POST['qty'];
+
+	$query = "SELECT * FROM dyeing WHERE dyeing_id='$dyeing_id'";
+	$result = mysqli_query($dbc, $query);
+	$quantity_instock = $result->fetch_assoc();
+
+	$new_qty = (float) $quantity_instock['quantity_instock'] - $requested_quantity;
+	$quantity_update = mysqli_query($dbc, "UPDATE dyeing SET quantity_instock='$new_qty' WHERE dyeing_id='$dyeing_id'");
+
+
+	if ($_POST['location_type'] == 'dyeing') {
+		$t = 'dyeing';
+	} elseif ($_POST['location_type'] == 'printer') {
+		$t = 'printer';
+	} elseif ($_POST['location_type'] == 'packing') {
+		$t = 'packing';
+	} elseif ($_POST['location_type'] == 'embroidery') {
+		$t = 'embroidery';
+	} elseif ($_POST['location_type'] == 'shop') {
+		$t = $_POST['location_type'];
+		$product_id = $_REQUEST['product_id'];
+		$quantity_instock = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT quantity_instock FROM  product WHERE product_id='" . $product_id . "' "));
+		$qty = (float)@$quantity_instock['quantity_instock'] + @$_REQUEST['qty'];
+		$quantity_update = mysqli_query($dbc, "UPDATE product SET  quantity_instock='$qty' WHERE product_id='" . $product_id . "' ");
+	}
+
+
+	if (insert_data($dbc, "dyeing", $data)) {
+		$response = [
+			'sts' => 'success',
+			'msg' => 'Dyeing Received successfully',
+			'dyeing_id' => $_POST['dyeing_issuance_purchase'],
+		];
+	} else {
+		$response = [
+			'sts' => 'warning',
+			'msg' => "Something went wrong: " . mysqli_error($dbc),
+		];
+	}
+
+	echo json_encode($response);
+}
 // Dyeing Recieving Form
 
 if (
@@ -1793,4 +2045,47 @@ if (
 	}
 
 	echo json_encode($response);
+}
+
+// Get Stock Function
+
+if (isset($_POST['get_stock'])) {
+	$id = $dbc->real_escape_string($_POST['get_stock']);
+
+	$productData = mysqli_query($dbc, "SELECT * FROM product WHERE product_id = '$id'");
+	$product = $productData->fetch_assoc();
+
+
+
+	if ($product) {
+		echo json_encode(['success' => true, 'data' => $product]);
+	} else {
+		echo json_encode(['success' => false, 'data' => null]);
+	}
+}
+if (isset($_POST['get_dyer_stock']) && isset($_POST['done_by'])) {
+	$id = $dbc->real_escape_string($_POST['get_dyer_stock']);
+	$doneById = $dbc->real_escape_string($_POST['done_by']);
+
+	$query = "
+        SELECT SUM(quantity_instock) AS total_quantity 
+        FROM dyeing 
+        WHERE product_id = '$id' 
+        AND status = 'sent' 
+        AND done_by = '$doneById'
+    ";
+
+	$result = mysqli_query($dbc, $query);
+
+	if ($result) {
+		$data = $result->fetch_assoc();
+
+		if ($data['total_quantity'] !== null) {
+			echo json_encode(['success' => true, 'total_quantity' => $data['total_quantity'], 'done_by' => $doneById]);
+		} else {
+			echo json_encode(['success' => false, 'total_quantity' => 0, 'done_by' => $doneById]);
+		}
+	} else {
+		echo json_encode(['success' => false, 'message' => 'Query failed']);
+	}
 }

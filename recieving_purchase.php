@@ -255,9 +255,7 @@
                         </div>
                         <div class="row mt-3">
                             <div class="col-sm-6 offset-6">
-
                                 <button class="btn btn-admin float-right " name="sale_order_btn" value="print" type="submit" id="sale_order_btn">Recieve and Print</button>
-
                             </div>
                         </div>
                     </form>
@@ -267,7 +265,6 @@
                 </div> <!-- .row -->
             </div> <!-- .container-fluid -->
             <!-- <button type="button" class="btn btn-danger d-none btn-sm m-1" id="productionModalButton" data-toggle="modal" data-target="#addProductionModal" onclick="getPurId(<?= $r['purchase_id'] ?>) , getRandomCode()">Production</button> -->
-            <!-- Button trigger modal -->
 
 
 
@@ -292,7 +289,6 @@
             dataType: 'json',
             success: function(response) {
                 if (response.success) {
-                    // Populate fields with purchase data
                     $('#purchase_date').val(response.data.purchase_date);
                     $('#rec_purchase_id').val(response.data.purchase_id);
                     $('#credit_order_client_name').val(response.data.client_name);
@@ -307,7 +303,6 @@
 
                     let itemsHtml = '';
 
-                    // Check if there are any items
                     if (response.items.length > 0) {
                         response.items.forEach(function(item) {
                             itemsHtml += `
@@ -330,7 +325,6 @@
                     `;
                         });
                     } else {
-                        // Display "Data Not Found" if no items are available
                         itemsHtml = `
                     <tr>
                         <td colspan="7" class="text-center">Data Not Found</td>
@@ -340,13 +334,11 @@
 
                     $('#purchase_product_tb').html(itemsHtml);
                 } else {
-                    // If no data found, show "Data Not Found" in the table
                     $('#purchase_product_tb').html(`
                     <tr>
                         <td colspan="7" class="text-center">Data Not Found</td>
                     </tr>
                 `);
-                    // Clear other fields
                     $("#recieving_form").trigger('reset');
                     $("#purchase_narration").val('');
                 }
