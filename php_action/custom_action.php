@@ -2349,3 +2349,34 @@ if (isset($_POST['get_dyer_stock']) && isset($_POST['done_by'])) {
 		echo json_encode(['success' => false, 'message' => 'Query failed']);
 	}
 }
+
+// Add Program
+if (isset($_POST['add_program_name'])) {
+	$name = $_POST['add_program_name'];
+	$status = $_POST['program_status'];
+
+	$data = [
+		'name' => $name,
+		'status' => $status,
+	];
+
+	if (insert_data($dbc, "programs", $data)) {
+		$program_id = mysqli_insert_id($dbc);
+		$response = [
+			'sts' => 'success',
+			'msg' => 'Program added successfully',
+			'data' => [
+				'program_id' => $program_id,
+				'name' => ucwords($name),
+			],
+		];
+	} else {
+		$response = [
+			'sts' => 'warning',
+			'msg' => "Something went wrong: " . mysqli_error($dbc),
+		];
+	}
+
+	echo json_encode($response);
+	exit;
+}

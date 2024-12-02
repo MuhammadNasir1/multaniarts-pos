@@ -225,6 +225,48 @@
      </div>
    </div>
 
+   <!-- Add program -->
+   <div class="modal fade" id="add_program_modal" tabindex="-1" role="dialog" aria-labelledby="defaultModalLabel" aria-hidden="true">
+     <div class="modal-dialog modal-lg" role="document">
+       <div class="modal-content">
+         <div class="modal-header">
+           <h5 class="modal-title" id="defaultModalLabel">Add Program</h5>
+           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+             <span aria-hidden="true">&times;</span>
+           </button>
+         </div>
+
+
+         <div class="modal-body">
+
+           <form action="php_action/custom_action.php" method="POST" role="form" id="program_data">
+             <div class="msg"></div>
+             <div class="form-group row">
+               <div class="col-sm-6">
+                 <label for="">Name</label>
+                 <input type="text" class="form-control" id="add_program_name" name="add_program_name">
+               </div>
+               <div class="col-sm-6">
+                 <label for="">Status</label>
+                 <select class="form-control" id="program_status" name="program_status">
+                   <option value="1">Active</option>
+                   <option value="0">Inactive</option>
+                 </select>
+               </div>
+             </div>
+             <hr>
+             <button type="button" class="btn mb-2 btn-secondary" data-dismiss="modal">Close</button>
+             <button type="submit" class="btn btn-admin float-right">Submit</button>
+           </form>
+
+
+         </div>
+         <div class="modal-footer"></div>
+
+       </div>
+     </div>
+   </div>
+
    <!-- Modal add----------------product              -->
    <div class="modal fade" id="add_category_modal" tabindex="-1" role="dialog" aria-labelledby="defaultModalLabel" aria-hidden="true">
      <div class="modal-dialog modal-lg" role="document">
@@ -420,4 +462,62 @@
        var randomCode = generateRandomCode();
        $('#production_lat_no').val(randomCode);
      }
+
+     $(document).ready(function() {
+       $("#program_data").on("submit", function(event) {
+         event.preventDefault();
+
+         var formData = $(this).serialize();
+
+         $.ajax({
+           type: "POST",
+           url: "php_action/custom_action.php",
+           data: formData,
+           dataType: "json",
+           success: function(response) {
+             if (response.sts === "success") {
+               // Add new option to the select field
+               var newOption = $("<option>")
+                 .val(response.data.program_id)
+                 .text(response.data.name);
+
+               $("#program").append(newOption);
+
+               // Select the newly added option
+               $("#program").val(response.data.program_id).trigger("change");
+
+               // Close the modal and reset the form
+               $("#add_program_modal").modal("hide");
+               $("#program_data")[0].reset(); // Resetting form fields
+
+               // Show SweetAlert success message
+               Swal.fire({
+                 icon: "success",
+                 title: "Program Added",
+                 text: response.msg,
+                 showConfirmButton: false,
+                 timer: 1500,
+               });
+             } else {
+               // Show SweetAlert warning message
+               Swal.fire({
+                 icon: "warning",
+                 title: "Warning",
+                 text: response.msg,
+                 showConfirmButton: true,
+               });
+             }
+           },
+           error: function() {
+             // Show SweetAlert error message
+             Swal.fire({
+               icon: "error",
+               title: "Error",
+               text: "An error occurred while adding the program.",
+               showConfirmButton: true,
+             });
+           },
+         });
+       });
+     });
    </script>
