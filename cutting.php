@@ -96,7 +96,7 @@
                                             </div>
                                             <div class="col-lg-4 m-0 p-0 pl-1">
                                                 <label for="lat_no">Lot No</label>
-                                                <input type="text" class="form-control" id="lat_no" name="lat_no[]" placeholder="Lot No">
+                                                <input type="text" class="form-control lat_no" id="lat_no" name="lat_no[]" placeholder="Lot No">
                                             </div>
                                             <div class="col-lg-4 m-0 p-0 pl-1">
                                                 <label for="d_lot_no">D Lot No</label>
@@ -180,7 +180,7 @@
                                             </div>
                                             <div class="col-lg-4 m-0 p-0 pl-1">
                                                 <label for="lat_no">Lot No</label>
-                                                <input type="text" class="form-control" id="lat_no" name="lat_no[]" placeholder="Lot No">
+                                                <input type="text" class="form-control lat_no" id="lat_no" name="lat_no[]" placeholder="Lot No">
                                             </div>
                                             <div class="col-lg-4 m-0 p-0 pl-1">
                                                 <label for="d_lot_no">D Lot No</label>
@@ -264,7 +264,7 @@
                                             </div>
                                             <div class="col-lg-4 m-0 p-0 pl-1">
                                                 <label for="lat_no">Lot No</label>
-                                                <input type="text" class="form-control" id="lat_no" name="lat_no[]" placeholder="Lot No">
+                                                <input type="text" class="form-control lat_no" id="lat_no" name="lat_no[]" placeholder="Lot No">
                                             </div>
                                             <div class="col-lg-4 m-0 p-0 pl-1">
                                                 <label for="d_lot_no">D Lot No</label>
@@ -348,7 +348,7 @@
                                             </div>
                                             <div class="col-lg-4 m-0 p-0 pl-1">
                                                 <label for="lat_no">Lot No</label>
-                                                <input type="text" class="form-control" id="lat_no" name="lat_no[]" placeholder="Lot No">
+                                                <input type="text" class="form-control lat_no" id="lat_no" name="lat_no[]" placeholder="Lot No">
                                             </div>
                                             <div class="col-lg-4 m-0 p-0 pl-1">
                                                 <label for="d_lot_no">D Lot No</label>
@@ -432,7 +432,7 @@
                                             </div>
                                             <div class="col-lg-4 m-0 p-0 pl-1">
                                                 <label for="lat_no">Lot No</label>
-                                                <input type="text" class="form-control" id="lat_no" name="lat_no[]" placeholder="Lot No">
+                                                <input type="text" class="form-control lat_no" id="lat_no" name="lat_no[]" placeholder="Lot No">
                                             </div>
                                             <div class="col-lg-4 m-0 p-0 pl-1">
                                                 <label for="d_lot_no">D Lot No</label>
@@ -537,9 +537,55 @@
             <!-- <button type="button" class="btn btn-danger d-none btn-sm m-1" id="productionModalButton" data-toggle="modal" data-target="#addProductionModal" onclick="getPurId(<?= $r['purchase_id'] ?>) , getRandomCode()">Production</button> -->
             <!-- Button trigger modal -->
 
+            <div class="col-2">
+                <label class="invisible d-block">.</label>
+                <button type="button" class="btn btn-success btn-sm" data-toggle="modal" id="show_dyeing_details_btn" data-target="#show_dyeing_details"> <i class="fa fa-plus"></i> </button>
+            </div>
+
+            <div class="modal fade" id="show_dyeing_details" tabindex="-1" role="dialog" aria-labelledby="defaultModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Purchase Details</h5>
+                            <input type="text" id="tableSearchInput" class="form-control ml-3" placeholder="Search Here" style="width: 50%;">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="detailModalClose">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
 
 
+                        <div class="modal-body">
+                            <table class="table table-bordered" id="purchaseDetailsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Purchase ID</th>
+                                        <th>Purchase Date</th>
+                                        <th>Product</th>
+                                        <th>Thaan</th>
+                                        <th>Gzanah</th>
+                                        <th>Quantity</th>
+                                        <th>Grand Total</th>
+                                        <th>Paid</th>
+                                        <th>Due</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    // $query = mysqli_query($dbc, "SELECT * FROM dyeing WHERE status = 'received' AND and ")
+                                    ?>
+                                    <h1>Hello World!</h1>
+                                    <?php
 
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="modal-footer"></div>
+
+                    </div>
+                </div>
+            </div>
     </body>
 
     </html>
@@ -547,3 +593,27 @@
 <?php
                         include_once 'includes/foot.php';
                     } ?>
+
+<script>
+    $(document).ready(function() {
+        // Attach an input event listener to all elements with class 'lat_no'
+        $(document).on('focus', '.lat_no', function() {
+            // Logic to open the modal
+            $('#show_dyeing_details_btn').click(); // Replace 'yourModalId' with the actual ID of your modal
+
+            // Optional: Store which field triggered the modal
+            let triggeredField = $(this);
+
+            // Example: You can perform operations using 'triggeredField'
+            console.log(triggeredField.val());
+        });
+    });
+    $(document).ready(function() {
+        $('#tableSearchInput').on('keyup', function() {
+            var value = $(this).val().toLowerCase();
+            $('#purchaseDetailsTable tbody tr').filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            });
+        });
+    });
+</script>

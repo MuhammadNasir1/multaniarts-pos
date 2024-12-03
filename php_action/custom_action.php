@@ -2224,6 +2224,7 @@ if (isset($_POST['dyeing_recieving'])) {
 		'thaan' => $_POST['thaan'],
 		'gzanah' => $_POST['gzanah'],
 		'quantity' => $_POST['qty'],
+		'quantity_instock' => $_POST['qty'],
 		'unit' => $_POST['unit'],
 		'transaction_id' => $_POST['transaction'],
 		'issuance_date' => $_POST['issuance_date'],
@@ -2247,8 +2248,19 @@ if (isset($_POST['dyeing_recieving'])) {
 		]),
 	];
 
+	$location_type = $_POST['location_type'];
+	$dyeing_id = $_POST['recievied_dyeing'];
+	$requested_quantity = (float)$_POST['qty'];
+
+	// Update quantity in stock for dyeing
+	$query = "SELECT * FROM dyeing WHERE dyeing_id='$dyeing_id'";
+	$result = mysqli_query($dbc, $query);
+	$quantity_instock = $result->fetch_assoc();
+	$new_qty = (float)$quantity_instock['quantity_instock'] - $requested_quantity;
+	mysqli_query($dbc, "UPDATE dyeing SET quantity_instock='$new_qty' WHERE dyeing_id='$dyeing_id'");
+
 	$dynamic_data = [
-		'status' => 'sent',
+		'status' => 'received',
 		'recievied_dyeing' => $_POST['recievied_dyeing'],
 	];
 	$dyeing_data = array_merge(
@@ -2257,7 +2269,7 @@ if (isset($_POST['dyeing_recieving'])) {
 	);
 
 	// Insert into the dyeing table first
-	if (!insert_data($dbc, "dyeing", $dynamic_data)) {
+	if (!insert_data($dbc, "dyeing", $dyeing_data)) {
 		$response = [
 			'sts' => 'warning',
 			'msg' => "Error inserting into dyeing table: " . mysqli_error($dbc),
