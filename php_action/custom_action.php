@@ -2225,6 +2225,7 @@ if (isset($_POST['dyeing_recieving'])) {
 		'gzanah' => $_POST['gzanah'],
 		'quantity' => $_POST['qty'],
 		'quantity_instock' => $_POST['qty'],
+		'lat_no' => $_POST['lot_no'],
 		'unit' => $_POST['unit'],
 		'transaction_id' => $_POST['transaction'],
 		'issuance_date' => $_POST['issuance_date'],
@@ -2335,6 +2336,8 @@ if (isset($_POST['get_stock'])) {
 		echo json_encode(['success' => false, 'data' => null]);
 	}
 }
+// get selected dyeing
+
 if (isset($_POST['get_dyer_stock']) && isset($_POST['done_by'])) {
 	$id = $dbc->real_escape_string($_POST['get_dyer_stock']);
 	$doneById = $dbc->real_escape_string($_POST['done_by']);

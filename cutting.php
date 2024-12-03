@@ -84,434 +84,87 @@
                         <hr>
                         <h3 class="text-center">Available Qty: </h3>
                         <hr>
-                        <div class="row m-0 ">
-                            <div id="voucher_rows_container2">
-                                <div class="voucher_row2">
-
-                                    <div class="row mt-3 m-0 p-0">
-                                        <div class="col-lg-2 m-0 p-0 pl-1 row">
-                                            <div class="col-lg-4 m-0 p-0 pl-1">
-                                                <label for="sr">Sr</label>
-                                                <input type="text" class="form-control" id="sr" readonly value="">
+                        <?php
+                        for ($i = 1; $i <= 5; $i++) {
+                        ?>
+                            <div class="row m-0 mt-3">
+                                <div id="voucher_rows_container2">
+                                    <div class="voucher_row2">
+                                        <div class="row mt-3 m-0 p-0">
+                                            <div class="col-lg-2 m-0 p-0 pl-1 row">
+                                                <div class="col-lg-6 m-0 p-0 pl-1">
+                                                    <label for="sr">Sr</label>
+                                                    <input type="text" class="form-control" id="sr<?= $i ?>" readonly value="<?= $i ?>">
+                                                </div>
+                                                <div class="col-lg-6 m-0 p-0 pl-1">
+                                                    <label for="lat_no">Lot No</label>
+                                                    <input type="text" class="form-control lat_no" id="lat_no<?= $i ?>" name="lat_no[]" placeholder="Lot No">
+                                                </div>
                                             </div>
-                                            <div class="col-lg-4 m-0 p-0 pl-1">
-                                                <label for="lat_no">Lot No</label>
-                                                <input type="text" class="form-control lat_no" id="lat_no" name="lat_no[]" placeholder="Lot No">
-                                            </div>
-                                            <div class="col-lg-4 m-0 p-0 pl-1">
+                                            <div class="col-lg-1 m-0 p-0 pl-1">
                                                 <label for="d_lot_no">D Lot No</label>
-                                                <input type="text" class="form-control" id="d_lot_no" name="d_lot_no[]" placeholder="D Lot No">
+                                                <input type="text" class="form-control" id="d_lot_no<?= $i ?>" name="d_lot_no[]" placeholder="D Lot No">
                                             </div>
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="pur_type">Unit</label>
-                                            <select class="form-control searchableSelect" name="pur_type[]" id="pur_type">
-                                                <option disabled selected>Select Unit</option>
-                                                <option value="meter">Meter</option>
-                                                <option value="yard">Yard</option>
-                                                <option value="others">Suit</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="type">Type</label>
-                                            <select class="form-control searchableSelect" name="type[]" id="type">
-                                                <option disabled selected>Select Type</option>
-                                                <option value="meter">Meter</option>
-                                                <option value="yard">Yard</option>
-                                                <option value="others">Suit</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="thaan">Thaan</label>
-                                            <input type="text" class="form-control" id="thaan" name="thaan[]" placeholder="Thaan">
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="pur_thaan">Qty/Thaan</label>
-                                            <input type="text" class="form-control" id="pur_thaan" name="pur_thaan[]" placeholder="Qty/Thaan">
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="qty">Qty</label>
-                                            <input type="text" class="form-control" id="qty" name="qty[]" value="0" placeholder="Qty">
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="unsettle">Unsettle</label>
-                                            <input type="text" class="form-control" id="unsettle" name="unsettle[]" placeholder="Unsettle">
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1 row">
-                                            <div class="col-lg-6 m-0 p-0 pl-1">
-                                                <label for="cp">CP</label>
-                                                <input type="text" class="form-control" id="cp" name="cp[]" placeholder="CP">
+                                            <div class="col-lg-1 m-0 p-0 pl-1">
+                                                <label for="pur_type">Unit</label>
+                                                <select class="form-control searchableSelect" name="pur_type[]" id="pur_type<?= $i ?>">
+                                                    <option disabled selected>Select Unit</option>
+                                                    <option value="meter">Meter</option>
+                                                    <option value="yard">Yard</option>
+                                                    <option value="others">Suit</option>
+                                                </select>
                                             </div>
-                                            <div class="col-lg-6 m-0 p-0 pl-1">
-                                                <label for="r_khata">R Khata</label>
-                                                <input type="text" class="form-control" id="r_khata" name="r_khata[]">
+                                            <div class="col-lg-1 m-0 p-0 pl-1">
+                                                <label for="type">Type</label>
+                                                <select class="form-control searchableSelect" name="type[]" id="type<?= $i ?>">
+                                                    <option disabled selected>Select Type</option>
+                                                    <option value="meter">Meter</option>
+                                                    <option value="yard">Yard</option>
+                                                    <option value="others">Suit</option>
+                                                </select>
                                             </div>
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1 row">
-                                            <div class="col-lg-6 m-0 p-0 pl-1">
-                                                <label for="small_cp">Small CP</label>
-                                                <input type="text" class="form-control" id="small_cp" name="small_cp[]">
+                                            <div class="col-lg-1 m-0 p-0 pl-1">
+                                                <label for="thaan">Thaan</label>
+                                                <input type="text" class="form-control" id="thaan<?= $i ?>" name="thaan[]" placeholder="Thaan">
                                             </div>
-                                            <div class="col-lg-6 m-0 p-0 pl-1">
-                                                <label for="color">Color</label>
-                                                <input type="text" class="form-control" id="color" name="color[]" placeholder="Color">
+                                            <div class="col-lg-1 m-0 p-0 pl-1">
+                                                <label for="pur_thaan">Qty/Thaan</label>
+                                                <input type="text" class="form-control" id="pur_thaan<?= $i ?>" name="pur_thaan[]" placeholder="Qty/Thaan">
                                             </div>
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="location">Location</label>
-                                            <select class="form-control searchableSelect" name="location[]" id="location">
-                                                <option disabled selected>Select Location</option>
-                                                <?php
-                                                $query = "SELECT * FROM customers WHERE customer_type IN ('dyeing', 'printer', 'packing', 'embroidery')";
-                                                $result = mysqli_query($dbc, $query);
-                                                while ($d = mysqli_fetch_assoc($result)) {
-                                                    echo "<option value='{$d['customer_id']}'>" . ucwords($d['customer_name']) . " (" . ucwords($d['customer_type']) . ")</option>";
-                                                }
-                                                ?>
-                                            </select>
+                                            <div class="col-lg-1 m-0 p-0 pl-1">
+                                                <label for="qty">Qty</label>
+                                                <input type="text" class="form-control" id="qty<?= $i ?>" name="qty[]" value="0" placeholder="Qty">
+                                            </div>
+                                            <div class="col-lg-1 m-0 p-0 pl-1">
+                                                <label for="unsettle">Unsettle</label>
+                                                <input type="text" class="form-control" id="unsettle<?= $i ?>" name="unsettle[]" placeholder="Unsettle">
+                                            </div>
+                                            <div class="col-lg-1 m-0 p-0 pl-1 row">
+                                                <div class="col-lg-6 m-0 p-0 pl-1">
+                                                    <label for="cp">CP</label>
+                                                    <input type="text" class="form-control" id="cp<?= $i ?>" name="cp[]" placeholder="CP">
+                                                </div>
+                                                <div class="col-lg-6 m-0 p-0 pl-1">
+                                                    <label for="r_khata">R Khata</label>
+                                                    <input type="text" class="form-control" id="r_khata<?= $i ?>" name="r_khata[]">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-1 m-0 p-0 pl-1 row">
+                                                <div class="col-lg-6 m-0 p-0 pl-1">
+                                                    <label for="small_cp">Small CP</label>
+                                                    <input type="text" class="form-control" id="small_cp<?= $i ?>" name="small_cp[]">
+                                                </div>
+                                                <div class="col-lg-6 m-0 p-0 pl-1">
+                                                    <label for="color">Color</label>
+                                                    <input type="text" class="form-control" id="color<?= $i ?>" name="color[]" placeholder="Color">
+                                                </div>
+                                            </div>
                                         </div>
 
                                     </div>
-                                    <div class="row mt-3 m-0 p-0">
-                                        <div class="col-lg-2 m-0 p-0 pl-1 row">
-                                            <div class="col-lg-4 m-0 p-0 pl-1">
-                                                <label for="sr">Sr</label>
-                                                <input type="text" class="form-control" id="sr" readonly value="">
-                                            </div>
-                                            <div class="col-lg-4 m-0 p-0 pl-1">
-                                                <label for="lat_no">Lot No</label>
-                                                <input type="text" class="form-control lat_no" id="lat_no" name="lat_no[]" placeholder="Lot No">
-                                            </div>
-                                            <div class="col-lg-4 m-0 p-0 pl-1">
-                                                <label for="d_lot_no">D Lot No</label>
-                                                <input type="text" class="form-control" id="d_lot_no" name="d_lot_no[]" placeholder="D Lot No">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="pur_type">Unit</label>
-                                            <select class="form-control searchableSelect" name="pur_type[]" id="pur_type">
-                                                <option disabled selected>Select Unit</option>
-                                                <option value="meter">Meter</option>
-                                                <option value="yard">Yard</option>
-                                                <option value="others">Suit</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="type">Type</label>
-                                            <select class="form-control searchableSelect" name="type[]" id="type">
-                                                <option disabled selected>Select Type</option>
-                                                <option value="meter">Meter</option>
-                                                <option value="yard">Yard</option>
-                                                <option value="others">Suit</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="thaan">Thaan</label>
-                                            <input type="text" class="form-control" id="thaan" name="thaan[]" placeholder="Thaan">
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="pur_thaan">Qty/Thaan</label>
-                                            <input type="text" class="form-control" id="pur_thaan" name="pur_thaan[]" placeholder="Qty/Thaan">
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="qty">Qty</label>
-                                            <input type="text" class="form-control" id="qty" name="qty[]" value="0" placeholder="Qty">
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="unsettle">Unsettle</label>
-                                            <input type="text" class="form-control" id="unsettle" name="unsettle[]" placeholder="Unsettle">
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1 row">
-                                            <div class="col-lg-6 m-0 p-0 pl-1">
-                                                <label for="cp">CP</label>
-                                                <input type="text" class="form-control" id="cp" name="cp[]" placeholder="CP">
-                                            </div>
-                                            <div class="col-lg-6 m-0 p-0 pl-1">
-                                                <label for="r_khata">R Khata</label>
-                                                <input type="text" class="form-control" id="r_khata" name="r_khata[]">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1 row">
-                                            <div class="col-lg-6 m-0 p-0 pl-1">
-                                                <label for="small_cp">Small CP</label>
-                                                <input type="text" class="form-control" id="small_cp" name="small_cp[]">
-                                            </div>
-                                            <div class="col-lg-6 m-0 p-0 pl-1">
-                                                <label for="color">Color</label>
-                                                <input type="text" class="form-control" id="color" name="color[]" placeholder="Color">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="location">Location</label>
-                                            <select class="form-control searchableSelect" name="location[]" id="location">
-                                                <option disabled selected>Select Location</option>
-                                                <?php
-                                                $query = "SELECT * FROM customers WHERE customer_type IN ('dyeing', 'printer', 'packing', 'embroidery')";
-                                                $result = mysqli_query($dbc, $query);
-                                                while ($d = mysqli_fetch_assoc($result)) {
-                                                    echo "<option value='{$d['customer_id']}'>" . ucwords($d['customer_name']) . " (" . ucwords($d['customer_type']) . ")</option>";
-                                                }
-                                                ?>
-                                            </select>
-                                        </div>
-
-                                    </div>
-                                    <div class="row mt-3 m-0 p-0">
-                                        <div class="col-lg-2 m-0 p-0 pl-1 row">
-                                            <div class="col-lg-4 m-0 p-0 pl-1">
-                                                <label for="sr">Sr</label>
-                                                <input type="text" class="form-control" id="sr" readonly value="">
-                                            </div>
-                                            <div class="col-lg-4 m-0 p-0 pl-1">
-                                                <label for="lat_no">Lot No</label>
-                                                <input type="text" class="form-control lat_no" id="lat_no" name="lat_no[]" placeholder="Lot No">
-                                            </div>
-                                            <div class="col-lg-4 m-0 p-0 pl-1">
-                                                <label for="d_lot_no">D Lot No</label>
-                                                <input type="text" class="form-control" id="d_lot_no" name="d_lot_no[]" placeholder="D Lot No">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="pur_type">Unit</label>
-                                            <select class="form-control searchableSelect" name="pur_type[]" id="pur_type">
-                                                <option disabled selected>Select Unit</option>
-                                                <option value="meter">Meter</option>
-                                                <option value="yard">Yard</option>
-                                                <option value="others">Suit</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="type">Type</label>
-                                            <select class="form-control searchableSelect" name="type[]" id="type">
-                                                <option disabled selected>Select Type</option>
-                                                <option value="meter">Meter</option>
-                                                <option value="yard">Yard</option>
-                                                <option value="others">Suit</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="thaan">Thaan</label>
-                                            <input type="text" class="form-control" id="thaan" name="thaan[]" placeholder="Thaan">
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="pur_thaan">Qty/Thaan</label>
-                                            <input type="text" class="form-control" id="pur_thaan" name="pur_thaan[]" placeholder="Qty/Thaan">
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="qty">Qty</label>
-                                            <input type="text" class="form-control" id="qty" name="qty[]" value="0" placeholder="Qty">
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="unsettle">Unsettle</label>
-                                            <input type="text" class="form-control" id="unsettle" name="unsettle[]" placeholder="Unsettle">
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1 row">
-                                            <div class="col-lg-6 m-0 p-0 pl-1">
-                                                <label for="cp">CP</label>
-                                                <input type="text" class="form-control" id="cp" name="cp[]" placeholder="CP">
-                                            </div>
-                                            <div class="col-lg-6 m-0 p-0 pl-1">
-                                                <label for="r_khata">R Khata</label>
-                                                <input type="text" class="form-control" id="r_khata" name="r_khata[]">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1 row">
-                                            <div class="col-lg-6 m-0 p-0 pl-1">
-                                                <label for="small_cp">Small CP</label>
-                                                <input type="text" class="form-control" id="small_cp" name="small_cp[]">
-                                            </div>
-                                            <div class="col-lg-6 m-0 p-0 pl-1">
-                                                <label for="color">Color</label>
-                                                <input type="text" class="form-control" id="color" name="color[]" placeholder="Color">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="location">Location</label>
-                                            <select class="form-control searchableSelect" name="location[]" id="location">
-                                                <option disabled selected>Select Location</option>
-                                                <?php
-                                                $query = "SELECT * FROM customers WHERE customer_type IN ('dyeing', 'printer', 'packing', 'embroidery')";
-                                                $result = mysqli_query($dbc, $query);
-                                                while ($d = mysqli_fetch_assoc($result)) {
-                                                    echo "<option value='{$d['customer_id']}'>" . ucwords($d['customer_name']) . " (" . ucwords($d['customer_type']) . ")</option>";
-                                                }
-                                                ?>
-                                            </select>
-                                        </div>
-
-                                    </div>
-                                    <div class="row mt-3 m-0 p-0">
-                                        <div class="col-lg-2 m-0 p-0 pl-1 row">
-                                            <div class="col-lg-4 m-0 p-0 pl-1">
-                                                <label for="sr">Sr</label>
-                                                <input type="text" class="form-control" id="sr" readonly value="">
-                                            </div>
-                                            <div class="col-lg-4 m-0 p-0 pl-1">
-                                                <label for="lat_no">Lot No</label>
-                                                <input type="text" class="form-control lat_no" id="lat_no" name="lat_no[]" placeholder="Lot No">
-                                            </div>
-                                            <div class="col-lg-4 m-0 p-0 pl-1">
-                                                <label for="d_lot_no">D Lot No</label>
-                                                <input type="text" class="form-control" id="d_lot_no" name="d_lot_no[]" placeholder="D Lot No">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="pur_type">Unit</label>
-                                            <select class="form-control searchableSelect" name="pur_type[]" id="pur_type">
-                                                <option disabled selected>Select Unit</option>
-                                                <option value="meter">Meter</option>
-                                                <option value="yard">Yard</option>
-                                                <option value="others">Suit</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="type">Type</label>
-                                            <select class="form-control searchableSelect" name="type[]" id="type">
-                                                <option disabled selected>Select Type</option>
-                                                <option value="meter">Meter</option>
-                                                <option value="yard">Yard</option>
-                                                <option value="others">Suit</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="thaan">Thaan</label>
-                                            <input type="text" class="form-control" id="thaan" name="thaan[]" placeholder="Thaan">
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="pur_thaan">Qty/Thaan</label>
-                                            <input type="text" class="form-control" id="pur_thaan" name="pur_thaan[]" placeholder="Qty/Thaan">
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="qty">Qty</label>
-                                            <input type="text" class="form-control" id="qty" name="qty[]" value="0" placeholder="Qty">
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="unsettle">Unsettle</label>
-                                            <input type="text" class="form-control" id="unsettle" name="unsettle[]" placeholder="Unsettle">
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1 row">
-                                            <div class="col-lg-6 m-0 p-0 pl-1">
-                                                <label for="cp">CP</label>
-                                                <input type="text" class="form-control" id="cp" name="cp[]" placeholder="CP">
-                                            </div>
-                                            <div class="col-lg-6 m-0 p-0 pl-1">
-                                                <label for="r_khata">R Khata</label>
-                                                <input type="text" class="form-control" id="r_khata" name="r_khata[]">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1 row">
-                                            <div class="col-lg-6 m-0 p-0 pl-1">
-                                                <label for="small_cp">Small CP</label>
-                                                <input type="text" class="form-control" id="small_cp" name="small_cp[]">
-                                            </div>
-                                            <div class="col-lg-6 m-0 p-0 pl-1">
-                                                <label for="color">Color</label>
-                                                <input type="text" class="form-control" id="color" name="color[]" placeholder="Color">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="location">Location</label>
-                                            <select class="form-control searchableSelect" name="location[]" id="location">
-                                                <option disabled selected>Select Location</option>
-                                                <?php
-                                                $query = "SELECT * FROM customers WHERE customer_type IN ('dyeing', 'printer', 'packing', 'embroidery')";
-                                                $result = mysqli_query($dbc, $query);
-                                                while ($d = mysqli_fetch_assoc($result)) {
-                                                    echo "<option value='{$d['customer_id']}'>" . ucwords($d['customer_name']) . " (" . ucwords($d['customer_type']) . ")</option>";
-                                                }
-                                                ?>
-                                            </select>
-                                        </div>
-
-                                    </div>
-                                    <div class="row mt-3 m-0 p-0">
-                                        <div class="col-lg-2 m-0 p-0 pl-1 row">
-                                            <div class="col-lg-4 m-0 p-0 pl-1">
-                                                <label for="sr">Sr</label>
-                                                <input type="text" class="form-control" id="sr" readonly value="">
-                                            </div>
-                                            <div class="col-lg-4 m-0 p-0 pl-1">
-                                                <label for="lat_no">Lot No</label>
-                                                <input type="text" class="form-control lat_no" id="lat_no" name="lat_no[]" placeholder="Lot No">
-                                            </div>
-                                            <div class="col-lg-4 m-0 p-0 pl-1">
-                                                <label for="d_lot_no">D Lot No</label>
-                                                <input type="text" class="form-control" id="d_lot_no" name="d_lot_no[]" placeholder="D Lot No">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="pur_type">Unit</label>
-                                            <select class="form-control searchableSelect" name="pur_type[]" id="pur_type">
-                                                <option disabled selected>Select Unit</option>
-                                                <option value="meter">Meter</option>
-                                                <option value="yard">Yard</option>
-                                                <option value="others">Suit</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="type">Type</label>
-                                            <select class="form-control searchableSelect" name="type[]" id="type">
-                                                <option disabled selected>Select Type</option>
-                                                <option value="meter">Meter</option>
-                                                <option value="yard">Yard</option>
-                                                <option value="others">Suit</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="thaan">Thaan</label>
-                                            <input type="text" class="form-control" id="thaan" name="thaan[]" placeholder="Thaan">
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="pur_thaan">Qty/Thaan</label>
-                                            <input type="text" class="form-control" id="pur_thaan" name="pur_thaan[]" placeholder="Qty/Thaan">
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="qty">Qty</label>
-                                            <input type="text" class="form-control" id="qty" name="qty[]" value="0" placeholder="Qty">
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="unsettle">Unsettle</label>
-                                            <input type="text" class="form-control" id="unsettle" name="unsettle[]" placeholder="Unsettle">
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1 row">
-                                            <div class="col-lg-6 m-0 p-0 pl-1">
-                                                <label for="cp">CP</label>
-                                                <input type="text" class="form-control" id="cp" name="cp[]" placeholder="CP">
-                                            </div>
-                                            <div class="col-lg-6 m-0 p-0 pl-1">
-                                                <label for="r_khata">R Khata</label>
-                                                <input type="text" class="form-control" id="r_khata" name="r_khata[]">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1 row">
-                                            <div class="col-lg-6 m-0 p-0 pl-1">
-                                                <label for="small_cp">Small CP</label>
-                                                <input type="text" class="form-control" id="small_cp" name="small_cp[]">
-                                            </div>
-                                            <div class="col-lg-6 m-0 p-0 pl-1">
-                                                <label for="color">Color</label>
-                                                <input type="text" class="form-control" id="color" name="color[]" placeholder="Color">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="location">Location</label>
-                                            <select class="form-control searchableSelect" name="location[]" id="location">
-                                                <option disabled selected>Select Location</option>
-                                                <?php
-                                                $query = "SELECT * FROM customers WHERE customer_type IN ('dyeing', 'printer', 'packing', 'embroidery')";
-                                                $result = mysqli_query($dbc, $query);
-                                                while ($d = mysqli_fetch_assoc($result)) {
-                                                    echo "<option value='{$d['customer_id']}'>" . ucwords($d['customer_name']) . " (" . ucwords($d['customer_type']) . ")</option>";
-                                                }
-                                                ?>
-                                            </select>
-                                        </div>
-
-                                    </div>
-
                                 </div>
                             </div>
-                        </div>
+                        <?php } ?>
                         <!-- <div class="row m-0 p-0 my-4 justify-content-end">
                             <div class="col-lg-1">
                                 <div id="cutt_voucher_btn">
@@ -537,7 +190,7 @@
             <!-- <button type="button" class="btn btn-danger d-none btn-sm m-1" id="productionModalButton" data-toggle="modal" data-target="#addProductionModal" onclick="getPurId(<?= $r['purchase_id'] ?>) , getRandomCode()">Production</button> -->
             <!-- Button trigger modal -->
 
-            <div class="col-2">
+            <div class="col-2 d-none">
                 <label class="invisible d-block">.</label>
                 <button type="button" class="btn btn-success btn-sm" data-toggle="modal" id="show_dyeing_details_btn" data-target="#show_dyeing_details"> <i class="fa fa-plus"></i> </button>
             </div>
@@ -546,7 +199,7 @@
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLongTitle">Purchase Details</h5>
+                            <h5 class="modal-title" id="exampleModalLongTitle">Dyeing Details</h5>
                             <input type="text" id="tableSearchInput" class="form-control ml-3" placeholder="Search Here" style="width: 50%;">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="detailModalClose">
                                 <span aria-hidden="true">&times;</span>
@@ -564,19 +217,41 @@
                                         <th>Thaan</th>
                                         <th>Gzanah</th>
                                         <th>Quantity</th>
-                                        <th>Grand Total</th>
-                                        <th>Paid</th>
-                                        <th>Due</th>
+                                        <th>Total</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php
-                                    // $query = mysqli_query($dbc, "SELECT * FROM dyeing WHERE status = 'received' AND and ")
+                                    $query = mysqli_query($dbc, "SELECT * FROM dyeing WHERE status = 'received'");
+                                    while ($row = mysqli_fetch_assoc($query)) {
                                     ?>
-                                    <h1>Hello World!</h1>
+                                        <tr>
+                                            <td><?= $row['purchase_id'] ?></td>
+                                            <td><?= $row['issuance_date'] ?></td>
+                                            <td>
+                                                <?php
+                                                $pr_id = $row['product_id'];
+                                                $result = mysqli_query($dbc, "SELECT * FROM product WHERE status=1 AND product_id = '$pr_id'");
+                                                while ($r = mysqli_fetch_array($result)) {
+                                                    // $getBrand = fetchRecord($dbc, "brands", "brand_id", $row['brand_id']);
+                                                    // $getCat = fetchRecord($dbc, "categories", "categories_id", $row['category_id']);
+                                                    echo $r['product_name'];
+                                                } ?>
+                                            </td>
+                                            <td><?= $row['thaan'] ?></td>
+                                            <td><?= $row['gzanah'] ?></td>
+                                            <td><?= $row['quantity_instock'] ?></td>
+                                            <td><?= $row['total_amount'] ?></td>
+                                            <td>
+                                                <button type="button" class="btn select-row btn-primary btn-sm"
+                                                    name="selected_purchase_id"
+                                                    id="selected_purchase_id"
+                                                    value="<?= $row['dyeing_id'] ?>" onclick="getDyeingDetails(this.value)">Apply</button>
+                                            </td>
+                                        </tr>
                                     <?php
-
+                                    }
                                     ?>
                                 </tbody>
                             </table>
@@ -595,19 +270,89 @@
                     } ?>
 
 <script>
-    $(document).ready(function() {
-        // Attach an input event listener to all elements with class 'lat_no'
-        $(document).on('focus', '.lat_no', function() {
-            // Logic to open the modal
-            $('#show_dyeing_details_btn').click(); // Replace 'yourModalId' with the actual ID of your modal
+    function getDyeingDetails(dyeingId) {
+        $.ajax({
+            url: 'php_action/custom_action.php',
+            type: 'POST',
+            data: {
+                get_selected_dyeing: dyeingId
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    const data = response.data;
+                    const currentId = $("#show_dyeing_details").data("currentId"); // Retrieve the stored currentId
 
-            // Optional: Store which field triggered the modal
-            let triggeredField = $(this);
+                    // Update fields dynamically
+                    const rowIndex = currentId.replace("lat_no", ""); // Extract row index from id
 
-            // Example: You can perform operations using 'triggeredField'
-            console.log(triggeredField.val());
+                    $(`#thaan${rowIndex}`).val(data.thaan); // Set Thaan value
+                    $(`#qty${rowIndex}`).val(data.quantity_instock); // Set Gzanah value
+                    $(`#d_lot_no${rowIndex}`).val(data.lat_no); // Set Gzanah value
+
+                    // Close Modal
+                    $("#detailModalClose").click();
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error: " + status + error);
+            }
         });
+    }
+
+    function getDyeingDetails(dyeingId) {
+        $.ajax({
+            url: 'php_action/custom_action.php',
+            type: 'POST',
+            data: {
+                get_selected_dyeing: dyeingId
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    const data = response.data;
+                    const currentId = $("#show_dyeing_details").data("currentId");
+
+                    const rowIndex = currentId.replace("lat_no", "");
+
+                    $(`#thaan${rowIndex}`).val(data.thaan);
+                    $(`#qty${rowIndex}`).val(data.quantity_instock);
+                    $(`#d_lot_no${rowIndex}`).val(data.lat_no);
+                    $(`#pur_type${rowIndex}`).val(data.unit);
+
+                    const productDetails = JSON.parse(data.product_details);
+                    const purThaanValue = productDetails.pur_thaan_arr[0];
+
+                    $(`#pur_thaan${rowIndex}`).val(purThaanValue);
+                    $(`#color${rowIndex}`).val(productDetails.color_arr[0]);
+
+                    $("#detailModalClose").click();
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error: " + status + error);
+            }
+        });
+    }
+
+
+    $(document).on("focus", ".lat_no", function() {
+        const currentId = $(this).attr("id"); // Get the id of the focused field
+        const dyeingId = $(this).val(); // Assume value or fetch as needed
+
+        // Open Modal
+        $("#show_dyeing_details").modal("show");
+
+        // Store currentId for later use
+        $("#show_dyeing_details").data("currentId", currentId);
     });
+
+    // When a row in the modal is selected
+    $(document).on("click", ".select-row", function() {
+        const dyeingId = $(this).data("dyeing-id"); // Assume dyeingId is stored in a button attribute
+        getDyeingDetails(dyeingId);
+    });
+
     $(document).ready(function() {
         $('#tableSearchInput').on('keyup', function() {
             var value = $(this).val().toLowerCase();
