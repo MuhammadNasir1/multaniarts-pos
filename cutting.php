@@ -32,6 +32,7 @@
                     <form action="" method="POST" id="cutting_form">
                         <input type="hidden" name="product_purchase_id" value="<?= @empty($_REQUEST['edit_purchase_id']) ? "" : base64_decode($_REQUEST['edit_purchase_id']) ?>">
                         <input type="hidden" name="cuttingform" id="cuttingform" value="cuttingform">
+                        <input type="hidden" name="purchase_id" id="purchase_id" value="cuttingform">
 
 
                         <div class="row form-group">
@@ -120,6 +121,23 @@
                                                     <option value="others">Suit</option>
                                                 </select>
                                             </div>
+                                            <div class="col-lg-2 m-0 p-0 pl-1">
+                                                <label for="type">Product</label>
+                                                <div class="input-group">
+                                                    <select class="form-control searchableSelect" name="from_type[]" id="from_type<?= $i ?>" onchange="getStock(this.value, <?= $i ?>)">
+                                                        <option disabled selected>Select Type</option>
+                                                        <?php
+                                                        $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'dyed' OR brand_id = 'cora' AND status = 1");
+                                                        while ($p = mysqli_fetch_assoc($products)) {
+                                                        ?>
+                                                            <option value="<?= $p['product_id'] ?>"><?= ucwords($p['product_name']) ?></option>
+                                                        <?php } ?>
+                                                    </select>
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text" id="basic-addon1<?= $i ?>">Stock :<span id="from_product_bl<?= $i ?>">0</span> </span>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <div class="col-lg-1 m-0 p-0 pl-1">
                                                 <label for="type">Type</label>
                                                 <select class="form-control searchableSelect" name="type[]" id="type<?= $i ?>">
@@ -132,17 +150,19 @@
                                                     <?php } ?>
                                                 </select>
                                             </div>
-                                            <div class="col-lg-1 m-0 p-0 pl-1">
-                                                <label for="thaan">Thaan</label>
-                                                <input type="text" class="form-control" id="thaan<?= $i ?>" name="thaan[]" placeholder="Thaan">
-                                            </div>
-                                            <div class="col-lg-1 m-0 p-0 pl-1">
-                                                <label for="pur_thaan">Qty/Thaan</label>
-                                                <input type="text" class="form-control" id="pur_thaan<?= $i ?>" name="pur_thaan[]" placeholder="Qty/Thaan">
-                                            </div>
-                                            <div class="col-lg-1 m-0 p-0 pl-1">
-                                                <label for="qty">Qty</label>
-                                                <input type="number" min="1" class="form-control" id="qty<?= $i ?>" name="qty[]" value="0" placeholder="Qty">
+                                            <div class="col-lg-2 m-0 p-0 pl-1 row">
+                                                <div class="col-lg-4 m-0 p-0 pl-1">
+                                                    <label for="thaan">Thaan</label>
+                                                    <input type="text" class="form-control" id="thaan<?= $i ?>" name="thaan[]" placeholder="Thaan">
+                                                </div>
+                                                <div class="col-lg-4 m-0 p-0 pl-1">
+                                                    <label for="pur_thaan">Qty/Thaan</label>
+                                                    <input type="text" class="form-control" id="pur_thaan<?= $i ?>" name="pur_thaan[]" placeholder="Qty/Thaan">
+                                                </div>
+                                                <div class="col-lg-4 m-0 p-0 pl-1">
+                                                    <label for="qty">Qty</label>
+                                                    <input type="number" min="1" class="form-control" id="qty<?= $i ?>" name="qty[]" value="0" placeholder="Qty">
+                                                </div>
                                             </div>
                                             <div class="col-lg-1 m-0 p-0 pl-1">
                                                 <label for="unsettle">Unsettle</label>
@@ -184,7 +204,7 @@
                             </div>
                         </div> -->
 
-                        <div class="row">
+                        <div class="row mt-3">
                             <div class="col-sm-6 offset-6">
 
                                 <button class="btn btn-admin float-right " name="sale_order_btn" value="print" type="submit" id="sale_order_btn">Save and Print</button>
@@ -288,6 +308,7 @@
                     row.find('[name="color[]"]').val(productDetails.color_arr[0] || '');
                     row.find('[name="pur_thaan[]"]').val(productDetails.pur_thaan_arr[0] || '');
 
+                    $("#purchase_id").val(data.purchase_id);
                     $("#show_dyeing_details").modal("hide");
                 } else {
                     console.error("Failed to fetch dyeing details:", response.message);
@@ -329,10 +350,10 @@
                             showConfirmButton: false,
                             timer: 12000
                         }).then((result) => {
-                            location.reload();
+                            // location.reload();
                         });
 
-                        $('#cutting_form')[0].reset();
+                        // $('#cutting_form')[0].reset();
                     } else {
                         Swal.fire({
                             icon: 'warning',
@@ -387,6 +408,28 @@
                 });
 
                 $('#table-body-id').html(tableBody); // Replace #table-body-id with your table body ID
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error:', error);
+            }
+        });
+    }
+
+    function getStock(product_id, index) {
+        $.ajax({
+            url: 'php_action/custom_action.php', // Replace with your PHP script's path
+            type: 'POST',
+            data: {
+                get_stock: product_id
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    // Update the stock span with the correct index
+                    $('#from_product_bl' + index).text(response.data.quantity_instock);
+                } else {
+                    alert('Error: ' + (response.error || 'Unknown error occurred'));
+                }
             },
             error: function(xhr, status, error) {
                 console.error('AJAX Error:', error);

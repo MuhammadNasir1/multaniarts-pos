@@ -2425,6 +2425,7 @@ if (isset($_POST['cuttingform'])) {
 				'lot_no' => $lat_no,
 				'd_lat_no' => $_POST['d_lot_no'][$key],
 				'unit' => @$_POST['pur_type'][$key],
+				'from_product_type' => @$_POST['from_type'][$key],
 				'product_id' => @$_POST['type'][$key],
 				'thaan' => $_POST['thaan'][$key],
 				'qty_pur_thaan' => $_POST['pur_thaan'][$key],
@@ -2440,16 +2441,32 @@ if (isset($_POST['cuttingform'])) {
 			$product_id = @$_POST['type'][$key];
 			$quantity = $_POST['qty'][$key];
 
-			// Get current quantity_instock for the product
+			// Update for the selected product
 			$quantity_instock_result = mysqli_query($dbc, "SELECT quantity_instock FROM product WHERE product_id='$product_id'");
-			$quantity_instock = mysqli_fetch_assoc($quantity_instock_result)['quantity_instock'];
+			$quantity_instock_data = $quantity_instock_result->fetch_assoc();
+			$quantity_instock = $quantity_instock_data['quantity_instock'];
 
 			// Calculate the new quantity
 			$new_qty = (float)$quantity_instock + (float)$quantity;
 
 			// Update the quantity_instock for the product
 			mysqli_query($dbc, "UPDATE product SET quantity_instock='$new_qty' WHERE product_id='$product_id'");
+
+			// Subtract the quantity from the `from_type` product's `quantity_instock`
+			$from_product_id = @$_POST['from_type'][$key]; // ID of the product in from_type
+			if (!empty($from_product_id)) {
+				$from_quantity_result = mysqli_query($dbc, "SELECT quantity_instock FROM product WHERE product_id='$from_product_id'");
+				$from_quantity_data = $from_quantity_result->fetch_assoc();
+				$from_quantity_instock = $from_quantity_data['quantity_instock'];
+
+				// Calculate the new quantity for the `from_type` product
+				$new_from_qty = (float)$from_quantity_instock - (float)$quantity;
+
+				// Update the `quantity_instock` for the `from_type` product
+				mysqli_query($dbc, "UPDATE product SET quantity_instock='$new_from_qty' WHERE product_id='$from_product_id'");
+			}
 		}
+
 
 		$errors = [];
 		foreach ($items_data as $item) {
