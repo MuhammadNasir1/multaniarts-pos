@@ -29,9 +29,9 @@
                     <div class="card-body">
                     <?php } ?>
 
-                    <form action="php_action/custom_action.php" method="POST" id="sale_order_fm">
+                    <form action="" method="POST" id="cutting_form">
                         <input type="hidden" name="product_purchase_id" value="<?= @empty($_REQUEST['edit_purchase_id']) ? "" : base64_decode($_REQUEST['edit_purchase_id']) ?>">
-                        <input type="hidden" name="payment_type" id="payment_type" value="credit_purchase">
+                        <input type="hidden" name="cuttingform" id="cuttingform" value="cuttingform">
 
 
                         <div class="row form-group">
@@ -47,7 +47,7 @@
                                 <div class="col-10">
                                     <label>Program</label>
                                     <select class="form-control searchableSelect" name="program" id="program">
-                                        <option value="" disabled selected>Select Program</option>
+                                        <option disabled selected>Select Program</option>
                                         <?php
                                         $location = mysqli_query($dbc, "SELECT * FROM programs WHERE status = 1");
                                         while ($d = mysqli_fetch_assoc($location)) {
@@ -87,23 +87,28 @@
                         <?php
                         for ($i = 1; $i <= 5; $i++) {
                         ?>
-                            <div class="row m-0 mt-3">
+                            <div class="row m-0 mt-3 complete" id="row<?= $i ?>">
                                 <div id="voucher_rows_container2">
-                                    <div class="voucher_row2">
+                                    <div class="voucher_row2" id="row<?= $i ?>">
                                         <div class="row mt-3 m-0 p-0">
-                                            <div class="col-lg-2 m-0 p-0 pl-1 row">
-                                                <div class="col-lg-6 m-0 p-0 pl-1">
+                                            <div class="col-lg-2 m-0 p-0  row">
+                                                <div class="col-lg-2 m-0 p-0 pl-1">
                                                     <label for="sr">Sr</label>
                                                     <input type="text" class="form-control" id="sr<?= $i ?>" readonly value="<?= $i ?>">
                                                 </div>
-                                                <div class="col-lg-6 m-0 p-0 pl-1">
+                                                <div class="col-lg-5 m-0 mt-1 p-0 pl-3 row">
+                                                    <button type="button" class="btn select_dyeing  mt-4 btn-primary btn-sm"
+                                                        name="select_dyeing"
+                                                        id="select_dyeing"> Select Dyeing </button>
+                                                </div>
+                                                <div class="col-lg-5 m-0 p-0">
                                                     <label for="lat_no">Lot No</label>
-                                                    <input type="text" class="form-control lat_no" id="lat_no<?= $i ?>" name="lat_no[]" placeholder="Lot No">
+                                                    <input type="text" class="form-control" id="lat_no<?= $i ?>" name="lat_no[]" placeholder="Lot No">
                                                 </div>
                                             </div>
                                             <div class="col-lg-1 m-0 p-0 pl-1">
                                                 <label for="d_lot_no">D Lot No</label>
-                                                <input type="text" class="form-control" id="d_lot_no<?= $i ?>" name="d_lot_no[]" placeholder="D Lot No">
+                                                <input type="text" class="form-control d_lot_no" readonly id="d_lot_no<?= $i ?>" name="d_lot_no[]" placeholder="D Lot No">
                                             </div>
                                             <div class="col-lg-1 m-0 p-0 pl-1">
                                                 <label for="pur_type">Unit</label>
@@ -245,9 +250,7 @@
                                             <td><?= $row['total_amount'] ?></td>
                                             <td>
                                                 <button type="button" class="btn select-row btn-primary btn-sm"
-                                                    name="selected_purchase_id"
-                                                    id="selected_purchase_id"
-                                                    value="<?= $row['dyeing_id'] ?>" onclick="getDyeingDetails(this.value)">Apply</button>
+                                                    value="<?= $row['dyeing_id'] ?>">Apply</button>
                                             </td>
                                         </tr>
                                     <?php
@@ -270,7 +273,22 @@
                     } ?>
 
 <script>
-    function getDyeingDetails(dyeingId) {
+    $(document).on("click", ".select_dyeing", function() {
+        const currentId = $(this).closest(".voucher_row2").attr("id");
+        $("#show_dyeing_details").data("currentId", currentId);
+
+        $("#show_dyeing_details").modal("show");
+        console.log("Modal opened for row ID:", currentId);
+    });
+
+    $(document).on("click", ".select-row", function() {
+        const dyeingId = $(this).val();
+        const currentId = $("#show_dyeing_details").data("currentId");
+
+        getDyeingDetails(dyeingId, currentId);
+    });
+
+    function getDyeingDetails(dyeingId, currentId) {
         $.ajax({
             url: 'php_action/custom_action.php',
             type: 'POST',
@@ -281,83 +299,83 @@
             success: function(response) {
                 if (response.success) {
                     const data = response.data;
-                    const currentId = $("#show_dyeing_details").data("currentId"); // Retrieve the stored currentId
 
-                    // Update fields dynamically
-                    const rowIndex = currentId.replace("lat_no", ""); // Extract row index from id
+                    console.log("Updating row ID:", currentId);
 
-                    $(`#thaan${rowIndex}`).val(data.thaan); // Set Thaan value
-                    $(`#qty${rowIndex}`).val(data.quantity_instock); // Set Gzanah value
-                    $(`#d_lot_no${rowIndex}`).val(data.lat_no); // Set Gzanah value
-
-                    // Close Modal
-                    $("#detailModalClose").click();
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error("AJAX Error: " + status + error);
-            }
-        });
-    }
-
-    function getDyeingDetails(dyeingId) {
-        $.ajax({
-            url: 'php_action/custom_action.php',
-            type: 'POST',
-            data: {
-                get_selected_dyeing: dyeingId
-            },
-            dataType: 'json',
-            success: function(response) {
-                if (response.success) {
-                    const data = response.data;
-                    const currentId = $("#show_dyeing_details").data("currentId");
-
-                    const rowIndex = currentId.replace("lat_no", "");
-
-                    $(`#thaan${rowIndex}`).val(data.thaan);
-                    $(`#qty${rowIndex}`).val(data.quantity_instock);
-                    $(`#d_lot_no${rowIndex}`).val(data.lat_no);
-                    $(`#pur_type${rowIndex}`).val(data.unit);
+                    const row = $(`#${currentId}`);
 
                     const productDetails = JSON.parse(data.product_details);
-                    const purThaanValue = productDetails.pur_thaan_arr[0];
+                    row.find('[name="d_lot_no[]"]').val(data.lat_no || '');
+                    row.find('[name="pur_type[]"]').val(data.unit || '');
+                    row.find('[name="type[]"]').val(data.type || '');
+                    row.find('[name="thaan[]"]').val(data.thaan || '');
+                    row.find('[name="pur_thaan[]"]').val(data.qty_thaan || '');
+                    row.find('[name="qty[]"]').val(data.quantity_instock || '');
+                    row.find('[name="color[]"]').val(productDetails.color_arr[0] || '');
+                    row.find('[name="pur_thaan[]"]').val(productDetails.pur_thaan_arr[0] || '');
 
-                    $(`#pur_thaan${rowIndex}`).val(purThaanValue);
-                    $(`#color${rowIndex}`).val(productDetails.color_arr[0]);
-
-                    $("#detailModalClose").click();
+                    $("#show_dyeing_details").modal("hide");
+                } else {
+                    console.error("Failed to fetch dyeing details:", response.message);
                 }
             },
             error: function(xhr, status, error) {
-                console.error("AJAX Error: " + status + error);
+                console.error("AJAX Error:", status, error);
             }
         });
     }
-
-
-    $(document).on("focus", ".lat_no", function() {
-        const currentId = $(this).attr("id"); // Get the id of the focused field
-        const dyeingId = $(this).val(); // Assume value or fetch as needed
-
-        // Open Modal
-        $("#show_dyeing_details").modal("show");
-
-        // Store currentId for later use
-        $("#show_dyeing_details").data("currentId", currentId);
-    });
-
-    // When a row in the modal is selected
-    $(document).on("click", ".select-row", function() {
-        const dyeingId = $(this).data("dyeing-id"); // Assume dyeingId is stored in a button attribute
-        getDyeingDetails(dyeingId);
-    });
 
     $(document).ready(function() {
         $('#tableSearchInput').on('keyup', function() {
             var value = $(this).val().toLowerCase();
             $('#purchaseDetailsTable tbody tr').filter(function() {
                 $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            });
+        });
+    });
+
+    $(document).ready(function() {
+        $('#cutting_form').on('submit', function(event) {
+            event.preventDefault();
+            let get_location = $("get_location_type").val();
+
+            var formData = $(this).serialize();
+
+            $.ajax({
+                type: 'POST',
+                url: 'php_action/custom_action.php',
+                data: formData,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.sts === 'success') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.msg,
+                            showConfirmButton: false,
+                            timer: 12000
+                        }).then((result) => {
+                            location.reload();
+                        });
+
+                        $('#cutting_form')[0].reset();
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Warning',
+                            text: response.msg,
+                            showConfirmButton: true,
+                        });
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while submitting the form.',
+                        showConfirmButton: true,
+                    });
+                }
             });
         });
     });
