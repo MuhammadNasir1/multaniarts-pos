@@ -2488,6 +2488,4 @@ if (isset($_POST['cutting_man_id'])) {
 		];
 	}
 	echo json_encode($response);
-} else {
-	echo json_encode(['error' => 'No cutting man ID provided.']);
 }
