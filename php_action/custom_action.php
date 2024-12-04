@@ -2211,89 +2211,114 @@ if (isset($_POST['dyeing_issuance_form'])) {
 
 // 	echo json_encode($response);
 // }
-if (isset($_POST['cuttingform'])) {
-	// Main form data for the `cutting` table
-	$cutting_data = [
-		'status' => 'sent',
-		'done_by' => $_POST['cutting_man'],
-		'purchase_id' => $_POST['purchase_id'],
-		'entry_from' => 'cutting',
+
+if (isset($_POST['dyeing_recieving'])) {
+	// Common data array for dyeing table
+	$data = [
+		'purchase_id' => $_POST['dyeing_issuance_purchase'],
+		'done_by' => $_POST['from_location'],
+		'entry_from' => 'dyeing_receiving',
+		'product_id' => $_POST['product_id'],
+		'rate' => $_POST['rate'],
+		'total_amount' => $_POST['total_amount'],
+		'thaan' => $_POST['thaan'],
+		'gzanah' => $_POST['gzanah'],
+		'quantity' => $_POST['qty'],
+		'quantity_instock' => $_POST['qty'],
+		'lat_no' => $_POST['lot_no'],
+		'unit' => $_POST['unit'],
 		'transaction_id' => $_POST['transaction'],
 		'issuance_date' => $_POST['issuance_date'],
-		'program_id' => $_POST['program'],
-		'suit' => $_POST['suit'],
-		'cutting_man' => $_POST['cutting_man'],
-		'remarks' => $_POST['remarks'],
+		'gate_pass' => $_POST['gate_pass'],
+		'from_location' => $_POST['from_location'],
+		'to_location' => $_POST['to_location'],
+		'pandi' => $_POST['pandi'],
+		'bilty_no' => $_POST['bilty_no'],
+		'remarks' => $_POST['purchase_narration'],
+		'product_details' => json_encode([
+			"from_product" => $_POST['from_product'],
+			"pur_type_arr" => $_POST['pur_type_arr'],
+			"unit_arr" => $_POST['unit_arr'],
+			"color_arr" => $_POST['color_arr'],
+			"thaan_arr" => $_POST['thaan_arr'],
+			"pur_thaan_arr" => $_POST['pur_thaan_arr'],
+			"qty_arr" => $_POST['qty_arr'],
+			"suit_arr" => $_POST['suit_arr'],
+			"gzanah_arr" => $_POST['gzanah_arr'],
+			"lot_no_arr" => $_POST['lot_no_arr'],
+		]),
 	];
 
-	// Insert data into the `cutting` table
-	if (insert_data($dbc, "cutting", $cutting_data)) {
-		$cutting_id = mysqli_insert_id($dbc);
+	$location_type = $_POST['location_type'];
+	$dyeing_id = $_POST['recievied_dyeing'];
+	$requested_quantity = (float)$_POST['qty'];
 
-		$items_data = [];
-		foreach ($_POST['lat_no'] as $key => $lat_no) {
-			$items_data[] = [
-				'cutting_id' => $cutting_id,
-				'lot_no' => $lat_no,
-				'purchase_id' => $_POST['purchase_id'],
-				'd_lat_no' => $_POST['d_lot_no'][$key],
-				'unit' => $_POST['pur_type'][$key],
-				'product_id' => $_POST['type'][$key],
-				'thaan' => $_POST['thaan'][$key],
-				'qty_pur_thaan' => $_POST['pur_thaan'][$key],
-				'qty' => $_POST['qty'][$key],
-				'unsettle' => $_POST['unsettle'][$key],
-				'cp' => $_POST['cp'][$key],
-				'r_khata' => $_POST['r_khata'][$key],
-				'small_cp' => $_POST['small_cp'][$key],
-				'color' => $_POST['color'][$key],
-			];
+	// Update quantity in stock for dyeing
+	$query = "SELECT * FROM dyeing WHERE dyeing_id='$dyeing_id'";
+	$result = mysqli_query($dbc, $query);
+	$quantity_instock = $result->fetch_assoc();
+	$new_qty = (float)$quantity_instock['quantity_instock'] - $requested_quantity;
+	mysqli_query($dbc, "UPDATE dyeing SET quantity_instock='$new_qty' WHERE dyeing_id='$dyeing_id'");
 
-			// Add logic to update the product quantity_instock
-			$product_id = $_POST['type'][$key];
-			$quantity = $_POST['qty'][$key];
+	$dynamic_data = [
+		'status' => 'received',
+		'recievied_dyeing' => $_POST['recievied_dyeing'],
+	];
+	$dyeing_data = array_merge(
+		$data,
+		$dynamic_data
+	);
 
-			// Get current quantity_instock for the product
-			$quantity_instock_result = mysqli_query($dbc, "SELECT quantity_instock FROM product WHERE product_id='$product_id'");
-			$quantity_instock = mysqli_fetch_assoc($quantity_instock_result)['quantity_instock'];
-
-			// Calculate the new quantity
-			$new_qty = (float)$quantity_instock + (float)$quantity;
-
-			// Update the quantity_instock for the product
-			mysqli_query($dbc, "UPDATE product SET quantity_instock='$new_qty' WHERE product_id='$product_id'");
-		}
-
-		$errors = [];
-		foreach ($items_data as $item) {
-			if (!insert_data($dbc, "cutting_items", $item)) {
-				$errors[] = "Error inserting item: " . mysqli_error($dbc);
-			}
-		}
-
-		// Response
-		if (empty($errors)) {
-			$response = [
-				'sts' => 'success',
-				'msg' => 'Cutting and items added successfully.',
-			];
-		} else {
-			$response = [
-				'sts' => 'warning',
-				'msg' => 'Some items could not be added: ' . implode(", ", $errors),
-			];
-		}
-	} else {
+	// Insert into the dyeing table first
+	if (!insert_data($dbc, "dyeing", $dyeing_data)) {
 		$response = [
 			'sts' => 'warning',
-			'msg' => "Something went wrong: " . mysqli_error($dbc),
+			'msg' => "Error inserting into dyeing table: " . mysqli_error($dbc),
 		];
+		echo json_encode($response);
+		exit;
 	}
 
-	echo json_encode($response);
-	exit;
-}
+	// Additional logic for other tables based on location_type
+	if ($_POST['location_type'] == 'printer') {
+		$dynamic_data = [
+			'status' => 'sent',
+			'recievied_printing' => $_POST['recievied_dyeing'],
+			'quantity_instock' => $_POST['qty'],
+		];
+		$printer_data = array_merge($data, $dynamic_data);
+		insert_data($dbc, "printing", $printer_data);
+	} elseif ($_POST['location_type'] == 'packing') {
+		$dynamic_data = [
+			'status' => 'sent',
+			'recievied_packing' => $_POST['recievied_dyeing'],
+			'quantity_instock' => $_POST['qty'],
+		];
+		$packing_data = array_merge($data, $dynamic_data);
+		insert_data($dbc, "packing", $packing_data);
+	} elseif ($_POST['location_type'] == 'embroidery') {
+		$dynamic_data = [
+			'status' => 'sent',
+			'recievied_embroidery' => $_POST['recievied_dyeing'],
+			'quantity_instock' => $_POST['qty'],
+		];
+		$embroidery_data = array_merge($data, $dynamic_data);
+		insert_data($dbc, "embroidery", $embroidery_data);
+	} elseif ($_POST['location_type'] == 'shop') {
+		$product_id = $_REQUEST['product_id'];
+		$quantity_instock = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT quantity_instock FROM product WHERE product_id='" . $product_id . "' "));
+		$new_qty = (float)@$quantity_instock['quantity_instock'] + @$_REQUEST['qty'];
+		mysqli_query($dbc, "UPDATE product SET quantity_instock='$new_qty' WHERE product_id='" . $product_id . "' ");
+	}
 
+	// Final response
+	$response = [
+		'sts' => 'success',
+		'msg' => 'Dyeing Received successfully',
+		'dyeing_id' => $_POST['dyeing_issuance_purchase'],
+	];
+	echo json_encode($response);
+}
 
 // Get Stock Function
 
