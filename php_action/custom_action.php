@@ -2216,6 +2216,7 @@ if (isset($_POST['cuttingform'])) {
 	$cutting_data = [
 		'status' => 'sent',
 		'done_by' => $_POST['cutting_man'],
+		'purchase_id' => $_POST['purchase_id'],
 		'entry_from' => 'cutting',
 		'transaction_id' => $_POST['transaction'],
 		'issuance_date' => $_POST['issuance_date'],
@@ -2234,6 +2235,7 @@ if (isset($_POST['cuttingform'])) {
 			$items_data[] = [
 				'cutting_id' => $cutting_id,
 				'lot_no' => $lat_no,
+				'purchase_id' => $_POST['purchase_id'],
 				'd_lat_no' => $_POST['d_lot_no'][$key],
 				'unit' => $_POST['pur_type'][$key],
 				'product_id' => $_POST['type'][$key],

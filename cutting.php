@@ -32,6 +32,7 @@
                     <form action="" method="POST" id="cutting_form">
                         <input type="hidden" name="product_purchase_id" value="<?= @empty($_REQUEST['edit_purchase_id']) ? "" : base64_decode($_REQUEST['edit_purchase_id']) ?>">
                         <input type="hidden" name="cuttingform" id="cuttingform" value="cuttingform">
+                        <input type="hidden" name="purchase_id" id="purchase_id" value="cuttingform">
 
 
                         <div class="row form-group">
@@ -288,6 +289,7 @@
                     row.find('[name="color[]"]').val(productDetails.color_arr[0] || '');
                     row.find('[name="pur_thaan[]"]').val(productDetails.pur_thaan_arr[0] || '');
 
+                    $("#purchase_id").val(data.purchase_id);
                     $("#show_dyeing_details").modal("hide");
                 } else {
                     console.error("Failed to fetch dyeing details:", response.message);
