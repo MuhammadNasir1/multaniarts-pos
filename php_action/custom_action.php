@@ -2401,7 +2401,6 @@ if (isset($_POST['add_program_name'])) {
 
 
 if (isset($_POST['cuttingform'])) {
-	// Main form data for the `cutting` table
 	$cutting_data = [
 		'status' => 'sent',
 		'done_by' => $_POST['cutting_man'],
@@ -2414,7 +2413,6 @@ if (isset($_POST['cuttingform'])) {
 		'remarks' => $_POST['remarks'],
 	];
 
-	// Insert data into the `cutting` table
 	if (insert_data($dbc, "cutting", $cutting_data)) {
 		$cutting_id = mysqli_insert_id($dbc);
 
@@ -2437,32 +2435,25 @@ if (isset($_POST['cuttingform'])) {
 				'color' => $_POST['color'][$key],
 			];
 
-			// Add logic to update the product quantity_instock
 			$product_id = @$_POST['type'][$key];
 			$quantity = $_POST['qty'][$key];
 
-			// Update for the selected product
 			$quantity_instock_result = mysqli_query($dbc, "SELECT quantity_instock FROM product WHERE product_id='$product_id'");
 			$quantity_instock_data = $quantity_instock_result->fetch_assoc();
 			$quantity_instock = $quantity_instock_data['quantity_instock'];
 
-			// Calculate the new quantity
 			$new_qty = (float)$quantity_instock + (float)$quantity;
 
-			// Update the quantity_instock for the product
 			mysqli_query($dbc, "UPDATE product SET quantity_instock='$new_qty' WHERE product_id='$product_id'");
 
-			// Subtract the quantity from the `from_type` product's `quantity_instock`
-			$from_product_id = @$_POST['from_type'][$key]; // ID of the product in from_type
+			$from_product_id = @$_POST['from_type'][$key];
 			if (!empty($from_product_id)) {
 				$from_quantity_result = mysqli_query($dbc, "SELECT quantity_instock FROM product WHERE product_id='$from_product_id'");
 				$from_quantity_data = $from_quantity_result->fetch_assoc();
 				$from_quantity_instock = $from_quantity_data['quantity_instock'];
 
-				// Calculate the new quantity for the `from_type` product
 				$new_from_qty = (float)$from_quantity_instock - (float)$quantity;
 
-				// Update the `quantity_instock` for the `from_type` product
 				mysqli_query($dbc, "UPDATE product SET quantity_instock='$new_from_qty' WHERE product_id='$from_product_id'");
 			}
 		}
