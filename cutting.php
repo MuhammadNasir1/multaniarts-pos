@@ -331,10 +331,9 @@
 
     $(document).ready(function() {
         $('#cutting_form').on('submit', function(event) {
-            event.preventDefault();
-            let get_location = $("get_location_type").val();
+            event.preventDefault(); // Prevent form default submission
 
-            var formData = $(this).serialize();
+            let formData = $(this).serialize();
 
             $.ajax({
                 type: 'POST',
@@ -350,10 +349,10 @@
                             showConfirmButton: false,
                             timer: 12000
                         }).then((result) => {
-                            // location.reload();
+                            location.reload();
                         });
 
-                        // $('#cutting_form')[0].reset();
+                        $('#cutting_form')[0].reset();
                     } else {
                         Swal.fire({
                             icon: 'warning',
@@ -375,9 +374,10 @@
         });
     });
 
+
     function getTableData(cuttingManId) {
         $.ajax({
-            url: 'php_action/custom_action.php', // Replace with your PHP script's path
+            url: 'php_action/custom_action.php',
             type: 'POST',
             data: {
                 cutting_man_id: cuttingManId
