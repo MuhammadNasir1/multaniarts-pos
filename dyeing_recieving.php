@@ -122,7 +122,8 @@
                                 <label>Remarks</label>
                                 <textarea placeholder="Remarks Here" autocomplete="off" class="form-control" name="purchase_narration" id="" cols="30" rows="3"><?= @$fetchPurchase['purchase_narration'] ?></textarea>
                             </div>
-                        </div> <!-- end of form-group -->
+                        </div>
+
 
                         <div class="row m-0 ">
                             <div id="voucher_rows_container2">
