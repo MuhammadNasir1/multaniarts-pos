@@ -2424,8 +2424,8 @@ if (isset($_POST['cuttingform'])) {
 				'cutting_id' => $cutting_id,
 				'lot_no' => $lat_no,
 				'd_lat_no' => $_POST['d_lot_no'][$key],
-				'unit' => $_POST['pur_type'][$key],
-				'product_id' => $_POST['type'][$key],
+				'unit' => @$_POST['pur_type'][$key],
+				'product_id' => @$_POST['type'][$key],
 				'thaan' => $_POST['thaan'][$key],
 				'qty_pur_thaan' => $_POST['pur_thaan'][$key],
 				'qty' => $_POST['qty'][$key],
@@ -2435,6 +2435,20 @@ if (isset($_POST['cuttingform'])) {
 				'small_cp' => $_POST['small_cp'][$key],
 				'color' => $_POST['color'][$key],
 			];
+
+			// Add logic to update the product quantity_instock
+			$product_id = @$_POST['type'][$key];
+			$quantity = $_POST['qty'][$key];
+
+			// Get current quantity_instock for the product
+			$quantity_instock_result = mysqli_query($dbc, "SELECT quantity_instock FROM product WHERE product_id='$product_id'");
+			$quantity_instock = mysqli_fetch_assoc($quantity_instock_result)['quantity_instock'];
+
+			// Calculate the new quantity
+			$new_qty = (float)$quantity_instock + (float)$quantity;
+
+			// Update the quantity_instock for the product
+			mysqli_query($dbc, "UPDATE product SET quantity_instock='$new_qty' WHERE product_id='$product_id'");
 		}
 
 		$errors = [];
@@ -2466,6 +2480,7 @@ if (isset($_POST['cuttingform'])) {
 	echo json_encode($response);
 	exit;
 }
+
 
 if (isset($_POST['cutting_man_id'])) {
 	$cuttingManId = $_POST['cutting_man_id'];
