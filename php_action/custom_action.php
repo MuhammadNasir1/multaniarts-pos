@@ -2224,6 +2224,8 @@ if (isset($_POST['dyeing_recieving'])) {
 		'thaan' => $_POST['thaan'],
 		'gzanah' => $_POST['gzanah'],
 		'quantity' => $_POST['qty'],
+		'quantity_instock' => $_POST['qty'],
+		'lat_no' => $_POST['lot_no'],
 		'unit' => $_POST['unit'],
 		'transaction_id' => $_POST['transaction'],
 		'issuance_date' => $_POST['issuance_date'],
@@ -2247,8 +2249,19 @@ if (isset($_POST['dyeing_recieving'])) {
 		]),
 	];
 
+	$location_type = $_POST['location_type'];
+	$dyeing_id = $_POST['recievied_dyeing'];
+	$requested_quantity = (float)$_POST['qty'];
+
+	// Update quantity in stock for dyeing
+	$query = "SELECT * FROM dyeing WHERE dyeing_id='$dyeing_id'";
+	$result = mysqli_query($dbc, $query);
+	$quantity_instock = $result->fetch_assoc();
+	$new_qty = (float)$quantity_instock['quantity_instock'] - $requested_quantity;
+	mysqli_query($dbc, "UPDATE dyeing SET quantity_instock='$new_qty' WHERE dyeing_id='$dyeing_id'");
+
 	$dynamic_data = [
-		'status' => 'sent',
+		'status' => 'received',
 		'recievied_dyeing' => $_POST['recievied_dyeing'],
 	];
 	$dyeing_data = array_merge(
@@ -2257,7 +2270,7 @@ if (isset($_POST['dyeing_recieving'])) {
 	);
 
 	// Insert into the dyeing table first
-	if (!insert_data($dbc, "dyeing", $dynamic_data)) {
+	if (!insert_data($dbc, "dyeing", $dyeing_data)) {
 		$response = [
 			'sts' => 'warning',
 			'msg' => "Error inserting into dyeing table: " . mysqli_error($dbc),
@@ -2323,6 +2336,8 @@ if (isset($_POST['get_stock'])) {
 		echo json_encode(['success' => false, 'data' => null]);
 	}
 }
+// get selected dyeing
+
 if (isset($_POST['get_dyer_stock']) && isset($_POST['done_by'])) {
 	$id = $dbc->real_escape_string($_POST['get_dyer_stock']);
 	$doneById = $dbc->real_escape_string($_POST['done_by']);
@@ -2379,4 +2394,100 @@ if (isset($_POST['add_program_name'])) {
 
 	echo json_encode($response);
 	exit;
+}
+
+
+//  Submit cutting data 
+
+
+if (isset($_POST['cuttingform'])) {
+	// Main form data for the `cutting` table
+	$cutting_data = [
+		'status' => 'sent',
+		'done_by' => $_POST['cutting_man'],
+		'entry_from' => 'cutting',
+		'transaction_id' => $_POST['transaction'],
+		'issuance_date' => $_POST['issuance_date'],
+		'program_id' => $_POST['program'],
+		'suit' => $_POST['suit'],
+		'cutting_man' => $_POST['cutting_man'],
+		'remarks' => $_POST['remarks'],
+	];
+
+	// Insert data into the `cutting` table
+	if (insert_data($dbc, "cutting", $cutting_data)) {
+		$cutting_id = mysqli_insert_id($dbc);
+
+		$items_data = [];
+		foreach ($_POST['lat_no'] as $key => $lat_no) {
+			$items_data[] = [
+				'cutting_id' => $cutting_id,
+				'lot_no' => $lat_no,
+				'd_lat_no' => $_POST['d_lot_no'][$key],
+				'unit' => $_POST['pur_type'][$key],
+				'product_id' => $_POST['type'][$key],
+				'thaan' => $_POST['thaan'][$key],
+				'qty_pur_thaan' => $_POST['pur_thaan'][$key],
+				'qty' => $_POST['qty'][$key],
+				'unsettle' => $_POST['unsettle'][$key],
+				'cp' => $_POST['cp'][$key],
+				'r_khata' => $_POST['r_khata'][$key],
+				'small_cp' => $_POST['small_cp'][$key],
+				'color' => $_POST['color'][$key],
+			];
+		}
+
+		$errors = [];
+		foreach ($items_data as $item) {
+			if (!insert_data($dbc, "cutting_items", $item)) {
+				$errors[] = "Error inserting item: " . mysqli_error($dbc);
+			}
+		}
+
+		// Response
+		if (empty($errors)) {
+			$response = [
+				'sts' => 'success',
+				'msg' => 'Cutting and items added successfully.',
+			];
+		} else {
+			$response = [
+				'sts' => 'warning',
+				'msg' => 'Some items could not be added: ' . implode(", ", $errors),
+			];
+		}
+	} else {
+		$response = [
+			'sts' => 'warning',
+			'msg' => "Something went wrong: " . mysqli_error($dbc),
+		];
+	}
+
+	echo json_encode($response);
+	exit;
+}
+
+if (isset($_POST['cutting_man_id'])) {
+	$cuttingManId = $_POST['cutting_man_id'];
+
+	$query = mysqli_query($dbc, "SELECT * FROM dyeing WHERE status = 'received' AND to_location = '$cuttingManId'");
+	$response = [];
+	while ($row = mysqli_fetch_assoc($query)) {
+		$productQuery = mysqli_query($dbc, "SELECT * FROM product WHERE status=1 AND product_id = '{$row['product_id']}'");
+		$productName = mysqli_fetch_assoc($productQuery)['product_name'] ?? 'N/A';
+
+		$response[] = [
+			'purchase_id' => $row['purchase_id'],
+			'issuance_date' => $row['issuance_date'],
+			'product_name' => $productName,
+			'thaan' => $row['thaan'],
+			'gzanah' => $row['gzanah'],
+			'quantity_instock' => $row['quantity_instock'],
+			'total_amount' => $row['total_amount'],
+			'dyeing_id' => $row['dyeing_id'],
+		];
+	}
+	echo json_encode($response);
+} else {
+	echo json_encode(['error' => 'No cutting man ID provided.']);
 }
