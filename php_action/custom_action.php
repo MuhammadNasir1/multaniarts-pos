@@ -2466,3 +2466,28 @@ if (isset($_POST['cuttingform'])) {
 	echo json_encode($response);
 	exit;
 }
+
+if (isset($_POST['cutting_man_id'])) {
+	$cuttingManId = $_POST['cutting_man_id'];
+
+	$query = mysqli_query($dbc, "SELECT * FROM dyeing WHERE status = 'received' AND to_location = '$cuttingManId'");
+	$response = [];
+	while ($row = mysqli_fetch_assoc($query)) {
+		$productQuery = mysqli_query($dbc, "SELECT * FROM product WHERE status=1 AND product_id = '{$row['product_id']}'");
+		$productName = mysqli_fetch_assoc($productQuery)['product_name'] ?? 'N/A';
+
+		$response[] = [
+			'purchase_id' => $row['purchase_id'],
+			'issuance_date' => $row['issuance_date'],
+			'product_name' => $productName,
+			'thaan' => $row['thaan'],
+			'gzanah' => $row['gzanah'],
+			'quantity_instock' => $row['quantity_instock'],
+			'total_amount' => $row['total_amount'],
+			'dyeing_id' => $row['dyeing_id'],
+		];
+	}
+	echo json_encode($response);
+} else {
+	echo json_encode(['error' => 'No cutting man ID provided.']);
+}

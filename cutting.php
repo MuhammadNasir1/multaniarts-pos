@@ -67,7 +67,8 @@
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label>Cutting Man</label>
-                                <select class="form-control searchableSelect" name="cutting_man" id="cutting_man">
+                                <select class="form-control searchableSelect" name="cutting_man" id="cutting_man" onchange="getTableData(this.value)">
+                                    <option disabled selected>Select Man</option>
                                     <?php
                                     $location = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_type = 'shop'");
                                     while ($d = mysqli_fetch_assoc($location)) {
@@ -103,7 +104,7 @@
                                                 </div>
                                                 <div class="col-lg-5 m-0 p-0">
                                                     <label for="lat_no">Lot No</label>
-                                                    <input type="text" class="form-control" id="lat_no<?= $i ?>" name="lat_no[]" placeholder="Lot No">
+                                                    <input type="text" class="form-control" id="lat_no<?= $i ?>" value="" name="lat_no[]" placeholder="Lot No">
                                                 </div>
                                             </div>
                                             <div class="col-lg-1 m-0 p-0 pl-1">
@@ -123,9 +124,12 @@
                                                 <label for="type">Type</label>
                                                 <select class="form-control searchableSelect" name="type[]" id="type<?= $i ?>">
                                                     <option disabled selected>Select Type</option>
-                                                    <option value="meter">Meter</option>
-                                                    <option value="yard">Yard</option>
-                                                    <option value="others">Suit</option>
+                                                    <?php
+                                                    $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'cutted' AND status = 1");
+                                                    while ($p = mysqli_fetch_assoc($products)) {
+                                                    ?>
+                                                        <option value="<?= $p['product_id'] ?>"><?= ucwords($p['product_name']) ?></option>
+                                                    <?php } ?>
                                                 </select>
                                             </div>
                                             <div class="col-lg-1 m-0 p-0 pl-1">
@@ -138,7 +142,7 @@
                                             </div>
                                             <div class="col-lg-1 m-0 p-0 pl-1">
                                                 <label for="qty">Qty</label>
-                                                <input type="text" class="form-control" id="qty<?= $i ?>" name="qty[]" value="0" placeholder="Qty">
+                                                <input type="number" min="1" class="form-control" id="qty<?= $i ?>" name="qty[]" value="0" placeholder="Qty">
                                             </div>
                                             <div class="col-lg-1 m-0 p-0 pl-1">
                                                 <label for="unsettle">Unsettle</label>
@@ -226,37 +230,7 @@
                                         <th>Action</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <?php
-                                    $query = mysqli_query($dbc, "SELECT * FROM dyeing WHERE status = 'received'");
-                                    while ($row = mysqli_fetch_assoc($query)) {
-                                    ?>
-                                        <tr>
-                                            <td><?= $row['purchase_id'] ?></td>
-                                            <td><?= $row['issuance_date'] ?></td>
-                                            <td>
-                                                <?php
-                                                $pr_id = $row['product_id'];
-                                                $result = mysqli_query($dbc, "SELECT * FROM product WHERE status=1 AND product_id = '$pr_id'");
-                                                while ($r = mysqli_fetch_array($result)) {
-                                                    // $getBrand = fetchRecord($dbc, "brands", "brand_id", $row['brand_id']);
-                                                    // $getCat = fetchRecord($dbc, "categories", "categories_id", $row['category_id']);
-                                                    echo $r['product_name'];
-                                                } ?>
-                                            </td>
-                                            <td><?= $row['thaan'] ?></td>
-                                            <td><?= $row['gzanah'] ?></td>
-                                            <td><?= $row['quantity_instock'] ?></td>
-                                            <td><?= $row['total_amount'] ?></td>
-                                            <td>
-                                                <button type="button" class="btn select-row btn-primary btn-sm"
-                                                    value="<?= $row['dyeing_id'] ?>">Apply</button>
-                                            </td>
-                                        </tr>
-                                    <?php
-                                    }
-                                    ?>
-                                </tbody>
+                                <tbody id="table-body-id"></tbody>
                             </table>
                         </div>
                         <div class="modal-footer"></div>
@@ -379,4 +353,44 @@
             });
         });
     });
+
+    function getTableData(cuttingManId) {
+        $.ajax({
+            url: 'php_action/custom_action.php', // Replace with your PHP script's path
+            type: 'POST',
+            data: {
+                cutting_man_id: cuttingManId
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.error) {
+                    alert(response.error);
+                    return;
+                }
+
+                let tableBody = '';
+                response.forEach(row => {
+                    tableBody += `
+                    <tr>
+                        <td>${row.purchase_id}</td>
+                        <td>${row.issuance_date}</td>
+                        <td>${row.product_name}</td>
+                        <td>${row.thaan}</td>
+                        <td>${row.gzanah}</td>
+                        <td>${row.quantity_instock}</td>
+                        <td>${row.total_amount}</td>
+                        <td>
+                            <button type="button" class="btn select-row btn-primary btn-sm" value="${row.dyeing_id}">Apply</button>
+                        </td>
+                    </tr>
+                `;
+                });
+
+                $('#table-body-id').html(tableBody); // Replace #table-body-id with your table body ID
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error:', error);
+            }
+        });
+    }
 </script>
