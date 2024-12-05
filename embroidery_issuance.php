@@ -164,7 +164,7 @@
                                                 <select class="form-control searchableSelect" name="from_type[]" id="from_type<?= $i ?>" onchange="getStock(this.value, <?= $i ?>)">
                                                     <option disabled selected>Select Type</option>
                                                     <?php
-                                                    $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'dyed' OR brand_id = 'cora' AND status = 1");
+                                                    $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'cora_cutted' OR brand_id = 'dyed_cutted' AND status = 1");
                                                     while ($p = mysqli_fetch_assoc($products)) {
                                                     ?>
                                                         <option value="<?= $p['product_id'] ?>"><?= ucwords($p['product_name']) ?> (<?= ucwords($p['brand_id']) ?>)</option>
@@ -308,10 +308,10 @@
     });
 
     $(document).on("click", ".select-row", function() {
-        const dyeingId = $(this).val();
+        const cuttingID = $(this).val();
         const currentId = $("#show_dyeing_details").data("currentId");
 
-        // getCuttingDetails(dyeingId, currentId);
+        getCuttingDetails(cuttingID, currentId);
     });
     // getDyeingDetails(dyeingId, currentId);
 
@@ -338,7 +338,7 @@
                             <td>${row.thaan}</td>
                             <td>${row.qty}</td>
                             <td>
-                                <button type="button" class="btn select-row btn-primary btn-sm" value="${row.cutting_id}">
+                                <button type="button" class="btn select-row btn-primary btn-sm" value="${row.cutting_item_id}">
                                     Apply
                                 </button>
                             </td>
@@ -362,33 +362,34 @@
 
 
 
-    function getDyeingDetails(dyeingId, currentId) {
+    function getCuttingDetails(cuttingID, currentId) {
         $.ajax({
             url: 'php_action/custom_action.php',
             type: 'POST',
             data: {
-                get_selected_dyeing: dyeingId
+                get_selected_cutting: cuttingID
             },
             dataType: 'json',
             success: function(response) {
                 if (response.success) {
                     const data = response.data;
 
+                    const row = $(`#${currentId}`); // Get the current row using currentId
 
-                    const row = $(`#${currentId}`);
-
-                    const productDetails = JSON.parse(data.product_details);
-                    row.find('[name="from_type[]"]').val(data.product_id || '').change();
-                    row.find('[name="d_lot_no[]"]').val(data.lat_no || '');
+                    // Fill in the fields with the response data
+                    row.find('[name="lat_no[]"]').val(data.lot_no || '');
+                    row.find('[name="d_lot_no[]"]').val(data.d_lat_no || '');
                     row.find('[name="pur_type[]"]').val(data.unit || '').change();
-                    row.find('[name="type[]"]').val(data.type || '');
+                    row.find('[name="from_type[]"]').val(data.product_id || '').change();
                     row.find('[name="thaan[]"]').val(data.thaan || '');
-                    row.find('[name="pur_thaan[]"]').val(data.qty_thaan || '');
-                    row.find('[name="qty[]"]').val(data.quantity_instock || '');
-                    row.find('[name="color[]"]').val(productDetails.color_arr[0] || '');
-                    row.find('[name="pur_thaan[]"]').val(productDetails.pur_thaan_arr[0] || '');
+                    row.find('[name="pur_thaan[]"]').val(data.qty_pur_thaan || '');
+                    row.find('[name="qty[]"]').val(data.qty || '');
+                    row.find('[name="unsettle[]"]').val(data.unsettle || '');
+                    row.find('[name="cp[]"]').val(data.cp || '');
+                    row.find('[name="r_khata[]"]').val(data.r_khata || '');
+                    row.find('[name="small_cp[]"]').val(data.small_cp || '');
+                    row.find('[name="color[]"]').val(data.color || '');
 
-                    $("#purchase_id").val(data.purchase_id);
                     $("#show_dyeing_details").modal("hide");
                 } else {
                     console.error("Failed to fetch dyeing details:", response.message);
@@ -396,6 +397,28 @@
             },
             error: function(xhr, status, error) {
                 console.error("AJAX Error:", status, error);
+            }
+        });
+    }
+
+    function getStock(product_id, index) {
+        $.ajax({
+            url: 'php_action/custom_action.php', // Replace with your PHP script's path
+            type: 'POST',
+            data: {
+                get_stock: product_id
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    // Update the stock span with the correct index
+                    $('#from_product_bl' + index).text(response.data.quantity_instock);
+                } else {
+                    alert('Error: ' + (response.error || 'Unknown error occurred'));
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error:', error);
             }
         });
     }

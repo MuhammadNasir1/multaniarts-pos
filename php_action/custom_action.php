@@ -2663,3 +2663,19 @@ if (isset($_POST['get_location_data'])) {
 		echo json_encode(['success' => false, 'data' => null]);
 	}
 }
+
+if (isset($_POST['get_selected_cutting'])) {
+	$id = $dbc->real_escape_string($_POST['get_selected_cutting']);
+
+	// Fetch data from the cutting table
+	$cuttingData = mysqli_query($dbc, "SELECT * FROM cutting_items WHERE cutting_item_id = '$id'");
+
+	$cutting = $cuttingData->fetch_assoc();
+
+	// Check if any data was returned
+	if ($cutting) {
+		echo json_encode(['success' => true, 'data' => $cutting]);
+	} else {
+		echo json_encode(['success' => false, 'message' => 'No data found for the selected dyeing.']);
+	}
+}
