@@ -50,7 +50,7 @@
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label>Date</label>
-                                <input type="date" name="issuance_date" required id="issuance_date" value="" class="form-control">
+                                <input type="date" name="issuance_date" required id="issuance_date" value="<?= date('Y-m-d') ?>" class="form-control">
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label>Gate Pass #</label>

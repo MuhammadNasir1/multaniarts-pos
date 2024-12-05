@@ -42,7 +42,7 @@
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label>Date</label>
-                                <input type="date" name="issuance_date" id="issuance_date" value="" class="form-control">
+                                <input type="date" name="issuance_date" id="issuance_date" value="<?= date('Y-m-d') ?>" class="form-control">
                             </div>
                             <div class="col-md-2 mt-3 row">
                                 <div class="col-10">
@@ -161,7 +161,7 @@
                                                 </div>
                                                 <div class="col-lg-4 m-0 p-0 pl-1">
                                                     <label for="qty">Qty</label>
-                                                    <input type="number" class="form-control" id="qty<?= $i ?>" name="qty[]"  placeholder="Qty">
+                                                    <input type="number" class="form-control" id="qty<?= $i ?>" name="qty[]" placeholder="Qty">
                                                 </div>
                                             </div>
                                             <div class="col-lg-1 m-0 p-0 pl-1">
