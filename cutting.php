@@ -309,8 +309,9 @@
                     const row = $(`#${currentId}`);
 
                     const productDetails = JSON.parse(data.product_details);
+                    row.find('[name="from_type[]"]').val(data.product_id || '').change();
                     row.find('[name="d_lot_no[]"]').val(data.lat_no || '');
-                    row.find('[name="pur_type[]"]').val(data.unit || '');
+                    row.find('[name="pur_type[]"]').val(data.unit || '').change();
                     row.find('[name="type[]"]').val(data.type || '');
                     row.find('[name="thaan[]"]').val(data.thaan || '');
                     row.find('[name="pur_thaan[]"]').val(data.qty_thaan || '');
@@ -345,8 +346,10 @@
 
                     const row = $(`#${currentId}`);
 
+                    row.find('[name="pur_type[]"]').val(data.pur_type || '').change();
+                    row.find('[name="from_type[]"]').val(data.product_id || '').change();
                     row.find('[name="qty[]"]').val(data.quantity || '');
-                    row.find('[name="pur_thaan[]"]').val(data.pur_thaan || '');
+                    row.find('[name="thaan[]"]').val(data.pur_thaan || '');
 
                     $("#purchase_id").val(data.purchase_id);
                     $("#show_dyeing_details").modal("hide");
