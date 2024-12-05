@@ -1844,7 +1844,8 @@ if (isset($_POST['get_selected_purchase'])) {
 if (isset($_POST['get_selected_pur'])) {
 	$id = $dbc->real_escape_string($_POST['get_selected_pur']);
 
-	$purchase_data = mysqli_query($dbc, "SELECT * FROM purchase WHERE purchase_id = '$id'");
+	$purchase_data = mysqli_query($dbc, "SELECT * FROM purchase WHERE purchase_id
+	 = '$id'");
 	$purchase = $purchase_data->fetch_assoc();
 
 	$p_id = $purchase['product_id'];
@@ -2612,13 +2613,6 @@ if (isset($_POST['cutting_man_id'])) {
 			while ($purchaseRow = mysqli_fetch_assoc($purchaseQuery)) {
 				$purchaseData[] = $purchaseRow; // Push all columns from the purchase row directly
 			}
-
-			// Combine both dyeing and purchase data into one response
-			// echo json_encode([
-			// 	'success' => true,
-			// 	'dyeing_data' => $dyeingData,
-			// 	'purchase_data' => $purchaseData
-			// ]);
 		}
 	}
 
@@ -2628,4 +2622,44 @@ if (isset($_POST['cutting_man_id'])) {
 		'dyeing_data' => $dyeingData,
 		'purchase_data' => $purchaseData
 	]);
+}
+
+
+
+// Embroidery Issuance 
+if (isset($_POST['get_location_data'])) {
+	$id = $dbc->real_escape_string($_POST['get_location_data']);
+	$cutting = [];
+
+	// Fetch data from the cutting table
+	$productData = mysqli_query($dbc, "SELECT * FROM cutting WHERE cutting_man = '$id'");
+	while ($product = mysqli_fetch_assoc($productData)) {
+		$cutting[] = $product;
+	}
+
+	if (!empty($cutting)) {
+		$cuttingItems = []; // Initialize an array for cutting items
+
+		foreach ($cutting as $cut) {
+			$cuttingId = $cut['cutting_id']; // Assuming the primary key is cutting_id
+
+			$itemsData = mysqli_query($dbc, "SELECT * FROM cutting_items WHERE cutting_id = '$cuttingId'");
+			while ($item = mysqli_fetch_assoc($itemsData)) {
+				// Fetch product name from the product table
+				$productId = $item['product_id'];
+				$productNameQuery = mysqli_query($dbc, "SELECT product_name FROM product WHERE product_id = '$productId'");
+				$productNameResult = mysqli_fetch_assoc($productNameQuery);
+
+				// Add the product name to the cutting item
+				$item['product_name'] = $productNameResult['product_name'] ?? 'Unknown';
+
+				// Add the item to the cuttingItems array
+				$cuttingItems[] = $item;
+			}
+		}
+
+		echo json_encode(['success' => true, 'cutting_items' => $cuttingItems]);
+	} else {
+		echo json_encode(['success' => false, 'data' => null]);
+	}
 }
