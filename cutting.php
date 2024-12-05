@@ -83,9 +83,7 @@
                                 <input type="text" placeholder="Gate Pass" value="" autocomplete="off" class="form-control " name="remarks" id="remarks">
                             </div>
                         </div> <!-- end of form-group -->
-                        <hr>
-                        <h3 class="text-center">Available Qty: </h3>
-                        <hr>
+
                         <?php
                         for ($i = 1; $i <= 5; $i++) {
                         ?>
