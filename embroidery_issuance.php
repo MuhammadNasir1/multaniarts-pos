@@ -28,9 +28,10 @@
                     <div class="card-body">
                     <?php } ?>
 
-                    <form action="php_action/custom_action.php" method="POST" id="sale_order_fm">
+                    <form action="php_action/custom_action.php" method="POST" id="embroidery_form">
                         <input type="hidden" name="product_purchase_id" value="<?= @empty($_REQUEST['edit_purchase_id']) ? "" : base64_decode($_REQUEST['edit_purchase_id']) ?>">
                         <input type="hidden" name="payment_type" id="payment_type" value="credit_purchase">
+                        <input type="hidden" name="embroideryform" id="embroideryform" value="embroideryform">
 
 
                         <div class="row form-group">
@@ -44,7 +45,7 @@
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label for="emb_type">Emb Type</label>
-                                <select class="form-control searchableSelect" name="emb_type[]" id="emb_type">
+                                <select class="form-control searchableSelect" name="emb_type" id="emb_type">
                                     <option disabled selected>Select Type</option>
                                     <option value="processing">Processing</option>
                                     <option value="completed">Completed</option>
@@ -52,7 +53,7 @@
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label for="location">Location</label>
-                                <select class="form-control searchableSelect" name="location[]" id="location" onchange="getTableData(this.value)">
+                                <select class="form-control searchableSelect" name="location" id="location" onchange="getTableData(this.value)">
                                     <option disabled selected>Select Location</option>
                                     <?php
                                     $query = "SELECT * FROM customers WHERE customer_type IN ('shop')";
@@ -65,7 +66,7 @@
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label for="embroidery">Embroidery</label>
-                                <select class="form-control searchableSelect" name="embroidery[]" id="embroidery">
+                                <select class="form-control searchableSelect" name="embroidery" id="embroidery">
                                     <option disabled selected>Select Embroidery</option>
                                     <?php
                                     $query = "SELECT * FROM customers WHERE customer_type IN ('embroidery')";
@@ -78,7 +79,7 @@
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label for="program">Program</label>
-                                <select class="form-control searchableSelect" name="program[]" id="program">
+                                <select class="form-control searchableSelect" name="program" id="program">
                                     <option disabled selected>Select Program</option>
                                     <?php
                                     $location = mysqli_query($dbc, "SELECT * FROM programs WHERE status = 1");
@@ -131,25 +132,18 @@
                                 <div class="voucher_row2" id="row<?= $i ?>">
                                     <div class="row mt-3 m-0 p-0">
                                         <div class="col-lg-2 m-0 p-0  row">
-                                            <div class="col-lg-2 m-0 p-0 pl-1">
+                                            <div class="col-lg-6 m-0 p-0 pl-1">
                                                 <label for="sr">Sr</label>
                                                 <input type="text" class="form-control" id="sr<?= $i ?>" readonly value="<?= $i ?>">
                                             </div>
-                                            <div class="col-lg-5 m-0 mt-1 p-0 pl-3 row">
+                                            <div class="col-lg-5 m-0 mt-1 p-0 pl-3">
                                                 <button type="button" class="btn select_dyeing  mt-4 btn-primary btn-sm"
                                                     name="select_dyeing"
                                                     id="select_dyeing"> Select Dyeing </button>
                                             </div>
-                                            <div class="col-lg-5 m-0 p-0">
-                                                <label for="lat_no">Lot No</label>
-                                                <input type="text" class="form-control" id="lat_no<?= $i ?>" value="" name="lat_no[]" placeholder="Lot No">
-                                            </div>
+
                                         </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="d_lot_no">D Lot No</label>
-                                            <input type="text" class="form-control d_lot_no" readonly id="d_lot_no<?= $i ?>" name="d_lot_no[]" placeholder="D Lot No">
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
+                                        <div class="col-lg-2 m-0 p-0 pl-1">
                                             <label for="pur_type">Unit</label>
                                             <select class="form-control searchableSelect" name="pur_type[]" id="pur_type<?= $i ?>">
                                                 <option disabled selected>Select Unit</option>
@@ -158,7 +152,7 @@
                                                 <option value="others">Suit</option>
                                             </select>
                                         </div>
-                                        <div class="col-lg-2 m-0 p-0 pl-1">
+                                        <div class="col-lg-3 m-0 p-0 pl-1">
                                             <label for="type">Product</label>
                                             <div class="input-group">
                                                 <select class="form-control searchableSelect" name="from_type[]" id="from_type<?= $i ?>" onchange="getStock(this.value, <?= $i ?>)">
@@ -175,7 +169,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
+                                        <div class="col-lg-2 m-0 p-0 pl-1">
                                             <label for="type">Type</label>
                                             <select class="form-control searchableSelect" name="type[]" id="type<?= $i ?>">
                                                 <option disabled selected>Select Type</option>
@@ -187,7 +181,7 @@
                                                 <?php } ?>
                                             </select>
                                         </div>
-                                        <div class="col-lg-2 m-0 p-0 pl-1 row">
+                                        <div class="col-lg-3 m-0 p-0 pl-1 row">
                                             <div class="col-lg-4 m-0 p-0 pl-1">
                                                 <label for="thaan">Thaan</label>
                                                 <input type="text" class="form-control" id="thaan<?= $i ?>" name="thaan[]" placeholder="Thaan">
@@ -196,35 +190,12 @@
                                                 <label for="pur_thaan">Qty/Thaan</label>
                                                 <input type="text" class="form-control" id="pur_thaan<?= $i ?>" name="pur_thaan[]" placeholder="Qty/Thaan">
                                             </div>
-                                            <div class="col-lg-4 m-0 p-0 pl-1">
+                                            <div class="col-lg-4 m-0 p-0 pl-1 row">
                                                 <label for="qty">Qty</label>
                                                 <input type="number" class="form-control" id="qty<?= $i ?>" name="qty[]" placeholder="Qty">
                                             </div>
                                         </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label for="unsettle">Unsettle</label>
-                                            <input type="text" class="form-control" id="unsettle<?= $i ?>" name="unsettle[]" placeholder="Unsettle">
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1 row">
-                                            <div class="col-lg-6 m-0 p-0 pl-1">
-                                                <label for="cp">CP</label>
-                                                <input type="text" class="form-control" id="cp<?= $i ?>" name="cp[]" placeholder="CP">
-                                            </div>
-                                            <div class="col-lg-6 m-0 p-0 pl-1">
-                                                <label for="r_khata">R Khata</label>
-                                                <input type="text" class="form-control" id="r_khata<?= $i ?>" name="r_khata[]">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1 row">
-                                            <div class="col-lg-6 m-0 p-0 pl-1">
-                                                <label for="small_cp">Small CP</label>
-                                                <input type="text" class="form-control" id="small_cp<?= $i ?>" name="small_cp[]">
-                                            </div>
-                                            <div class="col-lg-6 m-0 p-0 pl-1">
-                                                <label for="color">Color</label>
-                                                <input type="text" class="form-control" id="color<?= $i ?>" name="color[]" placeholder="Color">
-                                            </div>
-                                        </div>
+
                                     </div>
 
                                 </div>
@@ -232,6 +203,13 @@
                         </div>
                     <?php } ?>
 
+
+                    <div class="row mt-3 mb-5 mr-1">
+                        <div class="col-sm-6 offset-6">
+                            <button class="btn btn-admin float-right " name="sale_order_btn" value="print" type="submit" id="sale_order_btn">Save and Print</button>
+                        </div>
+                    </div>
+                    </form>
                     <div class="col-2 d-none">
                         <label class="invisible d-block">.</label>
                         <button type="button" class="btn btn-success btn-sm" data-toggle="modal" id="show_dyeing_details_btn" data-target="#show_dyeing_details"> <i class="fa fa-plus"></i> </button>
@@ -272,13 +250,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="row mt-3 mb-5 mr-1">
-                        <div class="col-sm-6 offset-6">
-                            <button class="btn btn-admin float-right " name="sale_order_btn" value="print" type="submit" id="sale_order_btn">Save and Print</button>
-                        </div>
-                    </div>
-                    </form>
                     <?php if (basename($_SERVER['REQUEST_URI']) == 'embroidery_issuance.php') { ?>
                 </div>
             </div> <!-- .row -->
@@ -360,6 +331,50 @@
         });
     }
 
+    $(document).ready(function() {
+        $('#embroidery_form').on('submit', function(event) {
+            event.preventDefault(); // Prevent form default submission
+
+            let formData = $(this).serialize();
+
+            $.ajax({
+                type: 'POST',
+                url: 'php_action/custom_action.php',
+                data: formData,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.sts === 'success') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.msg,
+                            showConfirmButton: false,
+                            timer: 500
+                        }).then((result) => {
+                            location.reload();
+                        });
+
+                        $('#embroidery_form')[0].reset();
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Warning',
+                            text: response.msg,
+                            showConfirmButton: true,
+                        });
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while submitting the form.',
+                        showConfirmButton: true,
+                    });
+                }
+            });
+        });
+    });
 
 
     function getCuttingDetails(cuttingID, currentId) {
