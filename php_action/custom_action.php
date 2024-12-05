@@ -1841,6 +1841,22 @@ if (isset($_POST['get_selected_purchase'])) {
 	}
 }
 
+if (isset($_POST['get_selected_pur'])) {
+	$id = $dbc->real_escape_string($_POST['get_selected_pur']);
+
+	$purchase_data = mysqli_query($dbc, "SELECT * FROM purchase WHERE purchase_id = '$id'");
+	$purchase = $purchase_data->fetch_assoc();
+
+	$p_id = $purchase['product_id'];
+	$product_data = mysqli_query($dbc, "SELECT * FROM product WHERE product_id = '$p_id'");
+	$product = $product_data->fetch_assoc();
+
+	if ($purchase && $product) {
+		echo json_encode(['success' => true, 'data' => $purchase, 'product' => $product]);
+	} else {
+		echo json_encode(['success' => false, 'data' => null]);
+	}
+}
 if (isset($_POST['get_selected_dyeing'])) {
 	$id = $dbc->real_escape_string($_POST['get_selected_dyeing']);
 

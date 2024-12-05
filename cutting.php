@@ -286,6 +286,12 @@
 
         getDyeingDetails(dyeingId, currentId);
     });
+    $(document).on("click", ".select-row-purchase", function() {
+        const purchaseID = $(this).val();
+        const currentId = $("#show_dyeing_details").data("currentId");
+
+        getPurData(purchaseID, currentId);
+    });
 
     function getDyeingDetails(dyeingId, currentId) {
         $.ajax({
@@ -299,7 +305,6 @@
                 if (response.success) {
                     const data = response.data;
 
-                    console.log("Updating row ID:", currentId);
 
                     const row = $(`#${currentId}`);
 
@@ -312,6 +317,36 @@
                     row.find('[name="qty[]"]').val(data.quantity_instock || '');
                     row.find('[name="color[]"]').val(productDetails.color_arr[0] || '');
                     row.find('[name="pur_thaan[]"]').val(productDetails.pur_thaan_arr[0] || '');
+
+                    $("#purchase_id").val(data.purchase_id);
+                    $("#show_dyeing_details").modal("hide");
+                } else {
+                    console.error("Failed to fetch dyeing details:", response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+            }
+        });
+    }
+
+    function getPurData(purchaseID, currentId) {
+        $.ajax({
+            url: 'php_action/custom_action.php',
+            type: 'POST',
+            data: {
+                get_selected_pur: purchaseID
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    const data = response.data;
+
+
+                    const row = $(`#${currentId}`);
+
+                    row.find('[name="qty[]"]').val(data.quantity || '');
+                    row.find('[name="pur_thaan[]"]').val(data.pur_thaan || '');
 
                     $("#purchase_id").val(data.purchase_id);
                     $("#show_dyeing_details").modal("hide");
@@ -434,7 +469,7 @@
                                 <td>${row.total_amount}</td>
                                 <td>Purchase</td>
                                 <td>
-                                    <button type="button" class="btn select-row btn-primary btn-sm" value="${row.purchase_id}">Apply</button>
+                                    <button type="button" class="btn select-row-purchase btn-primary btn-sm" value="${row.purchase_id}">Apply</button>
                                 </td>
                             </tr>
                         `;
