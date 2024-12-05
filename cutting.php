@@ -130,7 +130,7 @@
                                                         $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'dyed' OR brand_id = 'cora' AND status = 1");
                                                         while ($p = mysqli_fetch_assoc($products)) {
                                                         ?>
-                                                            <option value="<?= $p['product_id'] ?>"><?= ucwords($p['product_name']) ?></option>
+                                                            <option value="<?= $p['product_id'] ?>"><?= ucwords($p['product_name']) ?> (<?= ucwords($p['brand_id']) ?>)</option>
                                                         <?php } ?>
                                                     </select>
                                                     <div class="input-group-prepend">
