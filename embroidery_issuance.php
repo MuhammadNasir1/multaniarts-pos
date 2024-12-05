@@ -36,19 +36,18 @@
                         <div class="row form-group">
                             <div class="col-md-2  mt-3">
                                 <label>Transaction #</label>
-                                <input type="text" name="transaction" id="transaction" value="" class="form-control">
+                                <input type="text" name="transaction" id="transaction" placeholder="Write Here..." value="" class="form-control">
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label>Date</label>
-                                <input type="date" name="issuance_date" id="issuance_date" value="" class="form-control">
+                                <input type="date" name="issuance_date" id="issuance_date" value="<?= date('Y-m-d') ?>" class="form-control">
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label for="emb_type">Emb Type</label>
                                 <select class="form-control searchableSelect" name="emb_type[]" id="emb_type">
                                     <option disabled selected>Select Type</option>
-                                    <option value="meter">Meter</option>
-                                    <option value="yard">Yard</option>
-                                    <option value="others">Suit</option>
+                                    <option value="processing">Processing</option>
+                                    <option value="completed">Completed</option>
                                 </select>
                             </div>
                             <div class="col-md-2 mt-3">
@@ -56,7 +55,7 @@
                                 <select class="form-control searchableSelect" name="location[]" id="location">
                                     <option disabled selected>Select Location</option>
                                     <?php
-                                    $query = "SELECT * FROM customers WHERE customer_type IN ('dyeing', 'printer', 'packing', 'embroidery')";
+                                    $query = "SELECT * FROM customers WHERE customer_type IN ('shop')";
                                     $result = mysqli_query($dbc, $query);
                                     while ($d = mysqli_fetch_assoc($result)) {
                                         echo "<option value='{$d['customer_id']}'>" . ucwords($d['customer_name']) . " (" . ucwords($d['customer_type']) . ")</option>";
@@ -69,7 +68,7 @@
                                 <select class="form-control searchableSelect" name="embroidery[]" id="embroidery">
                                     <option disabled selected>Select Embroidery</option>
                                     <?php
-                                    $query = "SELECT * FROM customers WHERE customer_type IN ('dyeing', 'printer', 'packing', 'embroidery')";
+                                    $query = "SELECT * FROM customers WHERE customer_type IN ('embroidery')";
                                     $result = mysqli_query($dbc, $query);
                                     while ($d = mysqli_fetch_assoc($result)) {
                                         echo "<option value='{$d['customer_id']}'>" . ucwords($d['customer_name']) . " (" . ucwords($d['customer_type']) . ")</option>";
@@ -82,12 +81,11 @@
                                 <select class="form-control searchableSelect" name="program[]" id="program">
                                     <option disabled selected>Select Program</option>
                                     <?php
-                                    $query = "SELECT * FROM customers WHERE customer_type IN ('dyeing', 'printer', 'packing', 'embroidery')";
-                                    $result = mysqli_query($dbc, $query);
-                                    while ($d = mysqli_fetch_assoc($result)) {
-                                        echo "<option value='{$d['customer_id']}'>" . ucwords($d['customer_name']) . " (" . ucwords($d['customer_type']) . ")</option>";
-                                    }
+                                    $location = mysqli_query($dbc, "SELECT * FROM programs WHERE status = 1");
+                                    while ($d = mysqli_fetch_assoc($location)) {
                                     ?>
+                                        <option value="<?= $d['program_id'] ?>"> <?= ucwords($d['name']) ?></option>
+                                    <?php } ?>
                                 </select>
                             </div>
                             <div class="col-md-2 mt-3">
@@ -98,61 +96,21 @@
                                 <label>Dyeing Lot</label>
                                 <input type="text" placeholder="Gate Pass" value="" autocomplete="off" class="form-control " name="dyeing_lot" id="dyeing_lot">
                             </div>
-                            <div class="col-md-2 mt-3">
-                                <label for="quality">Quality</label>
-                                <select class="form-control searchableSelect" name="quality[]" id="quality">
-                                    <option disabled selected>Select Quality</option>
-                                    <?php
-                                    $query = "SELECT * FROM customers WHERE customer_type IN ('dyeing', 'printer', 'packing', 'embroidery')";
-                                    $result = mysqli_query($dbc, $query);
-                                    while ($d = mysqli_fetch_assoc($result)) {
-                                        echo "<option value='{$d['customer_id']}'>" . ucwords($d['customer_name']) . " (" . ucwords($d['customer_type']) . ")</option>";
-                                    }
-                                    ?>
-                                </select>
-                            </div>
                             <div class="col-md-2  mt-3">
                                 <label>Manual Gp #</label>
                                 <input type="text" placeholder="Gate Pass" value="" autocomplete="off" class="form-control " name="manual_gp" id="manual_gp">
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label for="cutting_man">Cutting Man</label>
-                                <select class="form-control searchableSelect" name="cutting_man[]" id="cutting_man">
-                                    <option disabled selected>Select Man</option>
-                                    <?php
-                                    $query = "SELECT * FROM customers WHERE customer_type IN ('dyeing', 'printer', 'packing', 'embroidery')";
-                                    $result = mysqli_query($dbc, $query);
-                                    while ($d = mysqli_fetch_assoc($result)) {
-                                        echo "<option value='{$d['customer_id']}'>" . ucwords($d['customer_name']) . " (" . ucwords($d['customer_type']) . ")</option>";
-                                    }
-                                    ?>
-                                </select>
+                                <input type="text" placeholder="Cutting Man" value="" autocomplete="off" class="form-control " name="cutting_man" id="cutting_man">
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label for="sending_person">Sending Person</label>
-                                <select class="form-control searchableSelect" name="sending_person[]" id="sending_person">
-                                    <option disabled selected>Select Man</option>
-                                    <?php
-                                    $query = "SELECT * FROM customers WHERE customer_type IN ('dyeing', 'printer', 'packing', 'embroidery')";
-                                    $result = mysqli_query($dbc, $query);
-                                    while ($d = mysqli_fetch_assoc($result)) {
-                                        echo "<option value='{$d['customer_id']}'>" . ucwords($d['customer_name']) . " (" . ucwords($d['customer_type']) . ")</option>";
-                                    }
-                                    ?>
-                                </select>
+                                <input type="text" placeholder="Sending Person" value="" autocomplete="off" class="form-control " name="sending_person" id="sending_person">
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label for="carrier_person">Carrier Person</label>
-                                <select class="form-control searchableSelect" name="carrier_person[]" id="carrier_person">
-                                    <option disabled selected>Select Man</option>
-                                    <?php
-                                    $query = "SELECT * FROM customers WHERE customer_type IN ('dyeing', 'printer', 'packing', 'embroidery')";
-                                    $result = mysqli_query($dbc, $query);
-                                    while ($d = mysqli_fetch_assoc($result)) {
-                                        echo "<option value='{$d['customer_id']}'>" . ucwords($d['customer_name']) . " (" . ucwords($d['customer_type']) . ")</option>";
-                                    }
-                                    ?>
-                                </select>
+                                <input type="text" placeholder="Carrier Person" value="" autocomplete="off" class="form-control " name="carrier_person" id="carrier_person">
                             </div>
                             <div class="col-md-2  mt-3">
                                 <label>Carrier Contact</label>
