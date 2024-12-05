@@ -247,6 +247,7 @@
                                         <th>Gzanah</th>
                                         <th>Quantity</th>
                                         <th>Total</th>
+                                        <th>Type</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -386,38 +387,75 @@
             data: {
                 cutting_man_id: cuttingManId
             },
-            dataType: 'json',
+            dataType: 'text', // Receive as raw text, since you will parse it manually
             success: function(response) {
-                if (response.error) {
-                    alert(response.error);
-                    return;
+                try {
+                    // Manually decode the JSON response
+                    let jsonResponse = JSON.parse(response);
+
+                    // Check if the response is successful
+                    if (jsonResponse.success) {
+                        let tableBody = '';
+
+                        // Handle dyeing data
+                        if (jsonResponse.dyeing_data) {
+                            console.log(jsonResponse.dyeing_data);
+
+                            jsonResponse.dyeing_data.forEach(row => {
+                                tableBody += `
+                            <tr>
+                                <td>${row.purchase_id}</td>
+                                <td>${row.issuance_date}</td>
+                                <td>${row.product_name}</td>
+                                <td>${row.thaan}</td>
+                                <td>${row.gzanah}</td>
+                                <td>${row.quantity_instock}</td>
+                                <td>${row.total_amount}</td>
+                                <td>Dyeing</td>
+                                <td>
+                                    <button type="button" class="btn select-row btn-primary btn-sm" value="${row.dyeing_id}">Apply</button>
+                                </td>
+                            </tr>
+                        `;
+                            });
+                        }
+
+                        // Handle purchase data
+                        if (jsonResponse.purchase_data) {
+                            jsonResponse.purchase_data.forEach(row => {
+                                tableBody += `
+                            <tr>
+                                <td>${row.purchase_id}</td>
+                                <td>${row.purchase_date}</td>
+                                <td>${row.product_name}</td>
+                                <td>${row.pur_thaan}</td>
+                                <td>${row.pur_gzanah}</td>
+                                <td>${row.quantity}</td>
+                                <td>${row.total_amount}</td>
+                                <td>Purchase</td>
+                                <td>
+                                    <button type="button" class="btn select-row btn-primary btn-sm" value="${row.purchase_id}">Apply</button>
+                                </td>
+                            </tr>
+                        `;
+                            });
+                        }
+
+                        $('#table-body-id').html(tableBody); // Insert the generated table rows
+                    } else {
+                        alert('No data found');
+                    }
+                } catch (error) {
+                    console.error('Error parsing JSON:', error);
                 }
-
-                let tableBody = '';
-                response.forEach(row => {
-                    tableBody += `
-                    <tr>
-                        <td>${row.purchase_id}</td>
-                        <td>${row.issuance_date}</td>
-                        <td>${row.product_name}</td>
-                        <td>${row.thaan}</td>
-                        <td>${row.gzanah}</td>
-                        <td>${row.quantity_instock}</td>
-                        <td>${row.total_amount}</td>
-                        <td>
-                            <button type="button" class="btn select-row btn-primary btn-sm" value="${row.dyeing_id}">Apply</button>
-                        </td>
-                    </tr>
-                `;
-                });
-
-                $('#table-body-id').html(tableBody); // Replace #table-body-id with your table body ID
             },
             error: function(xhr, status, error) {
                 console.error('AJAX Error:', error);
             }
         });
+
     }
+
 
     function getStock(product_id, index) {
         $.ajax({

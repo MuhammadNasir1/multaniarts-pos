@@ -2526,13 +2526,16 @@ if (isset($_POST['cuttingform'])) {
 if (isset($_POST['cutting_man_id'])) {
 	$cuttingManId = $_POST['cutting_man_id'];
 
-	$query = mysqli_query($dbc, "SELECT * FROM dyeing WHERE status = 'received' AND to_location = '$cuttingManId'");
-	$response = [];
-	while ($row = mysqli_fetch_assoc($query)) {
+	// Query to fetch dyeing data
+	$dyeingQuery = mysqli_query($dbc, "SELECT * FROM dyeing WHERE status = 'received' AND to_location = '$cuttingManId'");
+	$dyeingData = [];
+
+	while ($row = mysqli_fetch_assoc($dyeingQuery)) {
+		// Get product name for dyeing data
 		$productQuery = mysqli_query($dbc, "SELECT * FROM product WHERE status=1 AND product_id = '{$row['product_id']}'");
 		$productName = mysqli_fetch_assoc($productQuery)['product_name'] ?? 'N/A';
 
-		$response[] = [
+		$dyeingData[] = [
 			'purchase_id' => $row['purchase_id'],
 			'issuance_date' => $row['issuance_date'],
 			'product_name' => $productName,
@@ -2543,5 +2546,70 @@ if (isset($_POST['cutting_man_id'])) {
 			'dyeing_id' => $row['dyeing_id'],
 		];
 	}
-	echo json_encode($response);
+
+	// Query to fetch purchase data where brand_id is 'dyed' or 'cora'
+	$purchaseQuery = mysqli_query($dbc, "
+        SELECT purchase.*, product.product_name
+        FROM purchase
+        INNER JOIN product ON purchase.product_id = product.product_id
+        WHERE purchase.pur_location = '$cuttingManId'
+        AND product.brand_id IN ('dyed', 'cora')
+    ");
+	$purchaseData = [];
+
+	while ($purchaseRow = mysqli_fetch_assoc($purchaseQuery)) {
+		if (isset($_POST['cutting_man_id'])) {
+			$cuttingManId = $_POST['cutting_man_id'];
+
+			// Query to fetch dyeing data
+			$dyeingQuery = mysqli_query($dbc, "SELECT * FROM dyeing WHERE status = 'received' AND to_location = '$cuttingManId'");
+			$dyeingData = [];
+
+			while ($row = mysqli_fetch_assoc($dyeingQuery)) {
+				// Get product name for dyeing data
+				$productQuery = mysqli_query($dbc, "SELECT * FROM product WHERE status=1 AND product_id = '{$row['product_id']}'");
+				$productName = mysqli_fetch_assoc($productQuery)['product_name'] ?? 'N/A';
+
+				$dyeingData[] = [
+					'purchase_id' => $row['purchase_id'],
+					'issuance_date' => $row['issuance_date'],
+					'product_name' => $productName,
+					'thaan' => $row['thaan'],
+					'gzanah' => $row['gzanah'],
+					'quantity_instock' => $row['quantity_instock'],
+					'total_amount' => $row['total_amount'],
+					'dyeing_id' => $row['dyeing_id'],
+				];
+			}
+
+			// Query to fetch all purchase data where brand_id is 'dyed' or 'cora'
+			$purchaseQuery = mysqli_query($dbc, "
+        SELECT purchase.*, product.product_name
+        FROM purchase
+        INNER JOIN product ON purchase.product_id = product.product_id
+        WHERE purchase.pur_location = '$cuttingManId'
+        AND product.brand_id IN ('dyed', 'cora')
+    ");
+			$purchaseData = [];
+
+			// Fetching all columns from the purchase table
+			while ($purchaseRow = mysqli_fetch_assoc($purchaseQuery)) {
+				$purchaseData[] = $purchaseRow; // Push all columns from the purchase row directly
+			}
+
+			// Combine both dyeing and purchase data into one response
+			// echo json_encode([
+			// 	'success' => true,
+			// 	'dyeing_data' => $dyeingData,
+			// 	'purchase_data' => $purchaseData
+			// ]);
+		}
+	}
+
+	// Combine both dyeing and purchase data into one response
+	echo json_encode([
+		'success' => true,
+		'dyeing_data' => $dyeingData,
+		'purchase_data' => $purchaseData
+	]);
 }
