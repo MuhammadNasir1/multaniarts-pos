@@ -32,6 +32,7 @@
                         <input type="hidden" name="product_purchase_id" value="<?= @empty($_REQUEST['edit_purchase_id']) ? "" : base64_decode($_REQUEST['edit_purchase_id']) ?>">
                         <input type="hidden" name="payment_type" id="payment_type" value="credit_purchase">
                         <input type="hidden" name="embroideryform" id="embroideryform" value="embroideryform">
+                        <input type="hidden" name="purchase_id" id="purchase_id" value="">
 
 
                         <div class="row form-group">
@@ -405,6 +406,9 @@
                     row.find('[name="small_cp[]"]').val(data.small_cp || '');
                     row.find('[name="color[]"]').val(data.color || '');
 
+                    $("#lot_no").val(data.lot_no);
+                    $("#dyeing_lot").val(data.d_lat_no);
+                    $("#purchase_id").val(data.purchase_id);
                     $("#show_dyeing_details").modal("hide");
                 } else {
                     console.error("Failed to fetch dyeing details:", response.message);
