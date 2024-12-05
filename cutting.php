@@ -161,7 +161,7 @@
                                                 </div>
                                                 <div class="col-lg-4 m-0 p-0 pl-1">
                                                     <label for="qty">Qty</label>
-                                                    <input type="number" class="form-control" id="qty<?= $i ?>" name="qty[]" value="0" placeholder="Qty">
+                                                    <input type="number" class="form-control" id="qty<?= $i ?>" name="qty[]"  placeholder="Qty">
                                                 </div>
                                             </div>
                                             <div class="col-lg-1 m-0 p-0 pl-1">
@@ -390,7 +390,7 @@
                             title: 'Success',
                             text: response.msg,
                             showConfirmButton: false,
-                            timer: 12000
+                            timer: 500
                         }).then((result) => {
                             location.reload();
                         });
