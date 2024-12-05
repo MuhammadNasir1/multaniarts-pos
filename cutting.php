@@ -250,7 +250,11 @@
                                         <th>Action</th>
                                     </tr>
                                 </thead>
-                                <tbody id="table-body-id"></tbody>
+                                <tbody id="table-body-id">
+                                    <tr>
+                                        <td colspan="8" class="text-center">Select Cutting Man First</td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
                         <div class="modal-footer"></div>
