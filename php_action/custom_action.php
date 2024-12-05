@@ -1802,7 +1802,7 @@ if (isset($_POST['get_dyeing_data'])) {
         INNER JOIN product 
         ON product.product_id = dyeing.product_id
         WHERE dyeing.to_location = '$id' 
-        AND dyeing.status = 'sent'
+        AND dyeing.status = 'sent'  AND dyeing.quantity_instock != 0
     ";
 
 	$result = mysqli_query($dbc, $query);
@@ -2346,7 +2346,7 @@ if (isset($_POST['get_dyer_stock']) && isset($_POST['done_by'])) {
         SELECT SUM(quantity_instock) AS total_quantity 
         FROM dyeing 
         WHERE product_id = '$id' 
-        AND status = 'sent' 
+        AND status = 'received' 
         AND done_by = '$doneById'
     ";
 

@@ -1929,29 +1929,5 @@ function getStock(value) {
     },
   });
 }
-function getDyerStock(value) {
-  const doneById = $("#form_location").val();
-
-  $.ajax({
-    url: "php_action/custom_action.php",
-    type: "POST",
-    data: {
-      get_dyer_stock: value,
-      done_by: doneById,
-    },
-    dataType: "json",
-    success: function (response) {
-      if (response.success) {
-        $("#from_account_bl").text(response.total_quantity);
-        $("#qty_arr").attr("max", response.total_quantity);
-      } else {
-        console.error("Error: " + response.message);
-      }
-    },
-    error: function (xhr, status, error) {
-      console.error("AJAX Error: " + status + error);
-    },
-  });
-}
 
 // Add
