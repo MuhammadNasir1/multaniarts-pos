@@ -161,7 +161,7 @@
                                                 </div>
                                                 <div class="col-lg-4 m-0 p-0 pl-1">
                                                     <label for="qty">Qty</label>
-                                                    <input type="number" min="1" class="form-control" id="qty<?= $i ?>" name="qty[]" value="0" placeholder="Qty">
+                                                    <input type="number" class="form-control" id="qty<?= $i ?>" name="qty[]" value="0" placeholder="Qty">
                                                 </div>
                                             </div>
                                             <div class="col-lg-1 m-0 p-0 pl-1">
