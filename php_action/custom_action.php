@@ -2769,7 +2769,10 @@ if (isset($_POST['embroideryform'])) {
 					'product_id' => $product_id,
 					'thaan' => $_POST['thaan'][$key],
 					'qty_pur_thaan' => $_POST['pur_thaan'][$key],
-					'qty' => $quantity
+					'qty' => $quantity,
+					'status' => 'sent',
+					'emb_entry_form' => 'embroidery_issuance',
+					'quantity_instock' => $quantity
 				];
 			}
 
@@ -2815,7 +2818,7 @@ if (isset($_POST['get_embroidery_data'])) {
 	$cutting = [];
 
 	// Fetch data from the cutting table
-	$productData = mysqli_query($dbc, "SELECT * FROM embroidery WHERE to_location = '$id' AND status = 'sent'");
+	$productData = mysqli_query($dbc, "SELECT * FROM embroidery WHERE to_location = '$id'");
 	while ($product = mysqli_fetch_assoc($productData)) {
 		$cutting[] = $product;
 	}
@@ -2826,7 +2829,7 @@ if (isset($_POST['get_embroidery_data'])) {
 		foreach ($cutting as $cut) {
 			$cuttingId = $cut['embroidery_id']; // Assuming the primary key is cutting_id
 
-			$itemsData = mysqli_query($dbc, "SELECT * FROM embroidery_items WHERE embroidery_id = '$cuttingId'");
+			$itemsData = mysqli_query($dbc, "SELECT * FROM embroidery_items WHERE embroidery_id = '$cuttingId' AND status = 'sent'");
 			while ($item = mysqli_fetch_assoc($itemsData)) {
 				// Fetch product name from the product table
 				$productId = $item['product_id'];
@@ -2913,7 +2916,7 @@ if (isset($_POST['embroideryRecform'])) {
 						$from_quantity_instock = (float)$from_quantity_data['quantity_instock'];
 
 						if ($quantity > $from_quantity_instock) {
-							$errors[] = "Insufficient stock  in row $key.";
+							$errors[] = "Insufficient stock in row $key.";
 							continue; // Skip this row
 						}
 					} else {
@@ -2941,6 +2944,15 @@ if (isset($_POST['embroideryRecform'])) {
 				mysqli_query($dbc, "UPDATE product SET quantity_instock='$new_from_qty' WHERE product_id='$from_product_id'");
 
 				// Prepare item data for insertion
+				$idForUpdateData = $_POST['embroidery_item_id'][$key];
+
+				// Update status to 'received' for the corresponding embroidery item
+				$update_status_query = "UPDATE embroidery_items SET status = 'received' WHERE embroidery_item_id = '$idForUpdateData'";
+				if (!mysqli_query($dbc, $update_status_query)) {
+					$errors[] = "Error updating status for item ID $idForUpdateData: " . mysqli_error($dbc);
+				}
+
+				// Prepare the item data for insertion
 				$items_data[] = [
 					'design' => $_POST['design'][$key],
 					'calender' => $_POST['calender'][$key],
@@ -2956,6 +2968,9 @@ if (isset($_POST['embroideryRecform'])) {
 					'thaan' => $_POST['thaan'][$key],
 					'qty_pur_thaan' => $_POST['pur_thaan'][$key],
 					'qty' => $quantity,
+					'emb_entry_form' => 'embroidery_receiving',
+					'status' => 'received',
+					'quantity_instock' => $quantity,
 				];
 			}
 

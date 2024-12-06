@@ -36,6 +36,8 @@
                         <input type="hidden" name="purchase_id" id="purchase_id" value="">
                         <input type="hidden" name="received_embroidery" id="received_embroidery" value="">
 
+
+
                         <div class="row form-group">
                             <div class="col-md-2  mt-3">
                                 <label>Transaction #</label>
@@ -129,6 +131,7 @@
                                     <div class="voucher_row2" id="row_inner<?= $i ?>">
                                         <div class="row mt-3 m-0 p-0">
                                             <div class="col-lg-1 m-0 p-0 row">
+                                                <input type="hidden" name="embroidery_item_id[]" id="embroidery_item_id<?= $i ?>" value="">
                                                 <div class="col-lg-3 m-0 p-0">
                                                     <label for="sr">Sr</label>
                                                     <input type="text" class="form-control" id="sr<?= $i ?>" readonly value="<?= $i ?>" name="sr[]">
@@ -385,6 +388,7 @@
                     row.find('[name="r_khata[]"]').val(data.r_khata || '');
                     row.find('[name="small_cp[]"]').val(data.small_cp || '');
                     row.find('[name="color[]"]').val(data.color || '');
+                    row.find('[name="embroidery_item_id[]"]').val(data.embroidery_item_id || '');
 
                     $("#lot_no").val(data.lot_no);
                     $("#dyeing_lot").val(data.d_lat_no);
@@ -421,10 +425,10 @@
                             showConfirmButton: false,
                             timer: 500
                         }).then((result) => {
-                            // location.reload();
+                            location.reload();
                         });
 
-                        // $('#embroidery_rec_form')[0].reset();
+                        $('#embroidery_rec_form')[0].reset();
                     } else {
                         Swal.fire({
                             icon: 'warning',
