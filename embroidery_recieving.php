@@ -134,7 +134,7 @@
                                                 <div class="col-lg-9 m-0 mt-1 p-0 pl-3">
                                                     <button type="button" class="btn select_dyeing  mt-4 btn-primary btn-sm"
                                                         name="select_dyeing"
-                                                        id="select_dyeing"> Select Dyeing </button>
+                                                        id="select_dyeing"> Embroidery </button>
                                                 </div>
 
                                             </div>
@@ -232,17 +232,13 @@
                         <hr>
 
 
-                        <div class="row mt-3">
+
+                        <div class="row mt-3 mb-5 mr-1">
                             <div class="col-sm-6 offset-6">
                                 <button class="btn btn-admin float-right " name="sale_order_btn" value="print" type="submit" id="sale_order_btn">Save and Print</button>
                             </div>
                         </div>
                     </form>
-                    <div class="row mt-3 mb-5 mr-1">
-                        <div class="col-sm-6 offset-6">
-                            <button class="btn btn-admin float-right " name="sale_order_btn" value="print" type="submit" id="sale_order_btn">Save and Print</button>
-                        </div>
-                    </div>
                     </form>
                     <div class="col-2 d-none">
                         <label class="invisible d-block">.</label>
@@ -253,7 +249,7 @@
                         <div class="modal-dialog modal-lg" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLongTitle">Dyeing Details</h5>
+                                    <h5 class="modal-title" id="exampleModalLongTitle">Embroidery Details</h5>
                                     <input type="text" id="tableSearchInput" class="form-control ml-3" placeholder="Search Here" style="width: 50%;">
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="detailModalClose">
                                         <span aria-hidden="true">&times;</span>
@@ -267,14 +263,14 @@
                                             <tr>
                                                 <th>Product</th>
                                                 <th>Thaan</th>
-                                                <th>Gzanah</th>
+                                                <th>Unit</th>
                                                 <th>Quantity</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody id="table-body-id">
                                             <tr>
-                                                <td colspan="8" class="text-center">Select Cutting Man First</td>
+                                                <td colspan="8" class="text-center">Select Embroidery First</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -312,10 +308,10 @@
     });
 
     $(document).on("click", ".select-row", function() {
-        const cuttingID = $(this).val();
+        const embID = $(this).val();
         const currentId = $("#show_dyeing_details").data("currentId");
 
-        getCuttingDetails(cuttingID, currentId);
+        getEmbDetails(embID, currentId);
     });
 
     function getTableData(location_id) {
@@ -336,9 +332,9 @@
                         jsonResponse.embroidery_items.forEach(row => {
                             tableBody += `
                         <tr>
-                            <td>${row.purchase_id}</td>
                             <td class="text-capitalize">${row.product_name}</td>
                             <td>${row.thaan}</td>
+                            <td class="text-capitalize">${row.unit}</td>
                             <td>${row.qty}</td>
                             <td>
                                 <button type="button" class="btn select-row btn-primary btn-sm" value="${row.embroidery_item_id}">
@@ -355,6 +351,70 @@
                     }
                 } catch (error) {
                     console.error('Error parsing JSON:', error);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error:', error);
+            }
+        });
+    }
+
+    function getEmbDetails(embID, currentId) {
+        $.ajax({
+            url: 'php_action/custom_action.php',
+            type: 'POST',
+            data: {
+                get_selected_embroidery: embID
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    const data = response.data;
+
+                    const row = $(`#${currentId}`); // Get the current row using currentId
+
+                    // Fill in the fields with the response data
+                    row.find('[name="lat_no[]"]').val(data.lot_no || '');
+                    row.find('[name="d_lot_no[]"]').val(data.d_lat_no || '');
+                    row.find('[name="pur_type[]"]').val(data.unit || '').change();
+                    row.find('[name="from_type[]"]').val(data.product_id || '').change();
+                    row.find('[name="thaan[]"]').val(data.thaan || '');
+                    row.find('[name="pur_thaan[]"]').val(data.qty_pur_thaan || '');
+                    row.find('[name="qty[]"]').val(data.qty || '');
+                    row.find('[name="unsettle[]"]').val(data.unsettle || '');
+                    row.find('[name="cp[]"]').val(data.cp || '');
+                    row.find('[name="r_khata[]"]').val(data.r_khata || '');
+                    row.find('[name="small_cp[]"]').val(data.small_cp || '');
+                    row.find('[name="color[]"]').val(data.color || '');
+
+                    $("#lot_no").val(data.lot_no);
+                    $("#dyeing_lot").val(data.d_lat_no);
+                    $("#purchase_id").val(data.purchase_id);
+                    $("#show_dyeing_details").modal("hide");
+                } else {
+                    console.error("Failed to fetch dyeing details:", response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+            }
+        });
+    }
+
+    function getStock(product_id, index) {
+        $.ajax({
+            url: 'php_action/custom_action.php', // Replace with your PHP script's path
+            type: 'POST',
+            data: {
+                get_stock: product_id
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    // Update the stock span with the correct index
+                    $('#from_product_bl' + index).text(response.data.quantity_instock);
+                } else {
+                    alert('Error: ' + (response.error || 'Unknown error occurred'));
                 }
             },
             error: function(xhr, status, error) {

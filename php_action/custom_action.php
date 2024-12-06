@@ -2846,3 +2846,19 @@ if (isset($_POST['get_embroidery_data'])) {
 		echo json_encode(['success' => false, 'data' => null]);
 	}
 }
+
+if (isset($_POST['get_selected_embroidery'])) {
+	$id = $dbc->real_escape_string($_POST['get_selected_embroidery']);
+
+	// Fetch data from the cutting table
+	$embroideryData = mysqli_query($dbc, "SELECT * FROM embroidery_items WHERE embroidery_item_id = '$id'");
+
+	$embroidery = $embroideryData->fetch_assoc();
+
+	// Check if any data was returned
+	if ($embroidery) {
+		echo json_encode(['success' => true, 'data' => $embroidery]);
+	} else {
+		echo json_encode(['success' => false, 'message' => 'No data found for the selected Embroidery.']);
+	}
+}
