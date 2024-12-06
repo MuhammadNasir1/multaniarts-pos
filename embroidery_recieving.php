@@ -29,10 +29,12 @@
                     <div class="card-body">
                     <?php } ?>
 
-                    <form action="php_action/custom_action.php" method="POST" id="sale_order_fm">
+                    <form action="" method="POST" id="embroidery_rec_form">
                         <input type="hidden" name="product_purchase_id" value="<?= @empty($_REQUEST['edit_purchase_id']) ? "" : base64_decode($_REQUEST['edit_purchase_id']) ?>">
                         <input type="hidden" name="payment_type" id="payment_type" value="credit_purchase">
-
+                        <input type="hidden" name="embroideryRecform" id="embroideryRecform" value="embroideryRecform">
+                        <input type="hidden" name="purchase_id" id="purchase_id" value="">
+                        <input type="hidden" name="received_embroidery" id="received_embroidery" value="">
 
                         <div class="row form-group">
                             <div class="col-md-2  mt-3">
@@ -45,7 +47,7 @@
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label>Party GP #</label>
-                                <input type="text" placeholder="Gate Pass" value="" autocomplete="off" class="form-control " name="party_gp" id="party_gp">
+                                <input type="text" placeholder="Party GP" value="" autocomplete="off" class="form-control " name="party_gp" id="party_gp">
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label for="emb_type">Emb Type</label>
@@ -95,11 +97,11 @@
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label>Manual GP #</label>
-                                <input type="text" placeholder="Gate Pass" value="" autocomplete="off" class="form-control " name="maual_gp" id="maual_gp">
+                                <input type="text" placeholder="Gate Pass" value="" autocomplete="off" class="form-control " name="manual_gp" id="manual_gp">
                             </div>
                             <div class="col-2 mt-3">
                                 <label>Color</label>
-                                <input type="date" name="color" id="color" value="" class="form-control">
+                                <input type="date" name="main_color" id="main_color" value="" class="form-control">
                             </div>
                             <div class="col-2 mt-3">
                                 <label>Lot No #</label>
@@ -124,19 +126,18 @@
                         ?>
                             <div class="row m-0 mt-3 complete px-1" id="row<?= $i ?>">
                                 <div id="voucher_rows_container2">
-                                    <div class="voucher_row2" id="row<?= $i ?>">
+                                    <div class="voucher_row2" id="row_inner<?= $i ?>">
                                         <div class="row mt-3 m-0 p-0">
-                                            <div class="col-lg-1 m-0 p-0  row">
-                                                <div class="col-lg-3 m-0 p-0 ">
+                                            <div class="col-lg-1 m-0 p-0 row">
+                                                <div class="col-lg-3 m-0 p-0">
                                                     <label for="sr">Sr</label>
-                                                    <input type="text" class="form-control" id="sr<?= $i ?>" readonly value="<?= $i ?>">
+                                                    <input type="text" class="form-control" id="sr<?= $i ?>" readonly value="<?= $i ?>" name="sr[]">
                                                 </div>
                                                 <div class="col-lg-9 m-0 mt-1 p-0 pl-3">
-                                                    <button type="button" class="btn select_dyeing  mt-4 btn-primary btn-sm"
+                                                    <button type="button" class="btn select_dyeing mt-4 btn-primary btn-sm"
                                                         name="select_dyeing"
-                                                        id="select_dyeing"> Embroidery </button>
+                                                        id="select_dyeing">Embroidery</button>
                                                 </div>
-
                                             </div>
                                             <div class="col-lg-1 m-0 p-0 pl-1">
                                                 <label for="pur_type">Unit</label>
@@ -148,19 +149,19 @@
                                                 </select>
                                             </div>
                                             <div class="col-lg-2 m-0 p-0 pl-1">
-                                                <label for="type">Product</label>
+                                                <label for="from_type">Product</label>
                                                 <div class="input-group">
                                                     <select class="form-control searchableSelect" name="from_type[]" id="from_type<?= $i ?>" onchange="getStock(this.value, <?= $i ?>)">
                                                         <option disabled selected>Select Type</option>
                                                         <?php
-                                                        $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'cora_cutted' OR brand_id = 'dyed_cutted' AND status = 1");
+                                                        $products = mysqli_query($dbc, "SELECT * FROM product WHERE (brand_id = 'cora_cutted' OR brand_id = 'dyed_cutted') AND status = 1");
                                                         while ($p = mysqli_fetch_assoc($products)) {
                                                         ?>
                                                             <option value="<?= $p['product_id'] ?>"><?= ucwords($p['product_name']) ?> (<?= ucwords($p['brand_id']) ?>)</option>
                                                         <?php } ?>
                                                     </select>
                                                     <div class="input-group-prepend">
-                                                        <span class="input-group-text" id="basic-addon1<?= $i ?>">Stock :<span id="from_product_bl<?= $i ?>">0</span> </span>
+                                                        <span class="input-group-text">Stock: <span id="from_product_bl<?= $i ?>">0</span></span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -169,7 +170,7 @@
                                                 <select class="form-control searchableSelect" name="type[]" id="type<?= $i ?>">
                                                     <option disabled selected>Select Type</option>
                                                     <?php
-                                                    $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'cora_cutted' OR brand_id = 'dyed_cutted' AND status = 1");
+                                                    $products = mysqli_query($dbc, "SELECT * FROM product WHERE (brand_id = 'cora_cutted' OR brand_id = 'dyed_cutted') AND status = 1");
                                                     while ($p = mysqli_fetch_assoc($products)) {
                                                     ?>
                                                         <option value="<?= $p['product_id'] ?>"><?= ucwords($p['product_name']) ?> (<?= ucwords($p['brand_id']) ?>)</option>
@@ -224,7 +225,6 @@
                                                 </div>
                                             </div>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
@@ -238,7 +238,6 @@
                                 <button class="btn btn-admin float-right " name="sale_order_btn" value="print" type="submit" id="sale_order_btn">Save and Print</button>
                             </div>
                         </div>
-                    </form>
                     </form>
                     <div class="col-2 d-none">
                         <label class="invisible d-block">.</label>
@@ -390,6 +389,7 @@
                     $("#lot_no").val(data.lot_no);
                     $("#dyeing_lot").val(data.d_lat_no);
                     $("#purchase_id").val(data.purchase_id);
+                    $("#received_embroidery").val(data.embroidery_id);
                     $("#show_dyeing_details").modal("hide");
                 } else {
                     console.error("Failed to fetch dyeing details:", response.message);
@@ -400,6 +400,51 @@
             }
         });
     }
+
+    $(document).ready(function() {
+        $('#embroidery_rec_form').on('submit', function(event) {
+            event.preventDefault(); // Prevent form default submission
+
+            let formData = $(this).serialize();
+
+            $.ajax({
+                type: 'POST',
+                url: 'php_action/custom_action.php',
+                data: formData,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.sts === 'success') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.msg,
+                            showConfirmButton: false,
+                            timer: 500
+                        }).then((result) => {
+                            // location.reload();
+                        });
+
+                        // $('#embroidery_rec_form')[0].reset();
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Warning',
+                            text: response.msg,
+                            showConfirmButton: true,
+                        });
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while submitting the form.',
+                        showConfirmButton: true,
+                    });
+                }
+            });
+        });
+    });
 
     function getStock(product_id, index) {
         $.ajax({
