@@ -72,7 +72,7 @@
                                 <select class="form-control searchableSelect" name="location" id="location" onchange="getTableData(this.value)">
                                     <option disabled selected>Select Embroidery</option>
                                     <?php
-                                    $query = "SELECT * FROM customers WHERE customer_type IN ('shop')";
+                                    $query = "SELECT * FROM customers WHERE customer_type IN ('embroidery')";
                                     $result = mysqli_query($dbc, $query);
                                     while ($d = mysqli_fetch_assoc($result)) {
                                         echo "<option value='{$d['customer_id']}'>" . ucwords($d['customer_name']) . " (" . ucwords($d['customer_type']) . ")</option>";
@@ -238,6 +238,52 @@
                             </div>
                         </div>
                     </form>
+                    <div class="row mt-3 mb-5 mr-1">
+                        <div class="col-sm-6 offset-6">
+                            <button class="btn btn-admin float-right " name="sale_order_btn" value="print" type="submit" id="sale_order_btn">Save and Print</button>
+                        </div>
+                    </div>
+                    </form>
+                    <div class="col-2 d-none">
+                        <label class="invisible d-block">.</label>
+                        <button type="button" class="btn btn-success btn-sm" data-toggle="modal" id="show_dyeing_details_btn" data-target="#show_dyeing_details"> <i class="fa fa-plus"></i> </button>
+                    </div>
+
+                    <div class="modal fade" id="show_dyeing_details" tabindex="-1" role="dialog" aria-labelledby="defaultModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLongTitle">Dyeing Details</h5>
+                                    <input type="text" id="tableSearchInput" class="form-control ml-3" placeholder="Search Here" style="width: 50%;">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="detailModalClose">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+
+
+                                <div class="modal-body">
+                                    <table class="table table-bordered" id="purchaseDetailsTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Product</th>
+                                                <th>Thaan</th>
+                                                <th>Gzanah</th>
+                                                <th>Quantity</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="table-body-id">
+                                            <tr>
+                                                <td colspan="8" class="text-center">Select Cutting Man First</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="modal-footer"></div>
+
+                            </div>
+                        </div>
+                    </div>
                     <?php if (basename($_SERVER['REQUEST_URI']) == 'embroidery_recieving.php') { ?>
                     </div>
                 </div> <!-- .row -->
@@ -255,3 +301,65 @@
 <?php
                         include_once 'includes/foot.php';
                     } ?>
+
+<script>
+    $(document).on("click", ".select_dyeing", function() {
+        const currentId = $(this).closest(".voucher_row2").attr("id");
+        $("#show_dyeing_details").data("currentId", currentId);
+
+        $("#show_dyeing_details").modal("show");
+        console.log("Modal opened for row ID:", currentId);
+    });
+
+    $(document).on("click", ".select-row", function() {
+        const cuttingID = $(this).val();
+        const currentId = $("#show_dyeing_details").data("currentId");
+
+        getCuttingDetails(cuttingID, currentId);
+    });
+
+    function getTableData(location_id) {
+        $.ajax({
+            url: 'php_action/custom_action.php',
+            type: 'POST',
+            data: {
+                get_embroidery_data: location_id
+            },
+            dataType: 'text',
+            success: function(response) {
+                try {
+                    let jsonResponse = JSON.parse(response);
+
+                    if (jsonResponse.success && jsonResponse.embroidery_items) {
+                        let tableBody = '';
+
+                        jsonResponse.embroidery_items.forEach(row => {
+                            tableBody += `
+                        <tr>
+                            <td>${row.purchase_id}</td>
+                            <td class="text-capitalize">${row.product_name}</td>
+                            <td>${row.thaan}</td>
+                            <td>${row.qty}</td>
+                            <td>
+                                <button type="button" class="btn select-row btn-primary btn-sm" value="${row.embroidery_item_id}">
+                                    Apply
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                        });
+
+                        $('#table-body-id').html(tableBody);
+                    } else {
+                        alert('No data found');
+                    }
+                } catch (error) {
+                    console.error('Error parsing JSON:', error);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error:', error);
+            }
+        });
+    }
+</script>

@@ -2682,113 +2682,6 @@ if (isset($_POST['get_selected_cutting'])) {
 
 
 
-// if (isset($_POST['embroideryform'])) {
-// 	$embroidery_data = [
-// 		'transaction_id' => $_POST['transaction'],
-// 		'issuance_date' => $_POST['issuance_date'],
-// 		'lot_no' => $_POST['lot_no'],
-// 		'dyeing_lot' => $_POST['dyeing_lot'],
-// 		'manual_gp' => $_POST['manual_gp'],
-// 		'cutting_man' => $_POST['cutting_man'],
-// 		'sending_person' => $_POST['sending_person'],
-// 		'carrier_person' => $_POST['carrier_person'],
-// 		'carrier_contact' => $_POST['carrier_contact'],
-// 		'remarks' => $_POST['remarks'],
-// 		'program_id' => $_POST['program'], // Assuming a single program is selected
-// 		'emb_type' => $_POST['emb_type'],  // Assuming a single emb_type is selected
-// 		'location' => $_POST['location'],  // Assuming a single location is selected
-// 		'embroidery' => $_POST['embroidery'] // Assuming a single embroidery is selected
-// 	];
-
-// 	if (insert_data($dbc, "embroidery", $embroidery_data)) {
-// 		$embroidery_id = mysqli_insert_id($dbc);
-
-// 		$items_data = [];
-// 		$errors = [];
-// 		foreach ($_POST['pur_type'] as $key => $pur_type) {
-// 			// Skip empty rows (use any required field as a validator, e.g., `pur_type`)
-// 			if (empty($pur_type)) {
-// 				continue;
-// 			}
-
-// 			$quantity = (float)$_POST['qty'][$key];
-// 			$from_product_id = @$_POST['from_type'][$key];
-
-// 			if (!empty($from_product_id)) {
-// 				// Fetch the current stock for the from_type product
-// 				$from_quantity_result = mysqli_query($dbc, "SELECT quantity_instock FROM product WHERE product_id='$from_product_id'");
-// 				if ($from_quantity_result->num_rows > 0) {
-// 					$from_quantity_data = $from_quantity_result->fetch_assoc();
-// 					$from_quantity_instock = (float)$from_quantity_data['quantity_instock'];
-
-// 					// Check if there is enough stock
-// 					if ($quantity > $from_quantity_instock) {
-// 						$errors[] = "Insufficient stock for Product ID $from_product_id in row $key.";
-// 						continue; // Skip further processing for this row
-// 					}
-// 				} else {
-// 					$errors[] = "Product ID $from_product_id does not exist in the inventory for row $key.";
-// 					continue; // Skip further processing for this row
-// 				}
-// 			} else {
-// 				$errors[] = "From type is not specified for row $key.";
-// 				continue; // Skip further processing for this row
-// 			}
-
-// 			// Add the quantity to the selected product
-// 			$product_id = @$_POST['type'][$key];
-// 			$quantity_instock_result = mysqli_query($dbc, "SELECT quantity_instock FROM product WHERE product_id='$product_id'");
-// 			$quantity_instock_data = $quantity_instock_result->fetch_assoc();
-// 			$quantity_instock = (float)$quantity_instock_data['quantity_instock'];
-// 			$new_qty = $quantity_instock + $quantity;
-// 			mysqli_query($dbc, "UPDATE product SET quantity_instock='$new_qty' WHERE product_id='$product_id'");
-
-// 			// Subtract the quantity from the from_type product
-// 			$new_from_qty = $from_quantity_instock - $quantity;
-// 			mysqli_query($dbc, "UPDATE product SET quantity_instock='$new_from_qty' WHERE product_id='$from_product_id'");
-
-// 			// Collect the item data for insertion
-// 			$items_data[] = [
-// 				'embroidery_id' => $embroidery_id,
-// 				'pur_type' => $pur_type,
-// 				'from_product_type' => $from_product_id,
-// 				'product_id' => $product_id,
-// 				'thaan' => $_POST['thaan'][$key],
-// 				'qty_pur_thaan' => $_POST['pur_thaan'][$key],
-// 				'qty' => $quantity
-// 			];
-// 		}
-
-// 		// Insert items
-// 		foreach ($items_data as $item) {
-// 			if (!insert_data($dbc, "embroidery_items", $item)) {
-// 				$errors[] = "Error inserting item: " . mysqli_error($dbc);
-// 			}
-// 		}
-
-// 		// Response
-// 		if (empty($errors)) {
-// 			$response = [
-// 				'sts' => 'success',
-// 				'msg' => 'Embroidery and items added successfully.',
-// 			];
-// 		} else {
-// 			$response = [
-// 				'sts' => 'warning',
-// 				'msg' => 'Some items could not be added: ' . implode(", ", $errors),
-// 			];
-// 		}
-// 	} else {
-// 		$response = [
-// 			'sts' => 'warning',
-// 			'msg' => "Something went wrong: " . mysqli_error($dbc),
-// 		];
-// 	}
-
-// 	echo json_encode($response);
-// 	exit;
-// }
-
 
 if (isset($_POST['embroideryform'])) {
 	$embroidery_data = [
@@ -2914,4 +2807,42 @@ if (isset($_POST['embroideryform'])) {
 	header('Content-Type: application/json');
 	echo json_encode($response);
 	exit;
+}
+
+
+if (isset($_POST['get_embroidery_data'])) {
+	$id = $dbc->real_escape_string($_POST['get_embroidery_data']);
+	$cutting = [];
+
+	// Fetch data from the cutting table
+	$productData = mysqli_query($dbc, "SELECT * FROM embroidery WHERE to_location = '$id' AND status = 'sent'");
+	while ($product = mysqli_fetch_assoc($productData)) {
+		$cutting[] = $product;
+	}
+
+	if (!empty($cutting)) {
+		$embroideryItems = []; // Initialize an array for cutting items
+
+		foreach ($cutting as $cut) {
+			$cuttingId = $cut['embroidery_id']; // Assuming the primary key is cutting_id
+
+			$itemsData = mysqli_query($dbc, "SELECT * FROM embroidery_items WHERE embroidery_id = '$cuttingId'");
+			while ($item = mysqli_fetch_assoc($itemsData)) {
+				// Fetch product name from the product table
+				$productId = $item['product_id'];
+				$productNameQuery = mysqli_query($dbc, "SELECT product_name FROM product WHERE product_id = '$productId'");
+				$productNameResult = mysqli_fetch_assoc($productNameQuery);
+
+				// Add the product name to the cutting item
+				$item['product_name'] = $productNameResult['product_name'] ?? 'Unknown';
+
+				// Add the item to the embroideryItems array
+				$embroideryItems[] = $item;
+			}
+		}
+
+		echo json_encode(['success' => true, 'embroidery_items' => $embroideryItems]);
+	} else {
+		echo json_encode(['success' => false, 'data' => null]);
+	}
 }
