@@ -1844,25 +1844,25 @@ function fetchDyerData(dyerId) {
   }
 }
 
-function getBalance(partyId) {
-  if (partyId !== "") {
-    $("#hidden_party_id").val(partyId);
-    $.ajax({
-      url: "php_action/custom_action.php",
-      method: "POST",
-      data: { action: "get_balance", party_id: partyId },
-      success: function (response) {
-        $("#balance_amount").text(response === "" ? "0" : response);
-      },
-      error: function (xhr, status, error) {
-        console.error("Balance AJAX Error:", status, error);
-      },
-    });
-  } else {
-    $("#balance_amount").text("0");
-    $("#hidden_party_id").val("");
-  }
-}
+// function getBalance(partyId) {
+//   if (partyId !== "") {
+//     $("#hidden_party_id").val(partyId);
+//     $.ajax({
+//       url: "php_action/custom_action.php",
+//       method: "POST",
+//       data: { action: "getBalance", party_id: partyId },
+//       success: function (response) {
+//         $("#balance_amount").text(response === "" ? "0" : response);
+//       },
+//       error: function (xhr, status, error) {
+//         console.error("Balance AJAX Error:", status, error);
+//       },
+//     });
+//   } else {
+//     $("#balance_amount").text("0");
+//     $("#hidden_party_id").val("");
+//   }
+// }
 
 function getDyerData(partyId) {
   const productionId = document.getElementById("production_id_input").value;

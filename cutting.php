@@ -123,7 +123,7 @@
                                                 <label for="type">Product</label>
                                                 <div class="input-group">
                                                     <select class="form-control searchableSelect" name="from_type[]" id="from_type<?= $i ?>" onchange="getStock(this.value, <?= $i ?>)">
-                                                        <option disabled selected>Select Type</option>
+                                                        <option disabled selected>Select Product</option>
                                                         <?php
                                                         $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'dyed' OR brand_id = 'cora' AND status = 1");
                                                         while ($p = mysqli_fetch_assoc($products)) {
@@ -144,7 +144,8 @@
                                                     $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'cora_cutted' OR brand_id = 'dyed_cutted' AND status = 1");
                                                     while ($p = mysqli_fetch_assoc($products)) {
                                                     ?>
-                                                        <option value="<?= $p['product_id'] ?>"><?= ucwords($p['product_name']) ?> (<?= ucwords($p['brand_id']) ?>)</option>
+                                                        <option value="<?= $p['product_id'] ?>"><?= ucwords($p['product_name']) ?> (<?= isset($p['brand_id']) && strtolower($p['brand_id']) == 'cora_cutted' ? 'Cora Cutted' : 'Dyed Cutted' ?>)
+                                                        </option>
                                                     <?php } ?>
                                                 </select>
                                             </div>
