@@ -277,6 +277,7 @@
                                     <tr>
                                         <th>Purchase ID</th>
                                         <th>Purchase Date</th>
+                                        <th>Supplier</th>
                                         <th>Product</th>
                                         <th>Thaan</th>
                                         <th>Gzanah</th>
@@ -332,6 +333,7 @@
                         <tr>
                             <td>${row.purchase_id || ""}</td>
                             <td>${row.purchase_date || ""}</td>
+                            <td class="text-capitalize">${row.client_name || ""}</td>
                             <td>${row.product_name || ""}</td>
                             <td>${row.pur_thaan || ""}</td>
                             <td>${row.pur_gzanah || ""}</td>
