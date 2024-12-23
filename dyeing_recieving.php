@@ -131,12 +131,12 @@
 
                                     <div class="row mt-3 m-0 p-0">
 
-                                        <div class="col-lg-2 m-0 p-0 pl-1 row">
-                                            <div class="col-3 m-0 p-0 pl-1">
+                                        <div class="col-lg-3 m-0 p-0 pl-1 row">
+                                            <div class="col-1 m-0 p-0 pl-1">
                                                 <label>Sr</label>
                                                 <input type="text" class="form-control thaan" readonly value="">
                                             </div>
-                                            <div class="col-9 m-0 p-0 pl-1">
+                                            <div class="col-11 m-0 p-0 pl-1">
                                                 <label for="showProduct">Quality</label>
                                                 <div class="input-group">
                                                     <select class="form-control searchableSelect" required name="from_product[]" id="showProduct" onchange="getDyerStock(this.value)">
@@ -162,20 +162,20 @@
                                             </div>
                                         </div>
                                         <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label>Type</label>
-                                            <select class="form-control searchableSelect" name="pur_type_arr[]" id="pur_type_arr">
+                                            <label>Unit</label>
+                                            <select class="form-control searchableSelect" name="unit_arr[]" id="unit_arr">
                                                 <option disabled>Select Type</option>
                                                 <option value="meter">Meter</option>
                                                 <option value="yard">Yard</option>
                                                 <option value="others">Suit</option>
                                             </select>
-                                            <input type="hidden" name="pur_type" id="pur_type">
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label>Unit</label>
-                                            <input type="text" class="form-control thaan" name="unit_arr[]" placeholder="Thaan" id="unit_arr">
                                             <input type="hidden" name="unit" id="unit">
                                         </div>
+                                        <!-- <div class="col-lg-1 m-0 p-0 pl-1">
+                                            <label>Unit</label>
+                                            <input type="text" class="form-control thaan" name="unit_arr[]" placeholder="Thaan" id="unit_arr">
+                                            <input type="hidden" name="pur_type" id="pur_type">
+                                        </div> -->
                                         <div class="col-lg-1 m-0 p-0 pl-1">
                                             <label>Color</label>
                                             <input type="text" class="form-control thaan" name="color_arr[]" placeholder="Color">
@@ -200,6 +200,7 @@
                                             <label>Qty</label>
                                             <input type="text" class="form-control quantity" required name="qty_arr[]" value="0" placeholder="qty" id="qty_arr">
                                             <input type="hidden" name="qty" id="qty">
+                                            <input type="hidden" name="available_quantity" id="available_quantity">
                                         </div>
                                         <div class="col-lg-1 m-0 p-0 pl-1">
                                             <label>Suit</label>
@@ -531,6 +532,7 @@
             success: function(response) {
                 if (response.success) {
                     $("#from_account_bl").text(response.total_quantity);
+                    $("#available_quantity").val(response.total_quantity);
                     $("#qty_arr").attr("max", response.total_quantity);
                 } else {
                     console.error("Error: " + response.message);

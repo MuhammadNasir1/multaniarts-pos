@@ -2257,8 +2257,8 @@ if (isset($_POST['dyeing_recieving'])) {
 		'total_amount' => $_POST['total_amount'],
 		'thaan' => $_POST['thaan'],
 		'gzanah' => $_POST['gzanah'],
-		'quantity' => $_POST['qty'],
-		'quantity_instock' => $_POST['qty'],
+		'quantity' => $_POST['qty_arr'],
+		'quantity_instock' => $_POST['qty_arr'],
 		'lat_no' => $_POST['lot_no'],
 		'unit' => $_POST['unit'],
 		'transaction_id' => $_POST['transaction'],
@@ -2271,7 +2271,7 @@ if (isset($_POST['dyeing_recieving'])) {
 		'remarks' => $_POST['purchase_narration'],
 		'product_details' => json_encode([
 			"from_product" => $_POST['from_product'],
-			"pur_type_arr" => $_POST['pur_type_arr'],
+			"pur_type_arr" => @$_POST['pur_type_arr'],
 			"unit_arr" => $_POST['unit_arr'],
 			"color_arr" => $_POST['color_arr'],
 			"thaan_arr" => $_POST['thaan_arr'],
@@ -2285,7 +2285,7 @@ if (isset($_POST['dyeing_recieving'])) {
 
 	$location_type = $_POST['location_type'];
 	$dyeing_id = $_POST['recievied_dyeing'];
-	$requested_quantity = (float)$_POST['qty'];
+	$requested_quantity = (float)$_POST['qty_arr'];
 
 	// Update quantity in stock for dyeing
 	$query = "SELECT * FROM dyeing WHERE dyeing_id='$dyeing_id'";
