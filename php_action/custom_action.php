@@ -952,6 +952,7 @@ if (isset($_REQUEST['cash_purchase_supplier'])) {
 		'pur_rate' => $_REQUEST['product_price'],
 		'pur_gzanah' => $_REQUEST['pur_gzanah'],
 		'quantity' => $_REQUEST['quantity'],
+		'quantity_instock' => $_REQUEST['quantity'],
 		'discount' => $_REQUEST['ordered_discount'],
 		'due' => $_REQUEST['remaining_ammount']
 	];
