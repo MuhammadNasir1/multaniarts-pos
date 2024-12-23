@@ -175,7 +175,7 @@
                                             <select class="form-control searchableSelect" name="type[]" id="type<?= $i ?>">
                                                 <option disabled selected>Select Type</option>
                                                 <?php
-                                                $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'cora_cutted' OR brand_id = 'dyed_cutted' AND status = 1");
+                                                $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'embroidered' AND status = 1");
                                                 while ($p = mysqli_fetch_assoc($products)) {
                                                 ?>
                                                     <option value="<?= $p['product_id'] ?>"><?= ucwords($p['product_name']) ?> (<?= ucwords($p['brand_id']) ?>)</option>
