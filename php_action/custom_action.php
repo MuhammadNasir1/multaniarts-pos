@@ -1795,29 +1795,46 @@ if (isset($_POST['get_dyeing_data'])) {
 	$id = $dbc->real_escape_string($_POST['get_dyeing_data']);
 
 	$query = "
-        SELECT 
-            product.*, 
-            dyeing.*
-        FROM dyeing
-        INNER JOIN product 
-        ON product.product_id = dyeing.product_id
-        WHERE dyeing.to_location = '$id' 
-        AND dyeing.status = 'sent'  AND dyeing.quantity_instock != 0
-    ";
+    SELECT product.*, dyeing.* 
+    FROM dyeing
+    INNER JOIN product ON product.product_id = dyeing.product_id
+    WHERE dyeing.to_location = '$id' 
+      AND dyeing.status = 'sent' 
+      AND dyeing.quantity_instock > 0
+";
+
 
 	$result = mysqli_query($dbc, $query);
 
+	if (!$result) {
+		echo json_encode(['success' => false, 'error' => 'Query failed']);
+		exit;
+	}
+
 	$customers = [];
 	while ($row = $result->fetch_assoc()) {
+		$from_location_query = "
+            SELECT customer_name 
+            FROM customers 
+            WHERE customer_id = {$row['to_location']}
+        ";
+		$from_location_result = mysqli_query($dbc, $from_location_query);
+
+		if ($from_location_result && $from_location_data = $from_location_result->fetch_assoc()) {
+			$row['to_location_name'] = $from_location_data['customer_name'];
+		} else {
+			$row['to_location_name'] = null;
+		}
+
 		$customers[] = $row;
 	}
 
-	if (!empty($customers)) {
-		echo json_encode(['success' => true, 'data' => $customers]);
-	} else {
-		echo json_encode(['success' => false, 'data' => null]);
-	}
+	echo json_encode([
+		'success' => !empty($customers),
+		'data' => $customers,
+	]);
 }
+
 
 
 

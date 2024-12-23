@@ -280,6 +280,7 @@
                                     <tr>
                                         <th>Purchase ID</th>
                                         <th>Issuance Date</th>
+                                        <th>Dyer</th>
                                         <th>Product</th>
                                         <th>Thaan</th>
                                         <th>Gzanah</th>
@@ -328,25 +329,27 @@
                     let rowsHTML = "";
 
                     data.forEach(row => {
+                        const entryFrom = row.entry_from ? row.entry_from.replace('_', ' ') : ""; // Replace underscores
                         rowsHTML += `
-                    <tr>
-                        <td>${row.purchase_id || ""}</td>
-                        <td>${row.issuance_date || ""}</td>
-                        <td>${row.product_name || ""}</td>
-                        <td>${row.thaan || ""}</td>
-                        <td>${row.gzanah || ""}</td>
-                        <td>${row.quantity || ""}</td>
-                        <td>${row.rate || ""}</td>
-                        <td>${row.total_amount || ""}</td>
-                        <td>
-                            <button type="button" class="btn btn-primary btn-sm" 
-                                name="selected_purchase_id" 
-                                id="selected_purchase_id" 
-                                value="${row.dyeing_id || ""}" 
-                                onclick="getPurchase(this.value)">Apply</button>
-                        </td>
-                    </tr>
-                    `;
+        <tr>
+            <td>${row.purchase_id || ""}</td>
+            <td>${row.issuance_date || ""}</td>
+            <td class="text-capitalize">${row.to_location_name}</td>
+            <td>${row.product_name || ""}</td>
+            <td>${row.thaan || ""}</td>
+            <td>${row.gzanah || ""}</td>
+            <td>${row.quantity || ""}</td>
+            <td>${row.rate || ""}</td>
+            <td>${row.total_amount || ""}</td>
+            <td>
+                <button type="button" class="btn btn-primary btn-sm" 
+                    name="selected_purchase_id" 
+                    id="selected_purchase_id_${row.dyeing_id || ""}" 
+                    value="${row.dyeing_id || ""}" 
+                    onclick="getPurchase(this.value)">Apply</button>
+            </td>
+        </tr>
+    `;
                     });
 
                     $("#purchaseDetailsTable tbody").append(rowsHTML);
@@ -521,7 +524,7 @@
             url: "php_action/custom_action.php",
             type: "POST",
             data: {
-                get_dyer_stock: value,
+                get_dyer_stock: doneById,
                 done_by: doneById,
             },
             dataType: "json",
