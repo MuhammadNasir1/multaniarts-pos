@@ -2846,15 +2846,13 @@ if (isset($_POST['get_embroidery_data'])) {
 	$id = $dbc->real_escape_string($_POST['get_embroidery_data']);
 	$cutting = [];
 
-	// Fetch data from the cutting table
 	$productData = mysqli_query($dbc, "SELECT * FROM embroidery WHERE to_location = '$id'");
 	while ($product = mysqli_fetch_assoc($productData)) {
-		// Fetch customer_name from the customers table
-		$doneById = $product['done_by']; // Assuming 'done_by' is the customer ID in the embroidery table
+
+		$doneById = $product['done_by'];
 		$customerQuery = mysqli_query($dbc, "SELECT customer_name FROM customers WHERE customer_id = '$doneById'");
 		$customerResult = mysqli_fetch_assoc($customerQuery);
 
-		// Add customer_name to the embroidery data
 		$product['customer_name'] = $customerResult['customer_name'] ?? 'Unknown';
 
 		$cutting[] = $product;
