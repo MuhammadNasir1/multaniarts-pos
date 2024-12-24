@@ -28,10 +28,10 @@
                     <div class="card-body">
                     <?php } ?>
 
-                    <form action="php_action/custom_action.php" method="POST" id="embroidery_form">
+                    <form action="php_action/custom_action.php" method="POST" id="printing_form">
                         <input type="hidden" name="product_purchase_id" value="<?= @empty($_REQUEST['edit_purchase_id']) ? "" : base64_decode($_REQUEST['edit_purchase_id']) ?>">
                         <input type="hidden" name="payment_type" id="payment_type" value="credit_purchase">
-                        <input type="hidden" name="embroideryform" id="embroideryform" value="embroideryform">
+                        <input type="hidden" name="printingForm" id="embroideryform" value="embroideryform">
                         <input type="hidden" name="purchase_id" id="purchase_id" value="">
 
 
@@ -104,7 +104,7 @@
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label for="cutting_man">Cutting Man</label>
-                                <input type="text" placeholder="Cutting Man" value="" autocomplete="off" class="form-control " name="cutting_man" id="cutting_man">
+                                <input type="text" placeholder="Cutting Man" value="" autocomplete="off" class="form-control " name="printing_man" id="cutting_man">
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label for="sending_person">Sending Person</label>
@@ -159,7 +159,7 @@
                                                 <select class="form-control searchableSelect" name="from_type[]" id="from_type<?= $i ?>" onchange="getStock(this.value, <?= $i ?>)">
                                                     <option disabled selected>Select Type</option>
                                                     <?php
-                                                    $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'cora_cutted' OR brand_id = 'dyed_cutted' AND status = 1");
+                                                    $products = mysqli_query($dbc, "SELECT * FROM product WHERE  status = 1");
                                                     while ($p = mysqli_fetch_assoc($products)) {
                                                     ?>
                                                         <option value="<?= $p['product_id'] ?>"><?= ucwords($p['product_name']) ?> (<?= ucwords($p['brand_id']) ?>)</option>
@@ -234,7 +234,6 @@
                                             <tr>
                                                 <th>Product</th>
                                                 <th>Thaan</th>
-                                                <th>Gzanah</th>
                                                 <th>Quantity</th>
                                                 <th>Action</th>
                                             </tr>
@@ -285,6 +284,18 @@
 
         getCuttingDetails(cuttingID, currentId);
     });
+    $(document).on("click", ".select-row2", function() {
+        const cuttingID = $(this).val();
+        const currentId = $("#show_dyeing_details").data("currentId");
+
+        getPurchaseDetails(cuttingID, currentId);
+    });
+    $(document).on("click", ".select-row3", function() {
+        const cuttingID = $(this).val();
+        const currentId = $("#show_dyeing_details").data("currentId");
+
+        getDyeingDetails(cuttingID, currentId);
+    });
     // getDyeingDetails(dyeingId, currentId);
 
     function getTableData(location_id) {
@@ -292,35 +303,89 @@
             url: 'php_action/custom_action.php',
             type: 'POST',
             data: {
-                get_location_data: location_id
+                locations_data_get: location_id
             },
             dataType: 'text',
             success: function(response) {
                 try {
                     let jsonResponse = JSON.parse(response);
 
-                    if (jsonResponse.success && jsonResponse.cutting_items) {
+                    if (jsonResponse.success) {
                         let tableBody = '';
 
-                        jsonResponse.cutting_items.forEach(row => {
+                        // Add Cutting Items
+                        if (jsonResponse.cutting_items && jsonResponse.cutting_items.length > 0) {
                             tableBody += `
-                        <tr>
-                            <td>${row.purchase_id}</td>
-                            <td class="text-capitalize">${row.product_name}</td>
-                            <td>${row.thaan}</td>
-                            <td>${row.qty}</td>
-                            <td>
-                                <button type="button" class="btn select-row btn-primary btn-sm" value="${row.cutting_item_id}">
-                                    Apply
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                        });
+                            <tr>
+                                <td colspan="4" class="table-section-title text-center">Cutting Items</td>
+                            </tr>
+                        `;
+                            jsonResponse.cutting_items.forEach(row => {
+                                tableBody += `
+                                <tr>
+                                    <td class="text-capitalize">${row.product_name}</td>
+                                    <td>${row.thaan}</td>
+                                    <td>${row.quantity_instock}</td>
+                                    <td>
+                                        <button type="button" class="btn select-row btn-primary btn-sm" value="${row.cutting_item_id}">
+                                            Apply
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                            });
+                        }
 
+                        // Add Purchase Items
+                        if (jsonResponse.purchase_items && jsonResponse.purchase_items.length > 0) {
+                            tableBody += `
+                            <tr>
+                                <td colspan="4" class="table-section-title text-center">Purchase Items</td>
+                            </tr>
+                        `;
+                            jsonResponse.purchase_items.forEach(row => {
+                                tableBody += `
+                                <tr>
+                                <td class="text-capitalize">${row.product_name}</td>
+                                    <td>${row.pur_thaan}</td>
+                                    <td>${row.quantity_instock}</td>
+                                    <td>
+                                        <button type="button" class="btn select-row2 btn-success btn-sm" value="${row.purchase_id}">
+                                            Apply
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                            });
+                        }
+
+                        // Add Dyeing Items
+                        if (jsonResponse.dyeing_items && jsonResponse.dyeing_items.length > 0) {
+                            tableBody += `
+                            <tr>
+                                <td colspan="4" class="table-section-title text-center">Dyeing Items</td>
+                            </tr>
+                        `;
+                            jsonResponse.dyeing_items.forEach(row => {
+                                tableBody += `
+                                <tr>
+                                <td class="text-capitalize">${row.product_name}</td>
+                                    <td>${row.thaan}</td>
+                                    <td>${row.quantity_instock}</td>
+                                    <td>
+                                        <button type="button" class="btn select-row3 btn-warning btn-sm" value="${row.dyeing_id}">
+                                            Apply
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                            });
+                        }
+
+                        // Update Table Body
                         $('#table-body-id').html(tableBody);
                     } else {
-                        alert('No data found');
+                        $('#table-body-id').html('<tr><td colspan="5">No data found</td></tr>');
                     }
                 } catch (error) {
                     console.error('Error parsing JSON:', error);
@@ -332,8 +397,9 @@
         });
     }
 
+
     $(document).ready(function() {
-        $('#embroidery_form').on('submit', function(event) {
+        $('#printing_form').on('submit', function(event) {
             event.preventDefault(); // Prevent form default submission
 
             let formData = $(this).serialize();
@@ -355,7 +421,7 @@
                             location.reload();
                         });
 
-                        $('#embroidery_form')[0].reset();
+                        $('#printing_form')[0].reset();
                     } else {
                         Swal.fire({
                             icon: 'warning',
@@ -405,6 +471,79 @@
                     row.find('[name="r_khata[]"]').val(data.r_khata || '');
                     row.find('[name="small_cp[]"]').val(data.small_cp || '');
                     row.find('[name="color[]"]').val(data.color || '');
+
+                    $("#lot_no").val(data.lot_no);
+                    $("#dyeing_lot").val(data.d_lat_no);
+                    $("#purchase_id").val(data.purchase_id);
+                    $("#show_dyeing_details").modal("hide");
+                } else {
+                    console.error("Failed to fetch dyeing details:", response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+            }
+        });
+    }
+
+    function getPurchaseDetails(cuttingID, currentId) {
+        $.ajax({
+            url: 'php_action/custom_action.php',
+            type: 'POST',
+            data: {
+                purchase_selected: cuttingID
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    const data = response.data;
+
+                    const row = $(`#${currentId}`); // Get the current row using currentId
+
+                    // Fill in the fields with the response data
+                    row.find('[name="pur_type[]"]').val(data.pur_type || '').change();
+                    row.find('[name="from_type[]"]').val(data.product_id || '').change();
+                    row.find('[name="thaan[]"]').val(data.pur_thaan || '');
+                    row.find('[name="pur_thaan[]"]').val(data.qty_pur_thaan || '');
+                    row.find('[name="qty[]"]').val(data.quantity_instock || '');
+
+                    $("#lot_no").val(data.lot_no);
+                    $("#dyeing_lot").val(data.d_lat_no);
+                    $("#purchase_id").val(data.purchase_id);
+                    $("#show_dyeing_details").modal("hide");
+                } else {
+                    console.error("Failed to fetch dyeing details:", response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+            }
+        });
+    }
+
+    function getDyeingDetails(cuttingID, currentId) {
+        $.ajax({
+            url: 'php_action/custom_action.php',
+            type: 'POST',
+            data: {
+                dyeing_selected: cuttingID
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    const data = response.data;
+
+                    const row = $(`#${currentId}`); // Get the current row using currentId
+
+                    // Fill in the fields with the response data
+                    row.find('[name="lat_no[]"]').val(data.lot_no || '');
+                    row.find('[name="d_lot_no[]"]').val(data.d_lat_no || '');
+                    row.find('[name="pur_type[]"]').val(data.unit || '').change();
+                    row.find('[name="from_type[]"]').val(data.product_id || '').change();
+                    row.find('[name="thaan[]"]').val(data.thaan || '');
+                    let details = JSON.parse(data.product_details);
+                    row.find('[name="pur_type[]"]').val(details.unit_arr || '');
+                    row.find('[name="qty[]"]').val(data.quantity_instock || '');
 
                     $("#lot_no").val(data.lot_no);
                     $("#dyeing_lot").val(data.d_lat_no);
