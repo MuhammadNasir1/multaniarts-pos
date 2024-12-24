@@ -1765,18 +1765,19 @@ if (isset($_POST['location_type_get'])) {
 
 if (isset($_POST['get_purchase_data'])) {
 	$id = $dbc->real_escape_string($_POST['get_purchase_data']);
-
 	$customer_data = mysqli_query($dbc, "
-        SELECT purchase.*, product.product_name 
-        FROM purchase 
-        LEFT JOIN product ON purchase.product_id = product.product_id 
-        WHERE purchase.pur_location = '$id' 
-          AND purchase.purchase_id NOT IN (
-              SELECT purchase_id 
-              FROM dyeing 
-              WHERE status = 'sent' And entry_from = 'purchase'
-          )
-    ");
+    SELECT purchase.*, product.product_name 
+    FROM purchase 
+    LEFT JOIN product ON purchase.product_id = product.product_id 
+    WHERE purchase.pur_location = '$id' 
+    AND purchase.purchase_id NOT IN (
+        SELECT purchase_id 
+        FROM dyeing 
+        WHERE status = 'sent' AND entry_from = 'purchase'
+    )
+    AND (purchase.quantity_instock IS NOT NULL AND purchase.quantity_instock != '' AND purchase.quantity_instock > 0)
+");
+
 
 	$customers = [];
 	while ($row = $customer_data->fetch_assoc()) {
@@ -1894,9 +1895,11 @@ if (isset($_POST['get_selected_dyeing'])) {
 }
 
 if (isset($_POST['dyeing_issuance_form'])) {
+
+
 	$json_data = [
 		"from_product" => $_POST['from_product'],
-		"pur_type_arr" => $_POST['pur_type_arr'],
+		"pur_type_arr" => @$_POST['pur_type_arr'],
 		"unit_arr" => $_POST['unit_arr'],
 		"color_arr" => $_POST['color_arr'],
 		"thaan_arr" => $_POST['thaan_arr'],
@@ -1951,7 +1954,10 @@ if (isset($_POST['dyeing_issuance_form'])) {
 		$quantity_update = mysqli_query($dbc, "UPDATE product SET quantity_instock='$new_qty' WHERE product_id='$product_id'");
 		$t = $_POST['location_type'];
 	}
-
+	$qua = $_POST['dyeing_issuance_purchase'];
+	$previous = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT quantity_instock FROM purchase WHERE purchase_id = '$qua'"));
+	$qty_update = (float) $previous - $requested_quantity;
+	$quantity_update = mysqli_query($dbc, "UPDATE purchase SET quantity_instock='$new_qty' WHERE purchase_id='$qua'");
 
 	if (insert_data($dbc, "dyeing", $data)) {
 		$response = [
@@ -1969,6 +1975,7 @@ if (isset($_POST['dyeing_issuance_form'])) {
 
 	echo json_encode($response);
 }
+
 
 // if (isset($_POST['dyeing_recieving'])) {
 // 	$json_data = [

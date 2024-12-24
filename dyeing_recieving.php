@@ -433,6 +433,7 @@
                     $("#thaan_arr").val(response.data.thaan)
                     $("#thaan").val(response.data.thaan)
                     $("#qty_arr").val(response.data.quantity)
+                    $("#qty_arr").attr("max", response.data.quantity);
                     $("#qty").val(response.data.quantity)
                     $("#gzanah_arr").val(response.data.gzanah)
                     $("#gzanah").val(response.data.gzanah)

@@ -158,20 +158,20 @@
                                             </div>
                                         </div>
                                         <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label>Type</label>
-                                            <select class="form-control searchableSelect" name="pur_type_arr[]" id="pur_type_arr">
+                                            <label>Unit</label>
+                                            <select class="form-control searchableSelect" name="unit_arr[]" id="unit_arr">
                                                 <option disabled>Select Type</option>
                                                 <option value="meter">Meter</option>
                                                 <option value="yard">Yard</option>
                                                 <option value="others">Suit</option>
                                             </select>
-                                            <input type="hidden" name="pur_type" id="pur_type">
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label>Unit</label>
-                                            <input type="text" class="form-control thaan" name="unit_arr[]" placeholder="Thaan" id="unit_arr">
                                             <input type="hidden" name="unit" id="unit">
                                         </div>
+                                        <!-- <div class="col-lg-1 m-0 p-0 pl-1">
+                                            <label>Unit</label>
+                                            <input type="text" class="form-control thaan" name="unit_arr[]" placeholder="Thaan" id="unit_arr">
+                                            <input type="hidden" name="pur_type" id="pur_type">
+                                        </div> -->
                                         <div class="col-lg-1 m-0 p-0 pl-1">
                                             <label>Color</label>
                                             <input type="text" class="form-control thaan" name="color_arr[]" placeholder="Color">
@@ -196,11 +196,13 @@
                                             <label>Qty</label>
                                             <input type="number" class="form-control quantity" required name="qty_arr[]" value="0" placeholder="qty" id="qty_arr">
                                             <input type="hidden" name="qty" id="qty">
+                                            <input type="hidden" name="available_quantity" id="available_quantity">
                                         </div>
                                         <div class="col-lg-1 m-0 p-0 pl-1">
                                             <label>Suit</label>
                                             <input type="text" class="form-control thaan" name="suit_arr[]" placeholder="Suit">
                                             <input type="hidden" name="suit" id="suit">
+
                                         </div>
 
                                         <div class="col-lg-1 m-0 p-0 pl-1">
@@ -337,7 +339,7 @@
                             <td>${row.product_name || ""}</td>
                             <td>${row.pur_thaan || ""}</td>
                             <td>${row.pur_gzanah || ""}</td>
-                            <td>${row.quantity || ""}</td>
+                            <td>${row.quantity_instock || ""}</td>
                             <td>${row.grand_total || ""}</td>
                             <td>${row.paid || ""}</td>
                             <td>${row.due || ""}</td>
@@ -446,16 +448,16 @@
                     $("#unit").val(response.data.pur_type)
                     $("#thaan_arr").val(response.data.pur_thaan)
                     $("#thaan").val(response.data.pur_thaan)
-                    $("#qty_arr").val(response.data.quantity)
-                    $("#qty").val(response.data.quantity)
                     $("#pur_type_arr").val(response.data.pur_type)
                     $("#pur_type").val(response.data.pur_type)
                     $("#gzanah_arr").val(response.data.pur_gzanah)
                     $("#gzanah").val(response.data.pur_gzanah)
                     $("#rate").text(response.data.pur_rate)
                     $("#rateInput").val(response.data.pur_rate)
-                    $("#total_amount").text(response.data.pur_rate * response.data.quantity);
-                    $("#totalAmountInput").val(response.data.pur_rate * response.data.quantity);
+                    $("#total_amount").text(response.data.pur_rate * response.data.quantity_instock);
+                    $("#totalAmountInput").val(response.data.pur_rate * response.data.quantity_instock);
+                    $("#available_quantity").val(response.total_quantity);
+
 
                     $("#detailModalClose").click();
                 }
@@ -529,6 +531,32 @@
             error: function(xhr, status, error) {
                 console.error("AJAX Error: " + status + error);
             }
+        });
+    }
+
+    function getStock(value) {
+        $.ajax({
+            url: "php_action/custom_action.php",
+            type: "POST",
+            data: {
+                get_stock: value,
+            },
+            dataType: "json",
+            success: function(response) {
+                if (response.success) {
+                    // $("#get_location_type").val(response.data.customer_type);
+                    console.log(response.data);
+                    $("#from_account_bl").text(response.data.quantity_instock);
+                    $("#available_quantity").val(response.data.quantity_instock);
+                    $("#qty_arr").attr("max", response.data.quantity_instock);
+                    $("#qty_arr").val(response.data.quantity_instock)
+                    $("#qty").val(response.data.quantity_instock)
+                    $("#product_id").val($("#showProduct").val());
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error: " + status + error);
+            },
         });
     }
 </script>

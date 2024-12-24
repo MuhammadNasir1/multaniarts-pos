@@ -1907,27 +1907,4 @@ function getDyerData(partyId) {
 //   }
 // }
 
-function getStock(value) {
-  $.ajax({
-    url: "php_action/custom_action.php",
-    type: "POST",
-    data: {
-      get_stock: value,
-    },
-    dataType: "json",
-    success: function (response) {
-      if (response.success) {
-        // $("#get_location_type").val(response.data.customer_type);
-        console.log(response.data);
-        $("#from_account_bl").text(response.data.quantity_instock);
-        $("#qty_arr").attr("max", response.data.quantity_instock);
-        $("#product_id").val($("#showProduct").val());
-      }
-    },
-    error: function (xhr, status, error) {
-      console.error("AJAX Error: " + status + error);
-    },
-  });
-}
-
 // Add
