@@ -220,7 +220,7 @@
                         <div class="modal-dialog modal-lg" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLongTitle">Dyeing Details</h5>
+                                    <h5 class="modal-title" id="exampleModalLongTitle">Cutting Details</h5>
                                     <input type="text" id="tableSearchInput" class="form-control ml-3" placeholder="Search Here" style="width: 50%;">
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="detailModalClose">
                                         <span aria-hidden="true">&times;</span>
