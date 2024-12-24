@@ -1844,25 +1844,25 @@ function fetchDyerData(dyerId) {
   }
 }
 
-function getBalance(partyId) {
-  if (partyId !== "") {
-    $("#hidden_party_id").val(partyId);
-    $.ajax({
-      url: "php_action/custom_action.php",
-      method: "POST",
-      data: { action: "get_balance", party_id: partyId },
-      success: function (response) {
-        $("#balance_amount").text(response === "" ? "0" : response);
-      },
-      error: function (xhr, status, error) {
-        console.error("Balance AJAX Error:", status, error);
-      },
-    });
-  } else {
-    $("#balance_amount").text("0");
-    $("#hidden_party_id").val("");
-  }
-}
+// function getBalance(partyId) {
+//   if (partyId !== "") {
+//     $("#hidden_party_id").val(partyId);
+//     $.ajax({
+//       url: "php_action/custom_action.php",
+//       method: "POST",
+//       data: { action: "getBalance", party_id: partyId },
+//       success: function (response) {
+//         $("#balance_amount").text(response === "" ? "0" : response);
+//       },
+//       error: function (xhr, status, error) {
+//         console.error("Balance AJAX Error:", status, error);
+//       },
+//     });
+//   } else {
+//     $("#balance_amount").text("0");
+//     $("#hidden_party_id").val("");
+//   }
+// }
 
 function getDyerData(partyId) {
   const productionId = document.getElementById("production_id_input").value;
@@ -1906,52 +1906,5 @@ function getDyerData(partyId) {
 //     });
 //   }
 // }
-
-function getStock(value) {
-  $.ajax({
-    url: "php_action/custom_action.php",
-    type: "POST",
-    data: {
-      get_stock: value,
-    },
-    dataType: "json",
-    success: function (response) {
-      if (response.success) {
-        // $("#get_location_type").val(response.data.customer_type);
-        console.log(response.data);
-        $("#from_account_bl").text(response.data.quantity_instock);
-        $("#qty_arr").attr("max", response.data.quantity_instock);
-        $("#product_id").val($("#showProduct").val());
-      }
-    },
-    error: function (xhr, status, error) {
-      console.error("AJAX Error: " + status + error);
-    },
-  });
-}
-function getDyerStock(value) {
-  const doneById = $("#form_location").val();
-
-  $.ajax({
-    url: "php_action/custom_action.php",
-    type: "POST",
-    data: {
-      get_dyer_stock: value,
-      done_by: doneById,
-    },
-    dataType: "json",
-    success: function (response) {
-      if (response.success) {
-        $("#from_account_bl").text(response.total_quantity);
-        $("#qty_arr").attr("max", response.total_quantity);
-      } else {
-        console.error("Error: " + response.message);
-      }
-    },
-    error: function (xhr, status, error) {
-      console.error("AJAX Error: " + status + error);
-    },
-  });
-}
 
 // Add

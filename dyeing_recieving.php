@@ -51,7 +51,7 @@
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label>Date</label>
-                                <input type="date" name="issuance_date" required id="issuance_date" value="" class="form-control">
+                                <input type="date" name="issuance_date" required id="issuance_date" value="<?= date('Y-m-d') ?>" class="form-control">
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label>Gate Pass #</label>
@@ -122,7 +122,8 @@
                                 <label>Remarks</label>
                                 <textarea placeholder="Remarks Here" autocomplete="off" class="form-control" name="purchase_narration" id="" cols="30" rows="3"><?= @$fetchPurchase['purchase_narration'] ?></textarea>
                             </div>
-                        </div> <!-- end of form-group -->
+                        </div>
+
 
                         <div class="row m-0 ">
                             <div id="voucher_rows_container2">
@@ -130,12 +131,12 @@
 
                                     <div class="row mt-3 m-0 p-0">
 
-                                        <div class="col-lg-2 m-0 p-0 pl-1 row">
-                                            <div class="col-3 m-0 p-0 pl-1">
+                                        <div class="col-lg-3 m-0 p-0 pl-1 row">
+                                            <div class="col-1 m-0 p-0 pl-1">
                                                 <label>Sr</label>
                                                 <input type="text" class="form-control thaan" readonly value="">
                                             </div>
-                                            <div class="col-9 m-0 p-0 pl-1">
+                                            <div class="col-11 m-0 p-0 pl-1">
                                                 <label for="showProduct">Quality</label>
                                                 <div class="input-group">
                                                     <select class="form-control searchableSelect" required name="from_product[]" id="showProduct" onchange="getDyerStock(this.value)">
@@ -161,20 +162,20 @@
                                             </div>
                                         </div>
                                         <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label>Type</label>
-                                            <select class="form-control searchableSelect" name="pur_type_arr[]" id="pur_type_arr">
+                                            <label>Unit</label>
+                                            <select class="form-control searchableSelect" name="unit_arr[]" id="unit_arr">
                                                 <option disabled>Select Type</option>
                                                 <option value="meter">Meter</option>
                                                 <option value="yard">Yard</option>
                                                 <option value="others">Suit</option>
                                             </select>
-                                            <input type="hidden" name="pur_type" id="pur_type">
-                                        </div>
-                                        <div class="col-lg-1 m-0 p-0 pl-1">
-                                            <label>Unit</label>
-                                            <input type="text" class="form-control thaan" name="unit_arr[]" placeholder="Thaan" id="unit_arr">
                                             <input type="hidden" name="unit" id="unit">
                                         </div>
+                                        <!-- <div class="col-lg-1 m-0 p-0 pl-1">
+                                            <label>Unit</label>
+                                            <input type="text" class="form-control thaan" name="unit_arr[]" placeholder="Thaan" id="unit_arr">
+                                            <input type="hidden" name="pur_type" id="pur_type">
+                                        </div> -->
                                         <div class="col-lg-1 m-0 p-0 pl-1">
                                             <label>Color</label>
                                             <input type="text" class="form-control thaan" name="color_arr[]" placeholder="Color">
@@ -199,6 +200,7 @@
                                             <label>Qty</label>
                                             <input type="text" class="form-control quantity" required name="qty_arr[]" value="0" placeholder="qty" id="qty_arr">
                                             <input type="hidden" name="qty" id="qty">
+                                            <input type="hidden" name="available_quantity" id="available_quantity">
                                         </div>
                                         <div class="col-lg-1 m-0 p-0 pl-1">
                                             <label>Suit</label>
@@ -279,6 +281,7 @@
                                     <tr>
                                         <th>Purchase ID</th>
                                         <th>Issuance Date</th>
+                                        <th>Dyer</th>
                                         <th>Product</th>
                                         <th>Thaan</th>
                                         <th>Gzanah</th>
@@ -327,25 +330,27 @@
                     let rowsHTML = "";
 
                     data.forEach(row => {
+                        const entryFrom = row.entry_from ? row.entry_from.replace('_', ' ') : ""; // Replace underscores
                         rowsHTML += `
-                    <tr>
-                        <td>${row.purchase_id || ""}</td>
-                        <td>${row.issuance_date || ""}</td>
-                        <td>${row.product_name || ""}</td>
-                        <td>${row.thaan || ""}</td>
-                        <td>${row.gzanah || ""}</td>
-                        <td>${row.quantity || ""}</td>
-                        <td>${row.rate || ""}</td>
-                        <td>${row.total_amount || ""}</td>
-                        <td>
-                            <button type="button" class="btn btn-primary btn-sm" 
-                                name="selected_purchase_id" 
-                                id="selected_purchase_id" 
-                                value="${row.dyeing_id || ""}" 
-                                onclick="getPurchase(this.value)">Apply</button>
-                        </td>
-                    </tr>
-                    `;
+        <tr>
+            <td>${row.purchase_id || ""}</td>
+            <td>${row.issuance_date || ""}</td>
+            <td class="text-capitalize">${row.to_location_name}</td>
+            <td>${row.product_name || ""}</td>
+            <td>${row.thaan || ""}</td>
+            <td>${row.gzanah || ""}</td>
+            <td>${row.quantity || ""}</td>
+            <td>${row.rate || ""}</td>
+            <td>${row.total_amount || ""}</td>
+            <td>
+                <button type="button" class="btn btn-primary btn-sm" 
+                    name="selected_purchase_id" 
+                    id="selected_purchase_id_${row.dyeing_id || ""}" 
+                    value="${row.dyeing_id || ""}" 
+                    onclick="getPurchase(this.value)">Apply</button>
+            </td>
+        </tr>
+    `;
                     });
 
                     $("#purchaseDetailsTable tbody").append(rowsHTML);
@@ -428,6 +433,7 @@
                     $("#thaan_arr").val(response.data.thaan)
                     $("#thaan").val(response.data.thaan)
                     $("#qty_arr").val(response.data.quantity)
+                    $("#qty_arr").attr("max", response.data.quantity);
                     $("#qty").val(response.data.quantity)
                     $("#gzanah_arr").val(response.data.gzanah)
                     $("#gzanah").val(response.data.gzanah)
@@ -512,4 +518,30 @@
         const selectedValue = $(this).val();
         $("#product_id").val(selectedValue);
     });
+
+    function getDyerStock(value) {
+        const doneById = $("#form_location").val();
+
+        $.ajax({
+            url: "php_action/custom_action.php",
+            type: "POST",
+            data: {
+                get_dyer_stock: doneById,
+                done_by: doneById,
+            },
+            dataType: "json",
+            success: function(response) {
+                if (response.success) {
+                    $("#from_account_bl").text(response.total_quantity);
+                    $("#available_quantity").val(response.total_quantity);
+                    $("#qty_arr").attr("max", response.total_quantity);
+                } else {
+                    console.error("Error: " + response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error: " + status + error);
+            },
+        });
+    }
 </script>
