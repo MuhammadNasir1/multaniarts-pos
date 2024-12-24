@@ -263,6 +263,7 @@
                                     <table class="table table-bordered" id="purchaseDetailsTable">
                                         <thead>
                                             <tr>
+                                                <th>Embroidery</th>
                                                 <th>Product</th>
                                                 <th>Thaan</th>
                                                 <th>Unit</th>
@@ -334,6 +335,7 @@
                         jsonResponse.embroidery_items.forEach(row => {
                             tableBody += `
                         <tr>
+                            <td class="text-capitalize">${row.customer_name}</td>
                             <td class="text-capitalize">${row.product_name}</td>
                             <td>${row.thaan}</td>
                             <td class="text-capitalize">${row.unit}</td>

@@ -140,7 +140,7 @@
                                             <div class="col-lg-5 m-0 mt-1 p-0 pl-3">
                                                 <button type="button" class="btn select_dyeing  mt-4 btn-primary btn-sm"
                                                     name="select_dyeing"
-                                                    id="select_dyeing"> Select Dyeing </button>
+                                                    id="select_dyeing"> Select Cutting </button>
                                             </div>
 
                                         </div>
@@ -232,16 +232,16 @@
                                     <table class="table table-bordered" id="purchaseDetailsTable">
                                         <thead>
                                             <tr>
+                                                <th>Done By</th>
                                                 <th>Product</th>
                                                 <th>Thaan</th>
-                                                <th>Gzanah</th>
                                                 <th>Quantity</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody id="table-body-id">
                                             <tr>
-                                                <td colspan="8" class="text-center">Select Cutting Man First</td>
+                                                <td colspan="8" class="text-center">Select Location First</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -305,7 +305,7 @@
                         jsonResponse.cutting_items.forEach(row => {
                             tableBody += `
                         <tr>
-                            <td>${row.purchase_id}</td>
+                            <td class="text-capitalize">${row.customer_name}</td>
                             <td class="text-capitalize">${row.product_name}</td>
                             <td>${row.thaan}</td>
                             <td>${row.qty}</td>

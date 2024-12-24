@@ -99,7 +99,7 @@
                                                 <div class="col-lg-5 m-0 mt-1 p-0 pl-3 row">
                                                     <button type="button" class="btn select_dyeing  mt-4 btn-primary btn-sm"
                                                         name="select_dyeing"
-                                                        id="select_dyeing"> Select Dyeing </button>
+                                                        id="select_dyeing"> Select</button>
                                                 </div>
                                                 <div class="col-lg-5 m-0 p-0">
                                                     <label for="lat_no">Lot No</label>
@@ -224,10 +224,10 @@
             </div>
 
             <div class="modal fade" id="show_dyeing_details" tabindex="-1" role="dialog" aria-labelledby="defaultModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-dialog modal-xl" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLongTitle">Dyeing Details</h5>
+                            <h5 class="modal-title" id="exampleModalLongTitle">Dyeing & Purchase Details</h5>
                             <input type="text" id="tableSearchInput" class="form-control ml-3" placeholder="Search Here" style="width: 50%;">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="detailModalClose">
                                 <span aria-hidden="true">&times;</span>
@@ -247,12 +247,13 @@
                                         <th>Quantity</th>
                                         <th>Total</th>
                                         <th>Type</th>
+                                        <th>Supplier OR Dyer</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="table-body-id">
                                     <tr>
-                                        <td colspan="8" class="text-center">Select Cutting Man First</td>
+                                        <td colspan="10" class="text-center">Select Cutting Man First</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -470,6 +471,7 @@
                                 <td>${row.quantity}</td>
                                 <td>${row.total_amount}</td>
                                 <td>Purchase</td>
+                                <td class="text-capitalize">${row.client_name}</td>
                                 <td>
                                     <button type="button" class="btn select-row-purchase btn-primary btn-sm" value="${row.purchase_id}">Apply</button>
                                 </td>
