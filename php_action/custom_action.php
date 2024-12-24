@@ -2656,29 +2656,33 @@ if (isset($_POST['get_location_data'])) {
 	$id = $dbc->real_escape_string($_POST['get_location_data']);
 	$cutting = [];
 
-	// Fetch data from the cutting table
 	$productData = mysqli_query($dbc, "SELECT * FROM cutting WHERE cutting_man = '$id'");
 	while ($product = mysqli_fetch_assoc($productData)) {
+		$doneById = $product['done_by'];
+		$customerQuery = mysqli_query($dbc, "SELECT customer_name FROM customers WHERE customer_id = '$doneById'");
+		$customerResult = mysqli_fetch_assoc($customerQuery);
+
+		$product['customer_name'] = $customerResult['customer_name'] ?? 'Unknown';
+
 		$cutting[] = $product;
 	}
 
 	if (!empty($cutting)) {
-		$cuttingItems = []; // Initialize an array for cutting items
+		$cuttingItems = [];
 
 		foreach ($cutting as $cut) {
-			$cuttingId = $cut['cutting_id']; // Assuming the primary key is cutting_id
+			$cuttingId = $cut['cutting_id'];
 
 			$itemsData = mysqli_query($dbc, "SELECT * FROM cutting_items WHERE cutting_id = '$cuttingId'");
 			while ($item = mysqli_fetch_assoc($itemsData)) {
-				// Fetch product name from the product table
 				$productId = $item['product_id'];
 				$productNameQuery = mysqli_query($dbc, "SELECT product_name FROM product WHERE product_id = '$productId'");
 				$productNameResult = mysqli_fetch_assoc($productNameQuery);
 
-				// Add the product name to the cutting item
 				$item['product_name'] = $productNameResult['product_name'] ?? 'Unknown';
 
-				// Add the item to the cuttingItems array
+				$item['customer_name'] = $cut['customer_name'];
+
 				$cuttingItems[] = $item;
 			}
 		}
@@ -2688,6 +2692,7 @@ if (isset($_POST['get_location_data'])) {
 		echo json_encode(['success' => false, 'data' => null]);
 	}
 }
+
 
 if (isset($_POST['get_selected_cutting'])) {
 	$id = $dbc->real_escape_string($_POST['get_selected_cutting']);
@@ -2837,7 +2842,6 @@ if (isset($_POST['embroideryform'])) {
 	exit;
 }
 
-
 if (isset($_POST['get_embroidery_data'])) {
 	$id = $dbc->real_escape_string($_POST['get_embroidery_data']);
 	$cutting = [];
@@ -2845,26 +2849,33 @@ if (isset($_POST['get_embroidery_data'])) {
 	// Fetch data from the cutting table
 	$productData = mysqli_query($dbc, "SELECT * FROM embroidery WHERE to_location = '$id'");
 	while ($product = mysqli_fetch_assoc($productData)) {
+		// Fetch customer_name from the customers table
+		$doneById = $product['done_by']; // Assuming 'done_by' is the customer ID in the embroidery table
+		$customerQuery = mysqli_query($dbc, "SELECT customer_name FROM customers WHERE customer_id = '$doneById'");
+		$customerResult = mysqli_fetch_assoc($customerQuery);
+
+		// Add customer_name to the embroidery data
+		$product['customer_name'] = $customerResult['customer_name'] ?? 'Unknown';
+
 		$cutting[] = $product;
 	}
 
 	if (!empty($cutting)) {
-		$embroideryItems = []; // Initialize an array for cutting items
+		$embroideryItems = [];
 
 		foreach ($cutting as $cut) {
-			$cuttingId = $cut['embroidery_id']; // Assuming the primary key is cutting_id
+			$cuttingId = $cut['embroidery_id'];
 
 			$itemsData = mysqli_query($dbc, "SELECT * FROM embroidery_items WHERE embroidery_id = '$cuttingId' AND status = 'sent'");
 			while ($item = mysqli_fetch_assoc($itemsData)) {
-				// Fetch product name from the product table
 				$productId = $item['product_id'];
 				$productNameQuery = mysqli_query($dbc, "SELECT product_name FROM product WHERE product_id = '$productId'");
 				$productNameResult = mysqli_fetch_assoc($productNameQuery);
 
-				// Add the product name to the cutting item
 				$item['product_name'] = $productNameResult['product_name'] ?? 'Unknown';
 
-				// Add the item to the embroideryItems array
+				$item['customer_name'] = $cut['customer_name'];
+
 				$embroideryItems[] = $item;
 			}
 		}
@@ -2874,6 +2885,8 @@ if (isset($_POST['get_embroidery_data'])) {
 		echo json_encode(['success' => false, 'data' => null]);
 	}
 }
+
+
 
 if (isset($_POST['get_selected_embroidery'])) {
 	$id = $dbc->real_escape_string($_POST['get_selected_embroidery']);
