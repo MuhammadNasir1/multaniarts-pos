@@ -69,12 +69,7 @@ $btn_name = isset($_REQUEST['edit_product_id']) ? "Update" : "Add";
                         <option value="printed">Printed Product</option>
                         <option value="cora_cutted">Cora-Cutted Product</option>
                         <option value="dyed_cutted">Dyed-Cutted Product</option>
-<<<<<<< HEAD
-                        <option value="embroidered">Embroidered Product</option>
-                        <option value="suit">Suit Product</option>
-=======
                         <option value="embroidered">Embroidered</option>
->>>>>>> 68f92ff49b68a9e5dd81008e8a052afb7328ca84
                       </select>
                     </div>
                     <!-- <div class="pl-3">

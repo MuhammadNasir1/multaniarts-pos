@@ -406,8 +406,7 @@
                     row.find('[name="small_cp[]"]').val(data.small_cp || '');
                     row.find('[name="color[]"]').val(data.color || '');
 
-                    $("#lot_no").val(data.lot_no);
-                    $("#dyeing_lot").val(data.d_lat_no);
+
                     $("#purchase_id").val(data.purchase_id);
                     $("#show_dyeing_details").modal("hide");
                 } else {

@@ -175,7 +175,7 @@
                                             <select class="form-control searchableSelect" name="type[]" id="type<?= $i ?>">
                                                 <option disabled selected>Select Type</option>
                                                 <?php
-                                                $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'cora_cutted' OR brand_id = 'dyed_cutted' AND status = 1");
+                                                $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'printed' AND status = 1");
                                                 while ($p = mysqli_fetch_assoc($products)) {
                                                 ?>
                                                     <option value="<?= $p['product_id'] ?>"><?= ucwords($p['product_name']) ?> (<?= ucwords($p['brand_id']) ?>)</option>
@@ -472,8 +472,6 @@
                     row.find('[name="small_cp[]"]').val(data.small_cp || '');
                     row.find('[name="color[]"]').val(data.color || '');
 
-                    $("#lot_no").val(data.lot_no);
-                    $("#dyeing_lot").val(data.d_lat_no);
                     $("#purchase_id").val(data.purchase_id);
                     $("#show_dyeing_details").modal("hide");
                 } else {
@@ -507,8 +505,6 @@
                     row.find('[name="pur_thaan[]"]').val(data.qty_pur_thaan || '');
                     row.find('[name="qty[]"]').val(data.quantity_instock || '');
 
-                    $("#lot_no").val(data.lot_no);
-                    $("#dyeing_lot").val(data.d_lat_no);
                     $("#purchase_id").val(data.purchase_id);
                     $("#show_dyeing_details").modal("hide");
                 } else {
@@ -545,8 +541,6 @@
                     row.find('[name="pur_type[]"]').val(details.unit_arr || '');
                     row.find('[name="qty[]"]').val(data.quantity_instock || '');
 
-                    $("#lot_no").val(data.lot_no);
-                    $("#dyeing_lot").val(data.d_lat_no);
                     $("#purchase_id").val(data.purchase_id);
                     $("#show_dyeing_details").modal("hide");
                 } else {
