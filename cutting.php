@@ -450,6 +450,7 @@
                                 <td>${row.quantity_instock}</td>
                                 <td>${row.total_amount}</td>
                                 <td>Dyeing</td>
+                                <td class="text-capitalize">${row.dyeing_name}</td>
                                 <td>
                                     <button type="button" class="btn select-row btn-primary btn-sm" value="${row.dyeing_id}">Apply</button>
                                 </td>
