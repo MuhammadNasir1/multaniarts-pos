@@ -487,7 +487,7 @@
                             title: 'Success',
                             text: response.msg,
                             showConfirmButton: false,
-                            timer: 12000
+                            timer: 1000
                         }).then((result) => {
                             location.reload();
                         });

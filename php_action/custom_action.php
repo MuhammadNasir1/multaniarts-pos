@@ -2220,7 +2220,7 @@ if (isset($_POST['get_dyer_stock']) && isset($_POST['done_by'])) {
         SELECT SUM(quantity_instock) AS total_quantity 
         FROM dyeing 
         WHERE product_id = '$id' 
-        AND status = 'received' 
+        AND status = 'sent' 
         AND done_by = '$doneById'
     ";
 

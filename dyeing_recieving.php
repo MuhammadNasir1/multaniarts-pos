@@ -124,6 +124,9 @@
                             </div>
                         </div>
 
+                        <hr>
+                        <h4 class="text-center">Available Stock: <span id="showStock"></span></h4>
+                        <hr>
 
                         <div class="row m-0 ">
                             <div id="voucher_rows_container2">
@@ -139,7 +142,7 @@
                                             <div class="col-11 m-0 p-0 pl-1">
                                                 <label for="showProduct">Quality</label>
                                                 <div class="input-group">
-                                                    <select class="form-control searchableSelect" required name="from_product[]" id="showProduct" onchange="getDyerStock(this.value)">
+                                                    <select class="form-control searchableSelect" required name="from_product[]" id="showProduct" onchange="getStock(this.value)">
                                                         <option value="">Select Product</option>
 
                                                         <?php
@@ -339,7 +342,7 @@
             <td>${row.product_name || ""}</td>
             <td>${row.thaan || ""}</td>
             <td>${row.gzanah || ""}</td>
-            <td>${row.quantity || ""}</td>
+            <td>${row.quantity_instock || ""}</td>
             <td>${row.rate || ""}</td>
             <td>${row.total_amount || ""}</td>
             <td>
@@ -432,16 +435,18 @@
                     $("#unit").val(response.data.unit).change();
                     $("#thaan_arr").val(response.data.thaan)
                     $("#thaan").val(response.data.thaan)
-                    $("#qty_arr").val(response.data.quantity)
-                    $("#qty_arr").attr("max", response.data.quantity);
-                    $("#qty").val(response.data.quantity)
+                    $("#qty_arr").val(response.data.quantity_instock)
+                    $("#qty_arr").attr("max", response.data.quantity_instock);
+                    $("#qty").val(response.data.quantity_instock)
                     $("#gzanah_arr").val(response.data.gzanah)
                     $("#gzanah").val(response.data.gzanah)
                     $("#rate").text(response.data.rate)
                     $("#rateInput").val(response.data.rate)
-                    $("#total_amount").text(response.data.rate * response.data.quantity);
-                    $("#totalAmountInput").val(response.data.rate * response.data.quantity);
+                    $("#total_amount").text(response.data.rate * response.data.quantity_instock);
+                    $("#totalAmountInput").val(response.data.rate * response.data.quantity_instock);
                     $("#detailModalClose").click();
+
+                    getDyerStock(productId);
                 }
             },
 
@@ -526,17 +531,38 @@
             url: "php_action/custom_action.php",
             type: "POST",
             data: {
-                get_dyer_stock: doneById,
+                get_dyer_stock: value,
                 done_by: doneById,
             },
             dataType: "json",
             success: function(response) {
                 if (response.success) {
-                    $("#from_account_bl").text(response.total_quantity);
-                    $("#available_quantity").val(response.total_quantity);
+                    $("#showStock").text(response.total_quantity);
                     $("#qty_arr").attr("max", response.total_quantity);
                 } else {
                     console.error("Error: " + response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error: " + status + error);
+            },
+        });
+    }
+
+    function getStock(value) {
+        $.ajax({
+            url: "php_action/custom_action.php",
+            type: "POST",
+            data: {
+                get_stock: value,
+            },
+            dataType: "json",
+            success: function(response) {
+                if (response.success) {
+                    // $("#get_location_type").val(response.data.customer_type);
+                    console.log(response.data);
+                    $("#from_account_bl").text(response.data.quantity_instock);
+                    $("#product_id").val($("#showProduct").val());
                 }
             },
             error: function(xhr, status, error) {
