@@ -104,7 +104,7 @@
                                 <input type="text" placeholder="Gate Pass" value="" autocomplete="off" class="form-control " name="manual_gp" id="manual_gp">
                             </div>
                             <div class="col-md-2 mt-3">
-                                <label for="cutting_man">Cutting Man</label>
+                                <label for="cutting_man">Printing Man</label>
                                 <input type="text" placeholder="Cutting Man" value="" autocomplete="off" class="form-control " name="printing_man" id="cutting_man">
                             </div>
                             <div class="col-md-2 mt-3">
@@ -141,7 +141,7 @@
                                             <div class="col-lg-5 m-0 mt-1 p-0 pl-3">
                                                 <button type="button" class="btn select_dyeing  mt-4 btn-primary btn-sm"
                                                     name="select_dyeing"
-                                                    id="select_dyeing"> Select Dyeing </button>
+                                                    id="select_dyeing"> Select Embroidery </button>
                                             </div>
 
                                         </div>
@@ -221,7 +221,7 @@
                         <div class="modal-dialog modal-lg" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLongTitle">Dyeing Details</h5>
+                                    <h5 class="modal-title" id="exampleModalLongTitle">Embroidery Details</h5>
                                     <input type="text" id="tableSearchInput" class="form-control ml-3" placeholder="Search Here" style="width: 50%;">
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="detailModalClose">
                                         <span aria-hidden="true">&times;</span>
@@ -241,7 +241,7 @@
                                         </thead>
                                         <tbody id="table-body-id">
                                             <tr>
-                                                <td colspan="8" class="text-center">Select Cutting Man First</td>
+                                                <td colspan="8" class="text-center">Select Printing Man First</td>
                                             </tr>
                                         </tbody>
                                     </table>
