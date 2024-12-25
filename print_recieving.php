@@ -70,13 +70,22 @@
                                 <label for="embroidery">Print</label>
                                 <select class="form-control searchableSelect" name="print" id="print">
                                     <option disabled selected>Select Printer</option>
-                                    <?php
-                                    $query = "SELECT * FROM customers WHERE customer_type IN ('printer')";
-                                    $result = mysqli_query($dbc, $query);
-                                    while ($d = mysqli_fetch_assoc($result)) {
-                                        echo "<option value='{$d['customer_id']}'>" . ucwords($d['customer_name']) . " (" . ucwords($d['customer_type']) . ")</option>";
-                                    }
+                                    <?php $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status = 1 AND (customer_type = 'dyeing' OR customer_type = 'shop' OR customer_type = 'shop' OR customer_type = 'packing' OR customer_type = 'printer') ORDER BY customer_type ASC;");
+                                    $type2 = '';
+                                    while ($r = mysqli_fetch_assoc($q)):
+                                        $type = $r['customer_type'];
                                     ?>
+                                        <?php if ($type != $type2): ?>
+                                            <optgroup label="<?= $r['customer_type'] ?>">
+                                            <?php endif ?>
+
+                                            <option <?= @($voucher['customer_id2'] == $r['customer_id']) ? "selected" : "" ?> value="<?= $r['customer_id'] ?>"><?= $r['customer_name'] ?></option>
+
+                                            <?php if ($type != $type2): ?>
+                                            </optgroup>
+                                        <?php endif ?>
+                                    <?php $type2 = $r['customer_type'];
+                                    endwhile; ?>
                                 </select>
                             </div>
                             <div class="col-md-2 mt-3">
@@ -141,7 +150,7 @@
                                             <div class="col-lg-5 m-0 mt-1 p-0 pl-3">
                                                 <button type="button" class="btn select_dyeing  mt-4 btn-primary btn-sm"
                                                     name="select_dyeing"
-                                                    id="select_dyeing"> Select Embroidery </button>
+                                                    id="select_dyeing"> Select Printing </button>
                                             </div>
 
                                         </div>
@@ -221,7 +230,7 @@
                         <div class="modal-dialog modal-lg" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLongTitle">Embroidery Details</h5>
+                                    <h5 class="modal-title" id="exampleModalLongTitle">Printing Details</h5>
                                     <input type="text" id="tableSearchInput" class="form-control ml-3" placeholder="Search Here" style="width: 50%;">
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="detailModalClose">
                                         <span aria-hidden="true">&times;</span>
@@ -241,7 +250,7 @@
                                         </thead>
                                         <tbody id="table-body-id">
                                             <tr>
-                                                <td colspan="8" class="text-center">Select Printing Man First</td>
+                                                <td colspan="8" class="text-center">Select Location First</td>
                                             </tr>
                                         </tbody>
                                     </table>
