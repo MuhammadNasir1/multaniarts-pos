@@ -89,7 +89,7 @@
                                 <select class="form-control searchableSelect" name="to_location" id="to_location">
                                     <option disabled selected>Select Location</option>
                                     <?php
-                                    $query = "SELECT * FROM customers WHERE customer_type IN ('embroidery')";
+                                    $query = "SELECT * FROM customers WHERE customer_type IN ('shop')";
                                     $result = mysqli_query($dbc, $query);
                                     while ($d = mysqli_fetch_assoc($result)) {
                                         echo "<option value='{$d['customer_id']}'>" . ucwords($d['customer_name']) . " (" . ucwords($d['customer_type']) . ")</option>";
@@ -173,7 +173,7 @@
                                                 <select class="form-control searchableSelect" name="type[]" id="type<?= $i ?>">
                                                     <option disabled selected>Select Type</option>
                                                     <?php
-                                                    $products = mysqli_query($dbc, "SELECT * FROM product WHERE (brand_id = 'cora_cutted' OR brand_id = 'dyed_cutted') AND status = 1");
+                                                    $products = mysqli_query($dbc, "SELECT * FROM product WHERE (brand_id = 'embroidered') AND status = 1");
                                                     while ($p = mysqli_fetch_assoc($products)) {
                                                     ?>
                                                         <option value="<?= $p['product_id'] ?>"><?= ucwords($p['product_name']) ?> (<?= ucwords($p['brand_id']) ?>)</option>
