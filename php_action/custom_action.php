@@ -1770,6 +1770,7 @@ if (isset($_POST['get_purchase_data'])) {
     FROM purchase 
     LEFT JOIN product ON purchase.product_id = product.product_id 
     WHERE purchase.pur_location = '$id' 
+    AND product.brand_id = 'cora' 
     AND purchase.purchase_id NOT IN (
         SELECT purchase_id 
         FROM dyeing 
@@ -1777,6 +1778,7 @@ if (isset($_POST['get_purchase_data'])) {
     )
     AND (purchase.quantity_instock IS NOT NULL AND purchase.quantity_instock != '' AND purchase.quantity_instock > 0)
 ");
+
 
 
 	$customers = [];
