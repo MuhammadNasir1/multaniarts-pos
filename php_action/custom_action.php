@@ -929,6 +929,7 @@ if (isset($_REQUEST['cash_purchase_supplier'])) {
 
 	$data = [
 		'purchase_date' => $_REQUEST['purchase_date'],
+		'lot_no' => $_REQUEST['lat_no'],
 		'client_name' => @$_REQUEST['cash_purchase_supplier'],
 		'client_contact' => @$_REQUEST['client_contact'],
 		'purchase_narration' => @$_REQUEST['purchase_narration'],
@@ -1909,7 +1910,7 @@ if (isset($_POST['dyeing_issuance_form'])) {
 		"qty_arr" => $_POST['qty_arr'],
 		"suit_arr" => $_POST['suit_arr'],
 		"gzanah_arr" => $_POST['gzanah_arr'],
-		"lot_no_arr" => $_POST['lot_no_arr'],
+		"lot_no_arr" => $_POST['lot_no'],
 	];
 
 	$data = [
@@ -1918,6 +1919,7 @@ if (isset($_POST['dyeing_issuance_form'])) {
 		'status' => 'sent',
 		'entry_from' => 'dyeing_issuance',
 		'product_id' => $_POST['product_id'],
+		'lat_no' => $_POST['lot_no'],
 		'rate' => $_POST['rate'],
 		'total_amount' => $_POST['total_amount'],
 		'thaan' => $_POST['thaan'],
@@ -2403,66 +2405,51 @@ if (isset($_POST['cuttingform'])) {
 if (isset($_POST['cutting_man_id'])) {
 	$cuttingManId = $_POST['cutting_man_id'];
 
-	// Query to fetch dyeing data
-	$dyeingQuery = mysqli_query($dbc, "SELECT * FROM dyeing WHERE status = 'received' AND to_location = '$cuttingManId'");
+
+	$dyeingQuery = mysqli_query($dbc, "SELECT * FROM dyeing WHERE status = 'received' AND to_location = '$cuttingManId' AND quantity_instock > 0");
 	$dyeingData = [];
 
 	while ($row = mysqli_fetch_assoc($dyeingQuery)) {
-		$productQuery = mysqli_query($dbc, "SELECT product_name FROM product WHERE status=1 AND product_id = '{$row['product_id']}'");
+
+		$productQuery = mysqli_query($dbc, "SELECT product_name FROM product WHERE status = 1 AND product_id = '{$row['product_id']}'");
 		$productName = mysqli_fetch_assoc($productQuery)['product_name'] ?? 'N/A';
 
-		$dyeingResult = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT done_by FROM dyeing WHERE dyeing_id = '{$row['dyeing_id']}'"));
-		$done_by = $dyeingResult['done_by'] ?? null;
 
-		if (!$done_by) {
-			error_log("Missing done_by for dyeing_id: {$row['dyeing_id']}");
+		$done_by = $row['done_by'] ?? null;
+		$locationName = 'N/A';
+
+		if ($done_by) {
+			$locationQuery = mysqli_query($dbc, "SELECT customer_name FROM customers WHERE customer_id = '$done_by'");
+			$locationResult = mysqli_fetch_assoc($locationQuery);
+			$locationName = $locationResult['customer_name'] ?? 'N/A';
 		}
 
-		$locationQuery = mysqli_query($dbc, "SELECT customer_name FROM customers WHERE customer_id = '$done_by'");
-		$locationResult = mysqli_fetch_assoc($locationQuery);
-		$locationName = $locationResult['customer_name'] ?? 'N/A';
-
-		if ($locationName === 'N/A') {
-			error_log("No customer_name found for customer_id: $done_by");
-		}
-
-		$dyeingData[] = [
-			'purchase_id' => $row['purchase_id'],
-			'issuance_date' => $row['issuance_date'],
-			'dyeing_name' => $locationName,
+		$dyeingData[] = array_merge($row, [
 			'product_name' => $productName,
-			'thaan' => $row['thaan'],
-			'gzanah' => $row['gzanah'],
-			'quantity_instock' => $row['quantity_instock'],
-			'total_amount' => $row['total_amount'],
-			'dyeing_id' => $row['dyeing_id'],
-		];
+			'dyeing_name' => $locationName,
+		]);
 	}
 
-
-
-	// Query to fetch purchase data where brand_id is 'dyed' or 'cora'
 	$purchaseQuery = mysqli_query($dbc, "
-        SELECT purchase.*, product.product_name
-        FROM purchase
-        INNER JOIN product ON purchase.product_id = product.product_id
-        WHERE purchase.pur_location = '$cuttingManId'
-        AND product.brand_id IN ('dyed', 'cora')
-    ");
+    SELECT purchase.*, product.product_name
+    FROM purchase
+    INNER JOIN product ON purchase.product_id = product.product_id
+    WHERE purchase.pur_location = '$cuttingManId'
+    AND product.brand_id IN ('dyed', 'cora')
+    AND purchase.quantity_instock > 0
+");
 	$purchaseData = [];
 
 	while ($purchaseRow = mysqli_fetch_assoc($purchaseQuery)) {
-		$purchaseData[] = $purchaseRow; // Push all columns from the purchase row directly
+		$purchaseData[] = $purchaseRow;
 	}
 
-	// Combine both dyeing and purchase data into one response
 	echo json_encode([
 		'success' => true,
 		'dyeing_data' => $dyeingData,
 		'purchase_data' => $purchaseData
 	]);
 }
-
 
 
 // Embroidery Issuance 

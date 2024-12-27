@@ -46,7 +46,7 @@
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label for="lat_no">Lot No</label>
-                                <input type="text" class="form-control" id="lat_no" required value="" name="lat_no" placeholder="Lot No">
+                                <input type="text" class="form-control" readonly id="lat_no" required value="" name="lat_no" placeholder="Lot No">
                             </div>
                             <div class="col-md-2 mt-3 row">
                                 <div class="col-10">
@@ -239,7 +239,7 @@
                             <table class="table table-bordered" id="purchaseDetailsTable">
                                 <thead>
                                     <tr>
-                                        <th>Purchase ID</th>
+                                        <th>Lot No</th>
                                         <th>Purchase Date</th>
                                         <th>Product</th>
                                         <th>Thaan</th>
@@ -302,27 +302,55 @@
             },
             dataType: 'json',
             success: function(response) {
-                if (response.success) {
+                if (response.success && response.data) {
                     const data = response.data;
-
-
                     const row = $(`#${currentId}`);
 
-                    const productDetails = JSON.parse(data.product_details);
-                    row.find('[name="from_type[]"]').val(data.product_id || '').change();
-                    row.find('[name="d_lot_no[]"]').val(data.lat_no || '');
-                    row.find('[name="pur_type[]"]').val(data.unit || '').change();
-                    row.find('[name="type[]"]').val(data.type || '');
-                    row.find('[name="thaan[]"]').val(data.thaan || '');
-                    row.find('[name="pur_thaan[]"]').val(data.qty_thaan || '');
-                    row.find('[name="qty[]"]').val(data.quantity_instock || '');
-                    row.find('[name="color[]"]').val(productDetails.color_arr[0] || '');
-                    row.find('[name="pur_thaan[]"]').val(productDetails.pur_thaan_arr[0] || '');
+                    try {
+                        // Parse product details
+                        const productDetails = JSON.parse(data.product_details || '{}');
 
-                    $("#purchase_id").val(data.purchase_id);
-                    $("#show_dyeing_details").modal("hide");
+                        // Update form fields
+                        row.find('[name="from_type[]"]').val(data.product_id || '').change();
+                        row.find('[name="d_lot_no[]"]').val(data.lat_no || '');
+                        $('#lat_no').val(data.lat_no || '');
+                        row.find('[name="pur_type[]"]').val(data.unit || '').change();
+                        row.find('[name="type[]"]').val(data.type || '');
+                        row.find('[name="thaan[]"]').val(data.thaan || '');
+                        row.find('[name="pur_thaan[]"]').val(productDetails.pur_thaan_arr?.[0] || data.qty_thaan || '');
+                        row.find('[name="qty[]"]').val(data.quantity_instock || '');
+                        row.find('[name="color[]"]').val(productDetails.color_arr?.[0] || '');
+
+                        // Set purchase ID and hide modal
+                        $("#purchase_id").val(data.purchase_id);
+                        $("#show_dyeing_details").modal("hide");
+
+                        // Clear the table first
+                        $('#table-body-id').html('');
+
+                        // Populate the table
+                        const tableRow = `
+                        <tr>
+                            <td>${data.lat_no || 'N/A'}</td>
+                            <td>${data.issuance_date || 'N/A'}</td>
+                            <td>${response.product.product_name || 'N/A'}</td>
+                            <td>${data.thaan || 'N/A'}</td>
+                            <td>${data.gzanah || 'N/A'}</td>
+                            <td>${data.quantity_instock || 'N/A'}</td>
+                            <td>${data.total_amount || 'N/A'}</td>
+                            <td>Dyeing</td>
+                            <td class="text-capitalize">${data.done_by || 'N/A'}</td>
+                            <td>
+                                <button type="button" class="btn select-row btn-primary btn-sm" value="${data.dyeing_id || ''}">Apply</button>
+                            </td>
+                        </tr>
+                    `;
+                        $('#table-body-id').html(tableRow);
+                    } catch (e) {
+                        console.error("Error parsing product details:", e);
+                    }
                 } else {
-                    console.error("Failed to fetch dyeing details:", response.message);
+                    console.error("Failed to fetch dyeing details:", response.message || "Unknown error");
                 }
             },
             error: function(xhr, status, error) {
@@ -330,6 +358,9 @@
             }
         });
     }
+
+
+
 
     function getPurData(purchaseID, currentId) {
         $.ajax({
@@ -340,21 +371,44 @@
             },
             dataType: 'json',
             success: function(response) {
-                if (response.success) {
+                if (response.success && response.data) {
                     const data = response.data;
-
-
                     const row = $(`#${currentId}`);
 
+                    // Update form fields with the purchase data
                     row.find('[name="pur_type[]"]').val(data.pur_type || '').change();
                     row.find('[name="from_type[]"]').val(data.product_id || '').change();
                     row.find('[name="qty[]"]').val(data.quantity || '');
                     row.find('[name="thaan[]"]').val(data.pur_thaan || '');
+                    $('#lat_no').val(data.lot_no || '');
 
+                    // Set purchase ID and hide modal
                     $("#purchase_id").val(data.purchase_id);
                     $("#show_dyeing_details").modal("hide");
+
+                    // Clear the table first
+                    $('#table-body-id').html('');
+
+                    // Populate table with purchase data (for purchase rows)
+                    const tableRow = `
+                    <tr class="text-capitalize">
+                       <td>${data.lot_no}</td>
+                                <td>${data.purchase_date}</td>
+                                <td>${response.product.product_name || 'N/A'}</td>
+                                <td>${data.pur_thaan}</td>
+                                <td>${data.pur_gzanah}</td>
+                                <td>${data.quantity_instock}</td>
+                                <td>${data.total_amount}</td>
+                                <td>Purchase</td>
+                                <td class="text-capitalize">${data.client_name}</td>
+                                <td>
+                                    <button type="button" class="btn select-row-purchase btn-primary btn-sm" value="${data.purchase_id}">Apply</button>
+                                </td>
+                    </tr>
+                `;
+                    $('#table-body-id').html(tableRow);
                 } else {
-                    console.error("Failed to fetch dyeing details:", response.message);
+                    console.error("Failed to fetch purchase data:", response.message || "Unknown error");
                 }
             },
             error: function(xhr, status, error) {
@@ -362,6 +416,7 @@
             }
         });
     }
+
 
     $(document).ready(function() {
         $('#tableSearchInput').on('keyup', function() {
@@ -441,8 +496,8 @@
 
                             jsonResponse.dyeing_data.forEach(row => {
                                 tableBody += `
-                            <tr>
-                                <td>${row.purchase_id}</td>
+                            <tr class="text-capitalize">
+                                <td>${row.lat_no}</td>
                                 <td>${row.issuance_date}</td>
                                 <td>${row.product_name}</td>
                                 <td>${row.thaan}</td>
@@ -463,13 +518,13 @@
                         if (jsonResponse.purchase_data) {
                             jsonResponse.purchase_data.forEach(row => {
                                 tableBody += `
-                            <tr>
-                                <td>${row.purchase_id}</td>
+                            <tr class="text-capitalize">
+                                <td>${row.lot_no}</td>
                                 <td>${row.purchase_date}</td>
                                 <td>${row.product_name}</td>
                                 <td>${row.pur_thaan}</td>
                                 <td>${row.pur_gzanah}</td>
-                                <td>${row.quantity}</td>
+                                <td>${row.quantity_instock}</td>
                                 <td>${row.total_amount}</td>
                                 <td>Purchase</td>
                                 <td class="text-capitalize">${row.client_name}</td>

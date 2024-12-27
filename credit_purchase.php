@@ -35,7 +35,7 @@
 
 
             <div class="row form-group">
-              <div class="col-md-2">
+              <div class="col-md-1">
                 <label>Purchase ID#</label>
                 <?php $result = mysqli_query($dbc, "
     SHOW TABLE STATUS LIKE 'purchase'
@@ -72,7 +72,11 @@
                 <br>
                 <a href="customers.php?type=supplier" class="btn btn-admin2 btn-sm mt-2">Add</a>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-2">
+                <label for="lat_no">Lot No</label>
+                <input type="text" class="form-control" id="lat_no" required value="" name="lat_no" placeholder="Lot No">
+              </div>
+              <div class="col-md-2">
                 <label class="text-dark" for="purchase_for">Purchase For</label>
 
                 <select class="form-control searchableSelect" name="purchase_for" id="purchase_for">
