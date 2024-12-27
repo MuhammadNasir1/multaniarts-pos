@@ -2281,6 +2281,7 @@ if (isset($_POST['cuttingform'])) {
 		'status' => 'sent',
 		'done_by' => $_POST['cutting_man'],
 		'entry_from' => 'cutting',
+		'lot_no' => $_POST['lat_no'],
 		'transaction_id' => $_POST['transaction'],
 		'purchase_id' => $_POST['purchase_id'],
 		'issuance_date' => $_POST['issuance_date'],
@@ -2297,7 +2298,7 @@ if (isset($_POST['cuttingform'])) {
 		$errors = [];
 
 		// Process each row of items
-		foreach ($_POST['lat_no'] as $key => $lat_no) {
+		foreach ($_POST['from_type'] as $key => $lat_no) {
 			// Skip empty rows
 			if (empty($lat_no)) {
 				continue;
@@ -2347,7 +2348,7 @@ if (isset($_POST['cuttingform'])) {
 			// Prepare item data for insertion
 			$items_data[] = [
 				'cutting_id' => $cutting_id,
-				'lot_no' => $lat_no,
+				'lot_no' => $_POST['lat_no'],
 				'purchase_id' => $_POST['purchase_id'],
 				'd_lat_no' => $_POST['d_lot_no'][$key],
 				'unit' => @$_POST['pur_type'][$key],

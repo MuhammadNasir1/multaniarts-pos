@@ -36,13 +36,17 @@
 
 
                         <div class="row form-group">
-                            <div class="col-md-2 mt-3">
+                            <div class="col-md-1 mt-3">
                                 <label>Transaction #</label>
                                 <input type="text" name="transaction" id="transaction" value="" class="form-control">
                             </div>
-                            <div class="col-md-2 mt-3">
+                            <div class="col-md-1 mt-3">
                                 <label>Date</label>
                                 <input type="date" name="issuance_date" id="issuance_date" value="<?= date('Y-m-d') ?>" class="form-control">
+                            </div>
+                            <div class="col-md-2 mt-3">
+                                <label for="lat_no">Lot No</label>
+                                <input type="text" class="form-control" id="lat_no" required value="" name="lat_no" placeholder="Lot No">
                             </div>
                             <div class="col-md-2 mt-3 row">
                                 <div class="col-10">
@@ -101,14 +105,10 @@
                                                         name="select_dyeing"
                                                         id="select_dyeing"> Select</button>
                                                 </div>
-                                                <div class="col-lg-5 m-0 p-0">
-                                                    <label for="lat_no">Lot No</label>
-                                                    <input type="text" class="form-control" id="lat_no<?= $i ?>" value="" name="lat_no[]" placeholder="Lot No">
+                                                <div class="col-lg-5 m-0 p-0 pl-1">
+                                                    <label for="d_lot_no">D Lot No</label>
+                                                    <input type="text" class="form-control d_lot_no" readonly id="d_lot_no<?= $i ?>" name="d_lot_no[]" placeholder="D Lot No">
                                                 </div>
-                                            </div>
-                                            <div class="col-lg-1 m-0 p-0 pl-1">
-                                                <label for="d_lot_no">D Lot No</label>
-                                                <input type="text" class="form-control d_lot_no" readonly id="d_lot_no<?= $i ?>" name="d_lot_no[]" placeholder="D Lot No">
                                             </div>
                                             <div class="col-lg-1 m-0 p-0 pl-1">
                                                 <label for="pur_type">Unit</label>
