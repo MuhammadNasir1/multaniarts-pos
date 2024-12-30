@@ -208,7 +208,7 @@
                                         <div class="col-lg-1 m-0 p-0 pl-1">
                                             <div class="form-group mb-0">
                                                 <label>Lot No</label>
-                                                <input type="text" class="form-control" id="lot_no" name="lot_no_arr[]" placeholder="Lot No" required>
+                                                <input type="text" class="form-control" readonly value="0" id="lot_no1" name="lot_no_arr[]" placeholder="Lot No" required>
                                                 <input type="hidden" name="lot_no" id="lot_no">
                                             </div>
                                         </div>
@@ -277,7 +277,7 @@
                             <table class="table table-bordered" id="purchaseDetailsTable">
                                 <thead>
                                     <tr>
-                                        <th>Purchase ID</th>
+                                        <th>Lot No</th>
                                         <th>Purchase Date</th>
                                         <th>Supplier</th>
                                         <th>Product</th>
@@ -333,7 +333,7 @@
                         data.forEach(row => {
                             rowsHTML += `
                         <tr>
-                            <td>${row.purchase_id || ""}</td>
+                            <td>${row.lot_no || ""}</td>
                             <td>${row.purchase_date || ""}</td>
                             <td class="text-capitalize">${row.client_name || ""}</td>
                             <td>${row.product_name || ""}</td>
@@ -444,7 +444,9 @@
 
                     $('#showProduct').removeAttr("disabled");
                     $('#showProduct').val(productId).change();
-                    $("#unit_arr").val(response.data.pur_type)
+                    $("#unit_arr").val(response.data.pur_type).change();
+                    $("#lot_no").val(response.data.lot_no)
+                    $("#lot_no1").val(response.data.lot_no)
                     $("#unit").val(response.data.pur_type)
                     $("#thaan_arr").val(response.data.pur_thaan)
                     $("#thaan").val(response.data.pur_thaan)

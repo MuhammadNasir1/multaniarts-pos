@@ -214,7 +214,7 @@
                                         <div class="col-lg-1 m-0 p-0 pl-1">
                                             <div class="form-group mb-0">
                                                 <label>Lot No</label>
-                                                <input type="text" class="form-control" id="lot_no" name="lot_no_arr[]" placeholder="Lot No" required>
+                                                <input type="text" class="form-control" id="lot_no1" value="0" readonly name="lot_no_arr[]" placeholder="Lot No" required>
                                                 <input type="hidden" name="lot_no" id="lot_no">
                                             </div>
                                         </div>
@@ -282,7 +282,7 @@
                             <table class="table table-bordered" id="purchaseDetailsTable">
                                 <thead>
                                     <tr>
-                                        <th>Purchase ID</th>
+                                        <th>Lot No</th>
                                         <th>Issuance Date</th>
                                         <th>Dyer</th>
                                         <th>Product</th>
@@ -336,7 +336,7 @@
                         const entryFrom = row.entry_from ? row.entry_from.replace('_', ' ') : ""; // Replace underscores
                         rowsHTML += `
         <tr>
-            <td>${row.purchase_id || ""}</td>
+            <td>${row.lat_no || ""}</td>
             <td>${row.issuance_date || ""}</td>
             <td class="text-capitalize">${row.to_location_name}</td>
             <td>${row.product_name || ""}</td>
@@ -434,6 +434,8 @@
                     $("#recievied_dyeing").val(response.data.dyeing_id);
                     $("#unit").val(response.data.unit).change();
                     $("#thaan_arr").val(response.data.thaan)
+                    $("#lot_no").val(response.data.lat_no)
+                    $("#lot_no1").val(response.data.lat_no)
                     $("#thaan").val(response.data.thaan)
                     $("#qty_arr").val(response.data.quantity_instock)
                     $("#qty_arr").attr("max", response.data.quantity_instock);

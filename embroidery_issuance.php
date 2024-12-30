@@ -45,6 +45,10 @@
                                 <input type="date" name="issuance_date" id="issuance_date" value="<?= date('Y-m-d') ?>" class="form-control">
                             </div>
                             <div class="col-md-2 mt-3">
+                                <label>Lot No</label>
+                                <input type="text" placeholder="Lot No" readonly value="" autocomplete="off" class="form-control " name="lot_no" id="lot_no">
+                            </div>
+                            <div class="col-md-2 mt-3">
                                 <label for="emb_type">Emb Type</label>
                                 <select class="form-control searchableSelect" name="emb_type" id="emb_type">
                                     <option disabled selected>Select Type</option>
@@ -89,10 +93,6 @@
                                         <option value="<?= $d['program_id'] ?>"> <?= ucwords($d['name']) ?></option>
                                     <?php } ?>
                                 </select>
-                            </div>
-                            <div class="col-md-2 mt-3">
-                                <label>Lot No</label>
-                                <input type="text" placeholder="Gate Pass" value="" autocomplete="off" class="form-control " name="lot_no" id="lot_no">
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label>Dyeing Lot</label>
@@ -230,12 +230,11 @@
 
                                 <div class="modal-body">
                                     <table class="table table-bordered" id="purchaseDetailsTable">
-                                        <thead>
+                                        <thead id="table-head-id">
                                             <tr>
-                                                <th>Done By</th>
-                                                <th>Product</th>
-                                                <th>Thaan</th>
-                                                <th>Quantity</th>
+                                                <th>Issuance Date</th>
+                                                <th>Lot No</th>
+                                                <th>Cutting Man</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -285,6 +284,12 @@
 
         getCuttingDetails(cuttingID, currentId);
     });
+    $(document).on("click", ".select-row2", function() {
+        const cuttingID = $(this).val();
+        const currentId = $("#show_dyeing_details").data("currentId");
+
+        getCuttingItemDetails(cuttingID, currentId);
+    });
     // getDyeingDetails(dyeingId, currentId);
 
     function getTableData(location_id) {
@@ -305,12 +310,11 @@
                         jsonResponse.cutting_items.forEach(row => {
                             tableBody += `
                         <tr>
+                            <td class="text-capitalize">${row.lot_no}</td>
                             <td class="text-capitalize">${row.customer_name}</td>
-                            <td class="text-capitalize">${row.product_name}</td>
-                            <td>${row.thaan}</td>
-                            <td>${row.qty}</td>
+                            <td>${row.issuance_date}</td>
                             <td>
-                                <button type="button" class="btn select-row btn-primary btn-sm" value="${row.cutting_item_id}">
+                                <button type="button" class="btn select-row2 btn-primary btn-sm" value="${row.lot_no}">
                                     Apply
                                 </button>
                             </td>
@@ -331,7 +335,6 @@
             }
         });
     }
-
     $(document).ready(function() {
         $('#embroidery_form').on('submit', function(event) {
             event.preventDefault(); // Prevent form default submission
@@ -393,7 +396,7 @@
                     const row = $(`#${currentId}`); // Get the current row using currentId
 
                     // Fill in the fields with the response data
-                    row.find('[name="lat_no[]"]').val(data.lot_no || '');
+                    $('#lot_no').val(data.lot_no || '');
                     row.find('[name="d_lot_no[]"]').val(data.d_lat_no || '');
                     row.find('[name="pur_type[]"]').val(data.unit || '').change();
                     row.find('[name="from_type[]"]').val(data.product_id || '').change();
@@ -418,6 +421,73 @@
             }
         });
     }
+
+    function getCuttingItemDetails(cuttingID, currentId) {
+        $.ajax({
+            url: 'php_action/custom_action.php',
+            type: 'POST',
+            data: {
+                get_selected_cutting_items: cuttingID
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    // Correct reference to cutting_items
+                    const data = response.cutting_items;
+
+                    // Initialize variables for table header and body
+                    let tableHead = "";
+                    let tableBody = "";
+
+                    const row = $(`#${currentId}`);
+                    $('#table-body-id').html(""); // Clear previous table body
+                    $('#table-head-id').html(""); // Clear previous table header
+
+                    // Construct table header
+                    tableHead += `
+                    <tr>
+                        <th>Lot No</th>
+                        <th>Product</th>
+                        <th>Thaan</th>
+                        <th>Quantity</th>
+                        <th>Cutting Man</th>
+                        <th>Action</th>
+                    </tr>
+                `;
+
+                    // Construct table body from the response data
+                    data.forEach(item => {
+                        tableBody += `
+                        <tr>
+                            <td class="text-capitalize">${item.lot_no}</td>
+                            <td class="text-capitalize">${item.product_name}</td>
+                            <td>${item.thaan}</td>
+                            <td>${item.quantity_instock || item.qty}</td>
+                            <td>${item.customer_name}</td>
+                            <td>
+                                <button type="button" class="btn select-row btn-primary btn-sm" value="${item.cutting_item_id}">
+                                    Apply
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    });
+
+                    // Insert the constructed table head and body
+                    $('#table-head-id').html(tableHead);
+                    $('#table-body-id').html(tableBody);
+
+                } else {
+                    console.error("Failed to fetch cutting item details:", response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+            }
+        });
+    }
+
+
 
     function getStock(product_id, index) {
         $.ajax({
