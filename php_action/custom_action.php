@@ -2464,35 +2464,52 @@ if (isset($_POST['get_location_data'])) {
 		$customerResult = mysqli_fetch_assoc($customerQuery);
 
 		$product['customer_name'] = $customerResult['customer_name'] ?? 'Unknown';
-
 		$cutting[] = $product;
 	}
 
-	if (!empty($cutting)) {
-		$cuttingItems = [];
-
-		foreach ($cutting as $cut) {
-			$cuttingId = $cut['cutting_id'];
-
-			$itemsData = mysqli_query($dbc, "SELECT * FROM cutting_items WHERE cutting_id = '$cuttingId'");
-			while ($item = mysqli_fetch_assoc($itemsData)) {
-				$productId = $item['product_id'];
-				$productNameQuery = mysqli_query($dbc, "SELECT product_name FROM product WHERE product_id = '$productId'");
-				$productNameResult = mysqli_fetch_assoc($productNameQuery);
-
-				$item['product_name'] = $productNameResult['product_name'] ?? 'Unknown';
-
-				$item['customer_name'] = $cut['customer_name'];
-
-				$cuttingItems[] = $item;
-			}
-		}
-
-		echo json_encode(['success' => true, 'cutting_items' => $cuttingItems]);
+	if (!empty($productData)) {
+		echo json_encode(['success' => true, 'cutting_items' => $cutting]);
 	} else {
 		echo json_encode(['success' => false, 'data' => null]);
 	}
 }
+// $cutting = [];
+
+// $productData = mysqli_query($dbc, "SELECT * FROM cutting WHERE cutting_man = '$id'");
+// while ($product = mysqli_fetch_assoc($productData)) {
+// 	$doneById = $product['done_by'];
+// 	$customerQuery = mysqli_query($dbc, "SELECT customer_name FROM customers WHERE customer_id = '$doneById'");
+// 	$customerResult = mysqli_fetch_assoc($customerQuery);
+
+// 	$product['customer_name'] = $customerResult['customer_name'] ?? 'Unknown';
+
+// 	$cutting[] = $product;
+// }
+
+// if (!empty($cutting)) {
+// 	$cuttingItems = [];
+
+// 	foreach ($cutting as $cut) {
+// 		$cuttingId = $cut['cutting_id'];
+
+// 		$itemsData = mysqli_query($dbc, "SELECT * FROM cutting_items WHERE cutting_id = '$cuttingId'");
+// 		while ($item = mysqli_fetch_assoc($itemsData)) {
+// 			$productId = $item['product_id'];
+// 			$productNameQuery = mysqli_query($dbc, "SELECT product_name FROM product WHERE product_id = '$productId'");
+// 			$productNameResult = mysqli_fetch_assoc($productNameQuery);
+
+// 			$item['product_name'] = $productNameResult['product_name'] ?? 'Unknown';
+
+// 			$item['customer_name'] = $cut['customer_name'];
+
+// 			$cuttingItems[] = $item;
+// 		}
+// 	}
+
+// 	echo json_encode(['success' => true, 'cutting_items' => $cuttingItems]);
+// } else {
+// 	echo json_encode(['success' => false, 'data' => null]);
+// }
 if (isset($_POST['locations_data_get'])) {
 	$id = $dbc->real_escape_string($_POST['locations_data_get']);
 	$cutting = [];
@@ -2578,6 +2595,45 @@ if (isset($_POST['get_selected_cutting'])) {
 		echo json_encode(['success' => false, 'message' => 'No data found for the selected dyeing.']);
 	}
 }
+if (isset($_POST['get_selected_cutting_items'])) {
+	$id = $dbc->real_escape_string($_POST['get_selected_cutting_items']);
+
+	$productData = mysqli_query($dbc, "SELECT * FROM cutting WHERE lot_no = '$id'");
+	while ($product = mysqli_fetch_assoc($productData)) {
+		$doneById = $product['done_by'];
+		$customerQuery = mysqli_query($dbc, "SELECT customer_name FROM customers WHERE customer_id = '$doneById'");
+		$customerResult = mysqli_fetch_assoc($customerQuery);
+
+		$product['customer_name'] = $customerResult['customer_name'] ?? 'Unknown';
+
+		$cutting[] = $product;
+	}
+
+	if (!empty($cutting)) {
+		$cuttingItems = [];
+
+		foreach ($cutting as $cut) {
+			$cuttingId = $cut['cutting_id'];
+
+			$itemsData = mysqli_query($dbc, "SELECT * FROM cutting_items WHERE cutting_id = '$cuttingId'");
+			while ($item = mysqli_fetch_assoc($itemsData)) {
+				$productId = $item['product_id'];
+				$productNameQuery = mysqli_query($dbc, "SELECT product_name FROM product WHERE product_id = '$productId'");
+				$productNameResult = mysqli_fetch_assoc($productNameQuery);
+
+				$item['product_name'] = $productNameResult['product_name'] ?? 'Unknown';
+
+				$item['customer_name'] = $cut['customer_name'];
+
+				$cuttingItems[] = $item;
+			}
+		}
+
+		echo json_encode(['success' => true, 'cutting_items' => $cuttingItems]);
+	} else {
+		echo json_encode(['success' => false, 'data' => null]);
+	}
+}
 
 if (isset($_POST['purchase_selected'])) {
 	$id = $dbc->real_escape_string($_POST['purchase_selected']);
@@ -2619,7 +2675,6 @@ if (isset($_POST['embroideryform'])) {
 		'entry_from' => 'embroidery',
 		'done_by' => $_POST['embroidery'],
 		'transaction_id' => $_POST['transaction'],
-		'purchase_id' => $_POST['purchase_id'],
 		'issuance_date' => $_POST['issuance_date'],
 		'lot_no' => $_POST['lot_no'],
 		'dyeing_lot_no' => $_POST['dyeing_lot'],
@@ -2747,7 +2802,6 @@ if (isset($_POST['printingForm'])) {
 		'entry_from' => 'print_issuance',
 		'done_by' => $_POST['print'],
 		'transaction_id' => $_POST['transaction'],
-		'purchase_id' => $_POST['purchase_id'],
 		'issuance_date' => $_POST['issuance_date'],
 		'lot_no' => $_POST['lot_no'],
 		'dyeing_lot_no' => $_POST['dyeing_lot'],
