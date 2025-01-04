@@ -232,9 +232,11 @@
                                     <table class="table table-bordered" id="purchaseDetailsTable">
                                         <thead>
                                             <tr>
+                                                <th>Lot No</th>
                                                 <th>Product</th>
                                                 <th>Thaan</th>
                                                 <th>Quantity</th>
+                                                <th>From</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -267,8 +269,6 @@
 <?php
                         include_once 'includes/foot.php';
                     } ?>
-
-
 <script>
     $(document).on("click", ".select_dyeing", function() {
         const currentId = $(this).closest(".voucher_row2").attr("id");
@@ -283,6 +283,12 @@
         const currentId = $("#show_dyeing_details").data("currentId");
 
         getCuttingDetails(cuttingID, currentId);
+    });
+    $(document).on("click", ".select-row5", function() {
+        const cuttingID = $(this).val();
+        const currentId = $("#show_dyeing_details").data("currentId");
+
+        getItemDetails(cuttingID, currentId);
     });
     $(document).on("click", ".select-row2", function() {
         const cuttingID = $(this).val();
@@ -317,17 +323,19 @@
                         if (jsonResponse.cutting_items && jsonResponse.cutting_items.length > 0) {
                             tableBody += `
                             <tr>
-                                <td colspan="4" class="table-section-title text-center">Cutting Items</td>
+                                <td colspan="6" class="table-section-title text-center">Cutting Lot</td>
                             </tr>
                         `;
                             jsonResponse.cutting_items.forEach(row => {
                                 tableBody += `
-                                <tr>
-                                    <td class="text-capitalize">${row.product_name}</td>
-                                    <td>${row.thaan}</td>
-                                    <td>${row.quantity_instock}</td>
+                                <tr class="text-capitalize">
+                                    <td class="text-capitalize">${row.lot_no}</td>
+                                    <td class="text-capitalize">--</td>
+                                    <td>--</td>
+                                    <td>--</td>
+                                    <td>${row.customer_name}</td>
                                     <td>
-                                        <button type="button" class="btn select-row btn-primary btn-sm" value="${row.cutting_item_id}">
+                                        <button type="button" class="btn select-row5 btn-primary btn-sm" value="${row.lot_no}">
                                             Apply
                                         </button>
                                     </td>
@@ -340,20 +348,20 @@
                         if (jsonResponse.purchase_items && jsonResponse.purchase_items.length > 0) {
                             tableBody += `
                             <tr>
-                                <td colspan="4" class="table-section-title text-center">Purchase Items</td>
+                                <td colspan="6" class="table-section-title text-center">Purchase Items</td>
                             </tr>
                         `;
                             jsonResponse.purchase_items.forEach(row => {
                                 tableBody += `
-                                <tr>
-                                <td class="text-capitalize">${row.product_name}</td>
-                                    <td>${row.pur_thaan}</td>
-                                    <td>${row.quantity_instock}</td>
-                                    <td>
-                                        <button type="button" class="btn select-row2 btn-success btn-sm" value="${row.purchase_id}">
-                                            Apply
-                                        </button>
-                                    </td>
+                                <tr class="text-capitalize">
+                                 <td class="text-capitalize">${row.lot_no}</td>
+                                 <td class="text-capitalize">${row.product_name}</td>
+                                 <td>${row.pur_thaan}</td>
+                                 <td>${row.quantity_instock}</td>
+                                 <td>${row.client_name}</td>
+                                 <td>
+                                     <button type="button" class="btn select-row2 btn-success btn-sm" value="${row.purchase_id}">Apply</button>
+                                 </td>
                                 </tr>
                             `;
                             });
@@ -363,15 +371,17 @@
                         if (jsonResponse.dyeing_items && jsonResponse.dyeing_items.length > 0) {
                             tableBody += `
                             <tr>
-                                <td colspan="4" class="table-section-title text-center">Dyeing Items</td>
+                                <td colspan="6" class="table-section-title text-center">Dyeing Items</td>
                             </tr>
                         `;
                             jsonResponse.dyeing_items.forEach(row => {
                                 tableBody += `
-                                <tr>
+                                <tr class="text-capitalize">
+                                 <td class="text-capitalize">${row.lat_no}</td>
                                 <td class="text-capitalize">${row.product_name}</td>
                                     <td>${row.thaan}</td>
                                     <td>${row.quantity_instock}</td>
+                                    <td>${row.customer_name}</td>
                                     <td>
                                         <button type="button" class="btn select-row3 btn-warning btn-sm" value="${row.dyeing_id}">
                                             Apply
@@ -385,7 +395,7 @@
                         // Update Table Body
                         $('#table-body-id').html(tableBody);
                     } else {
-                        $('#table-body-id').html('<tr><td colspan="5">No data found</td></tr>');
+                        $('#table-body-id').html('<tr><td colspan="6">No data found</td></tr>');
                     }
                 } catch (error) {
                     console.error('Error parsing JSON:', error);
@@ -476,6 +486,71 @@
                     $("#show_dyeing_details").modal("hide");
                 } else {
                     console.error("Failed to fetch dyeing details:", response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+            }
+        });
+    }
+
+    function getItemDetails(cuttingID, currentId) {
+        $.ajax({
+            url: 'php_action/custom_action.php',
+            type: 'POST',
+            data: {
+                get_selected_cutting_items: cuttingID
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    // Correct reference to cutting_items
+                    const data = response.cutting_items;
+
+                    // Initialize variables for table header and body
+                    let tableHead = "";
+                    let tableBody = "";
+
+                    const row = $(`#${currentId}`);
+                    $('#table-body-id').html(""); // Clear previous table body
+                    $('#table-head-id').html(""); // Clear previous table header
+
+                    // Construct table header
+                    tableHead += `
+                    <tr>
+                        <th>Lot No</th>
+                        <th>Product</th>
+                        <th>Thaan</th>
+                        <th>Quantity</th>
+                        <th>Cutting Man</th>
+                        <th>Action</th>
+                    </tr>
+                `;
+
+                    // Construct table body from the response data
+                    data.forEach(item => {
+                        tableBody += `
+                        <tr>
+                            <td class="text-capitalize">${item.lot_no}</td>
+                            <td class="text-capitalize">${item.product_name}</td>
+                            <td>${item.thaan}</td>
+                            <td>${item.quantity_instock || item.qty}</td>
+                            <td>${item.customer_name}</td>
+                            <td>
+                                <button type="button" class="btn select-row btn-primary btn-sm" value="${item.cutting_item_id}">
+                                    Apply
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    });
+
+                    // Insert the constructed table head and body
+                    $('#table-head-id').html(tableHead);
+                    $('#table-body-id').html(tableBody);
+
+                } else {
+                    console.error("Failed to fetch cutting item details:", response.message);
                 }
             },
             error: function(xhr, status, error) {

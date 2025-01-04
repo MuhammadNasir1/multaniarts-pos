@@ -2359,6 +2359,7 @@ if (isset($_POST['cuttingform'])) {
 				'thaan' => $_POST['thaan'][$key],
 				'qty_pur_thaan' => $_POST['pur_thaan'][$key],
 				'qty' => $quantity,
+				'quantity_instock' => $quantity,
 				'unsettle' => $_POST['unsettle'][$key],
 				'cp' => $_POST['cp'][$key],
 				'r_khata' => $_POST['r_khata'][$key],
@@ -2528,24 +2529,24 @@ if (isset($_POST['locations_data_get'])) {
 		$cutting[] = $product;
 	}
 
-	$cuttingItems = [];
-	if (!empty($cutting)) {
-		foreach ($cutting as $cut) {
-			$cuttingId = $cut['cutting_id'];
+	// $cuttingItems = [];
+	// if (!empty($cutting)) {
+	// 	foreach ($cutting as $cut) {
+	// 		$cuttingId = $cut['cutting_id'];
 
-			$itemsData = mysqli_query($dbc, "SELECT * FROM cutting_items WHERE cutting_id = '$cuttingId'");
-			while ($item = mysqli_fetch_assoc($itemsData)) {
-				$productId = $item['product_id'];
-				$productNameQuery = mysqli_query($dbc, "SELECT product_name FROM product WHERE product_id = '$productId'");
-				$productNameResult = mysqli_fetch_assoc($productNameQuery);
+	// 		$itemsData = mysqli_query($dbc, "SELECT * FROM cutting_items WHERE cutting_id = '$cuttingId'");
+	// 		while ($item = mysqli_fetch_assoc($itemsData)) {
+	// 			$productId = $item['product_id'];
+	// 			$productNameQuery = mysqli_query($dbc, "SELECT product_name FROM product WHERE product_id = '$productId'");
+	// 			$productNameResult = mysqli_fetch_assoc($productNameQuery);
 
-				$item['product_name'] = $productNameResult['product_name'] ?? 'Unknown';
-				$item['customer_name'] = $cut['customer_name'];
+	// 			$item['product_name'] = $productNameResult['product_name'] ?? 'Unknown';
+	// 			$item['customer_name'] = $cut['customer_name'];
 
-				$cuttingItems[] = $item;
-			}
-		}
-	}
+	// 			$cuttingItems[] = $item;
+	// 		}
+	// 	}
+	// }
 
 	// Fetch Purchase Data
 	$purchaseData = mysqli_query($dbc, "SELECT * FROM purchase WHERE pur_location = '$id'");
@@ -2559,20 +2560,29 @@ if (isset($_POST['locations_data_get'])) {
 	}
 
 	// Fetch Dyeing Data
-	$dyeingData = mysqli_query($dbc, "SELECT * FROM dyeing WHERE from_location = '$id' AND status = 'sent'");
+	$dyeingData = mysqli_query($dbc, "SELECT * FROM dyeing WHERE to_location = '$id' AND status = 'received'");
 	while ($dyeingRow = mysqli_fetch_assoc($dyeingData)) {
 		$productId = $dyeingRow['product_id'];
+
+		// Fetch product name
 		$productQuery = mysqli_query($dbc, "SELECT product_name FROM product WHERE product_id = '$productId'");
 		$productResult = mysqli_fetch_assoc($productQuery);
-
 		$dyeingRow['product_name'] = $productResult['product_name'] ?? 'Unknown';
+
+		// Fetch customer name
+		$customerQuery = mysqli_query($dbc, "SELECT customer_name FROM customers WHERE customer_id = '$id'");
+		$customerResult = mysqli_fetch_assoc($customerQuery);
+		$dyeingRow['customer_name'] = $customerResult['customer_name'] ?? 'Unknown';
+
+		// Append the updated dyeing row to the array
 		$dyeing[] = $dyeingRow;
 	}
+
 
 	// Final Response
 	echo json_encode([
 		'success' => true,
-		'cutting_items' => $cuttingItems,
+		'cutting_items' => $cutting,
 		'purchase_items' => $purchase,
 		'dyeing_items' => $dyeing
 	]);
