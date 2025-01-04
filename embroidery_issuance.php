@@ -266,9 +266,8 @@
 
 <?php
                         include_once 'includes/foot.php';
-                    } ?>
-
-
+                    }
+?>
 <script>
     $(document).on("click", ".select_dyeing", function() {
         const currentId = $(this).closest(".voucher_row2").attr("id");

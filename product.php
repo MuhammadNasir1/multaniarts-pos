@@ -153,10 +153,7 @@ $btn_name = isset($_REQUEST['edit_product_id']) ? "Update" : "Add";
                     endif;
                     ?>
                     <th>Selling Price</th>
-                    <td>15 Days Rate
-                    </td>
-                    <td>30 Days Rate
-                    </td>
+                  
                     <?php if ($get_company['stock_manage'] == 1): ?>
                       <th>Quanity instock</th>
                     <?php endif; ?>
@@ -176,7 +173,7 @@ $btn_name = isset($_REQUEST['edit_product_id']) ? "Update" : "Add";
                       <td><?= $c ?></td>
                       <td><?= $r['product_code'] ?></td>
                       <td><?= $r['product_name'] ?></td>
-                      <td><?= $brandFetched['brand_name'] ?>/<?= $categoryFetched['categories_name'] ?></td>
+                      <td><?= $r['brand_id'] ?> / <?= $categoryFetched['categories_name'] ?></td>
                       <?php
                       if ($UserData['user_role'] == 'admin'):
                       ?>
@@ -186,10 +183,7 @@ $btn_name = isset($_REQUEST['edit_product_id']) ? "Update" : "Add";
                       ?>
                       <td><?= $r['current_rate'] ?>
                       </td>
-                      <td><?= $r['f_days'] ?>
-                      </td>
-                      <td><?= $r['t_days'] ?>
-                      </td>
+                     
                       <?php if ($get_company['stock_manage'] == 1): ?>
                         <?php if ($r['quantity_instock'] > $r['alert_at']): ?>
                           <td>
