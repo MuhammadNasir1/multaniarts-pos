@@ -45,6 +45,10 @@
                                 <input type="date" name="issuance_date" id="issuance_date" value="<?= date('Y-m-d') ?>" class="form-control">
                             </div>
                             <div class="col-md-2 mt-3">
+                                <label>Lot No</label>
+                                <input type="text" placeholder="Gate Pass" value="" readonly autocomplete="off" class="form-control " name="lot_no" id="lot_no">
+                            </div>
+                            <div class="col-md-2 mt-3">
                                 <label for="emb_type">Emb Type</label>
                                 <select class="form-control searchableSelect" name="emb_type" id="emb_type">
                                     <option disabled selected>Select Type</option>
@@ -89,10 +93,6 @@
                                         <option value="<?= $d['program_id'] ?>"> <?= ucwords($d['name']) ?></option>
                                     <?php } ?>
                                 </select>
-                            </div>
-                            <div class="col-md-2 mt-3">
-                                <label>Lot No</label>
-                                <input type="text" placeholder="Gate Pass" value="" autocomplete="off" class="form-control " name="lot_no" id="lot_no">
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label>Dyeing Lot</label>
@@ -159,7 +159,7 @@
                                                 <select class="form-control searchableSelect" name="from_type[]" id="from_type<?= $i ?>" onchange="getStock(this.value, <?= $i ?>)">
                                                     <option disabled selected>Select Type</option>
                                                     <?php
-                                                    $products = mysqli_query($dbc, "SELECT * FROM product WHERE  status = 1");
+                                                    $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'cora_cutted' OR brand_id = 'dyed_cutted' status = 1");
                                                     while ($p = mysqli_fetch_assoc($products)) {
                                                     ?>
                                                         <option value="<?= $p['product_id'] ?>"><?= ucwords($p['product_name']) ?> (<?= ucwords($p['brand_id']) ?>)</option>
@@ -482,6 +482,7 @@
                     row.find('[name="small_cp[]"]').val(data.small_cp || '');
                     row.find('[name="color[]"]').val(data.color || '');
 
+                    $("#lot_no").val(data.lot_no);
                     $("#purchase_id").val(data.purchase_id);
                     $("#show_dyeing_details").modal("hide");
                 } else {
@@ -579,7 +580,7 @@
                     row.find('[name="thaan[]"]').val(data.pur_thaan || '');
                     row.find('[name="pur_thaan[]"]').val(data.qty_pur_thaan || '');
                     row.find('[name="qty[]"]').val(data.quantity_instock || '');
-
+                    $("#lot_no").val(data.lot_no);
                     $("#purchase_id").val(data.purchase_id);
                     $("#show_dyeing_details").modal("hide");
                 } else {
@@ -615,7 +616,8 @@
                     let details = JSON.parse(data.product_details);
                     row.find('[name="pur_type[]"]').val(details.unit_arr || '');
                     row.find('[name="qty[]"]').val(data.quantity_instock || '');
-
+                    let product_details = JSON.parse(data.product_details);
+                    $("#lot_no").val(product_details.lot_no_arr);
                     $("#purchase_id").val(data.purchase_id);
                     $("#show_dyeing_details").modal("hide");
                 } else {

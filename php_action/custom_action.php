@@ -2868,6 +2868,7 @@ if (isset($_POST['printingForm'])) {
 					'from_product_type' => $from_product_id,
 					'product_id' => $product_id,
 					'thaan' => $_POST['thaan'][$key],
+					'item_lot_no' => $_POST['lot_no'],
 					'qty_pur_thaan' => $_POST['pur_thaan'][$key],
 					'qty' => $quantity,
 					'status' => 'sent',

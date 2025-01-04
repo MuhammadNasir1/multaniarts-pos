@@ -46,6 +46,10 @@
                                 <input type="date" name="issuance_date" id="issuance_date" value="<?= date('Y-m-d') ?>" class="form-control">
                             </div>
                             <div class="col-md-2 mt-3">
+                                <label>Lot No</label>
+                                <input type="text" placeholder="Gate Pass" readonly value="" autocomplete="off" class="form-control " name="lot_no" id="lot_no">
+                            </div>
+                            <div class="col-md-2 mt-3">
                                 <label for="emb_type">Emb Type</label>
                                 <select class="form-control searchableSelect" name="emb_type" id="emb_type">
                                     <option disabled selected>Select Type</option>
@@ -101,10 +105,6 @@
                                 </select>
                             </div>
                             <div class="col-md-2 mt-3">
-                                <label>Lot No</label>
-                                <input type="text" placeholder="Gate Pass" value="" autocomplete="off" class="form-control " name="lot_no" id="lot_no">
-                            </div>
-                            <div class="col-md-2 mt-3">
                                 <label>Dyeing Lot</label>
                                 <input type="text" placeholder="Gate Pass" value="" autocomplete="off" class="form-control " name="dyeing_lot" id="dyeing_lot">
                             </div>
@@ -143,6 +143,7 @@
                                 <div class="voucher_row2" id="row<?= $i ?>">
                                     <div class="row mt-3 m-0 p-0">
                                         <div class="col-lg-2 m-0 p-0  row">
+                                            <input type="hidden" name="printing_item_id[]" id="printing_item_id<?= $i ?>" value="">
                                             <div class="col-lg-6 m-0 p-0 pl-1">
                                                 <label for="sr">Sr</label>
                                                 <input type="text" class="form-control" id="sr<?= $i ?>" readonly value="<?= $i ?>">
@@ -169,7 +170,7 @@
                                                 <select class="form-control searchableSelect" name="from_type[]" id="from_type<?= $i ?>" onchange="getStock(this.value, <?= $i ?>)">
                                                     <option disabled selected>Select Type</option>
                                                     <?php
-                                                    $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'printed' AND status = 1");
+                                                    $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'cora_cutted' OR brand_id = 'dyed_cutted' AND status = 1");
                                                     while ($p = mysqli_fetch_assoc($products)) {
                                                     ?>
                                                         <option value="<?= $p['product_id'] ?>"><?= ucwords($p['product_name']) ?> (<?= ucwords($p['brand_id']) ?>)</option>
@@ -185,7 +186,7 @@
                                             <select class="form-control searchableSelect" name="type[]" id="type<?= $i ?>">
                                                 <option disabled selected>Select Type</option>
                                                 <?php
-                                                $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'cora_cutted' OR brand_id = 'dyed_cutted' AND status = 1");
+                                                $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'printed' AND status = 1");
                                                 while ($p = mysqli_fetch_assoc($products)) {
                                                 ?>
                                                     <option value="<?= $p['product_id'] ?>"><?= ucwords($p['product_name']) ?> (<?= ucwords($p['brand_id']) ?>)</option>
@@ -242,6 +243,7 @@
                                     <table class="table table-bordered" id="purchaseDetailsTable">
                                         <thead>
                                             <tr>
+                                                <th>Lot No</th>
                                                 <th>Product</th>
                                                 <th>Thaan</th>
                                                 <th>Quantity</th>
@@ -323,6 +325,7 @@
 
                                 tableBody += `
             <tr>
+                <td class="text-capitalize">${row.item_lot_no}</td>
                 <td class="text-capitalize">${row.product_name}</td>
                 <td>${row.thaan}</td>
                 <td>${row.quantity_instock}</td>
@@ -418,7 +421,8 @@
                     row.find('[name="lat_no[]"]').val(data.lot_no || '');
                     row.find('[name="d_lot_no[]"]').val(data.d_lat_no || '');
                     row.find('[name="pur_type[]"]').val(data.unit || '').change();
-                    row.find('[name="from_type[]"]').val(data.product_id || '').change();
+                    row.find('[name="from_type[]"]').val(data.from_product_type || '').change();
+                    row.find('[name="type[]"]').val(data.product_id || '').change();
                     row.find('[name="thaan[]"]').val(data.thaan || '');
                     row.find('[name="pur_thaan[]"]').val(data.qty_pur_thaan || '');
                     row.find('[name="qty[]"]').val(data.qty || '');
@@ -427,8 +431,9 @@
                     row.find('[name="r_khata[]"]').val(data.r_khata || '');
                     row.find('[name="small_cp[]"]').val(data.small_cp || '');
                     row.find('[name="color[]"]').val(data.color || '');
+                    row.find('[name="printing_item_id[]"]').val(data.printing_item_id || '');
 
-
+                    $("#lot_no").val(data.item_lot_no);
                     $("#received_printing").val(data.printing_id);
                     $("#purchase_id").val(data.purchase_id);
                     $("#show_dyeing_details").modal("hide");
