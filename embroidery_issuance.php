@@ -309,9 +309,9 @@
                         jsonResponse.cutting_items.forEach(row => {
                             tableBody += `
                         <tr>
-                            <td class="text-capitalize">${row.lot_no}</td>
-                            <td class="text-capitalize">${row.customer_name}</td>
-                            <td>${row.issuance_date}</td>
+                        <td>${row.issuance_date}</td>
+                        <td class="text-capitalize">${row.lot_no}</td>
+                        <td class="text-capitalize">${row.customer_name}</td>
                             <td>
                                 <button type="button" class="btn select-row2 btn-primary btn-sm" value="${row.lot_no}">
                                     Apply

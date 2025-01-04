@@ -2742,18 +2742,6 @@ if (isset($_POST['embroideryform'])) {
 
 				// Update stock for the destination product
 				$product_id = @$_POST['type'][$key];
-				$quantity_instock_result = mysqli_query($dbc, "SELECT quantity_instock FROM product WHERE product_id='$product_id'");
-
-				if ($quantity_instock_result && $quantity_instock_result->num_rows > 0) {
-					$quantity_instock_data = $quantity_instock_result->fetch_assoc();
-					$quantity_instock = (float)$quantity_instock_data['quantity_instock'];
-					$new_qty = $quantity_instock + $quantity;
-					mysqli_query($dbc, "UPDATE product SET quantity_instock='$new_qty' WHERE product_id='$product_id'");
-				}
-
-				// Subtract the quantity from the from_type product
-				$new_from_qty = $from_quantity_instock - $quantity;
-				mysqli_query($dbc, "UPDATE product SET quantity_instock='$new_from_qty' WHERE product_id='$from_product_id'");
 
 				// Prepare item data for insertion
 				$items_data[] = [
@@ -2763,6 +2751,7 @@ if (isset($_POST['embroideryform'])) {
 					'from_product_type' => $from_product_id,
 					'product_id' => $product_id,
 					'thaan' => $_POST['thaan'][$key],
+					'item_lot_no' => $_POST['lot_no'],
 					'qty_pur_thaan' => $_POST['pur_thaan'][$key],
 					'qty' => $quantity,
 					'status' => 'sent',
@@ -2870,18 +2859,6 @@ if (isset($_POST['printingForm'])) {
 
 				// Update stock for the destination product
 				$product_id = @$_POST['type'][$key];
-				$quantity_instock_result = mysqli_query($dbc, "SELECT quantity_instock FROM product WHERE product_id='$product_id'");
-
-				if ($quantity_instock_result && $quantity_instock_result->num_rows > 0) {
-					$quantity_instock_data = $quantity_instock_result->fetch_assoc();
-					$quantity_instock = (float)$quantity_instock_data['quantity_instock'];
-					$new_qty = $quantity_instock + $quantity;
-					mysqli_query($dbc, "UPDATE product SET quantity_instock='$new_qty' WHERE product_id='$product_id'");
-				}
-
-				// Subtract the quantity from the from_type product
-				$new_from_qty = $from_quantity_instock - $quantity;
-				mysqli_query($dbc, "UPDATE product SET quantity_instock='$new_from_qty' WHERE product_id='$from_product_id'");
 
 				// Prepare item data for insertion
 				$items_data[] = [

@@ -47,6 +47,10 @@
                                 <label>Date</label>
                                 <input type="date" name="issuance_date" id="issuance_date" value="" class="form-control">
                             </div>
+                            <div class="col-2 mt-3">
+                                <label>Lot No #</label>
+                                <input type="text" placeholder="Lot No" readonly value="" autocomplete="off" class="form-control " name="lat_no" id="lat_no">
+                            </div>
                             <div class="col-md-2 mt-3">
                                 <label>Party GP #</label>
                                 <input type="text" placeholder="Party GP" value="" autocomplete="off" class="form-control " name="party_gp" id="party_gp">
@@ -103,11 +107,7 @@
                             </div>
                             <div class="col-2 mt-3">
                                 <label>Color</label>
-                                <input type="date" name="main_color" id="main_color" value="" class="form-control">
-                            </div>
-                            <div class="col-2 mt-3">
-                                <label>Lot No #</label>
-                                <input type="text" placeholder="Lot No" value="" autocomplete="off" class="form-control " name="lat_no" id="lat_no">
+                                <input type="text" name="main_color" id="main_color" value="" class="form-control">
                             </div>
                             <div class="col-2 mt-3">
                                 <label>D Lot No #</label>
@@ -157,7 +157,7 @@
                                                     <select class="form-control searchableSelect" name="from_type[]" id="from_type<?= $i ?>" onchange="getStock(this.value, <?= $i ?>)">
                                                         <option disabled selected>Select Type</option>
                                                         <?php
-                                                        $products = mysqli_query($dbc, "SELECT * FROM product WHERE (brand_id = 'embroidered') AND status = 1");
+                                                        $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'cora_cutted' OR brand_id = 'dyed_cutted' AND status = 1");
                                                         while ($p = mysqli_fetch_assoc($products)) {
                                                         ?>
                                                             <option value="<?= $p['product_id'] ?>"><?= ucwords($p['product_name']) ?> (<?= ucwords($p['brand_id']) ?>)</option>
@@ -263,6 +263,7 @@
                                     <table class="table table-bordered" id="purchaseDetailsTable">
                                         <thead>
                                             <tr>
+                                                <th>Lot No</th>
                                                 <th>Embroidery</th>
                                                 <th>Product</th>
                                                 <th>Thaan</th>
@@ -335,6 +336,7 @@
                         jsonResponse.embroidery_items.forEach(row => {
                             tableBody += `
                         <tr>
+                            <td class="text-capitalize">${row.item_lot_no}</td>
                             <td class="text-capitalize">${row.customer_name}</td>
                             <td class="text-capitalize">${row.product_name}</td>
                             <td>${row.thaan}</td>
@@ -378,10 +380,11 @@
                     const row = $(`#${currentId}`); // Get the current row using currentId
 
                     // Fill in the fields with the response data
-                    row.find('[name="lat_no[]"]').val(data.lot_no || '');
+                    row.find('[name="lat_no[]"]').val(data.item_lot_no || '');
                     row.find('[name="d_lot_no[]"]').val(data.d_lat_no || '');
                     row.find('[name="pur_type[]"]').val(data.unit || '').change();
-                    row.find('[name="from_type[]"]').val(data.product_id || '').change();
+                    row.find('[name="from_type[]"]').val(data.from_product_type || '').change();
+                    row.find('[name="type[]"]').val(data.product_id || '').change();
                     row.find('[name="thaan[]"]').val(data.thaan || '');
                     row.find('[name="pur_thaan[]"]').val(data.qty_pur_thaan || '');
                     row.find('[name="qty[]"]').val(data.qty || '');
@@ -392,7 +395,7 @@
                     row.find('[name="color[]"]').val(data.color || '');
                     row.find('[name="embroidery_item_id[]"]').val(data.embroidery_item_id || '');
 
-                    $("#lot_no").val(data.lot_no);
+                    $("#lat_no").val(data.item_lot_no);
                     $("#dyeing_lot").val(data.d_lat_no);
                     $("#purchase_id").val(data.purchase_id);
                     $("#received_embroidery").val(data.embroidery_id);
