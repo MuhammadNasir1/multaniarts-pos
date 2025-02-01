@@ -260,25 +260,24 @@
                             <th>TOTAL</th>
                         </thead>
                         <tbody class="tbody_row">
-                            <?php $c = 0;
-                            while ($r = mysqli_fetch_assoc($order_item)) {
-                                $c++;
-                                //print_r($order);
-                            ?>
-                                <tr>
-                                    <td><?= $c ?></td>
-                                    <td><?= strtoupper($r['product_name']) ?></td>
-                                    <td><?= $r['rate'] ?></td>
-                                    <td><?= $r['quantity'] ?></td>
-                                    <td><?= $r['pur_thaan'] ?></td>
-                                    <td><?= $r['pur_gzanah'] ?></td>
-                                    <td><?= ucwords($r['pur_unit']) ?></td>
-                                    <td><?= $r['rate'] * $r['quantity'] ?></td>
-                                </tr>
 
-                            <?php
-                                $totalQTY += $r['quantity'];
-                            } ?>
+                            <tr class="text-capitalize">
+                                <td>01</td>
+                                <td>
+                                    <?php
+                                    $p = fetchRecord($dbc, "product", "product_id", $order['product_id']);
+                                   echo  $p['product_name']
+                                    ?>
+                                </td>
+                                <td><?= $order['pur_rate'] ?></td>
+                                <td><?= $order['quantity'] ?></td>
+                                <td><?= $order['pur_thaan'] ?></td>
+                                <td><?= $order['pur_gzanah'] ?></td>
+                                <td><?= ucwords($order['pur_type']) ?></td>
+                                <td><?= $order['pur_rate'] * $order['quantity'] ?></td>
+                            </tr>
+
+
                         </tbody>
                         <tfoot class="tfoot_row">
 

@@ -960,7 +960,7 @@ if (isset($_REQUEST['cash_purchase_supplier'])) {
 	if ($_REQUEST['product_purchase_id'] == "") {
 
 		if (insert_data($dbc, 'purchase', $data)) {
-
+			$last_id = mysqli_insert_id($dbc);
 			$p_id = $_POST['next_increment'];
 			$all_data = [
 				'purchase_id' => $p_id,
@@ -996,6 +996,7 @@ if (isset($_REQUEST['cash_purchase_supplier'])) {
 				}
 			}
 
+			
 			// $total_grand = $total_ammount - $total_ammount * ((float)@$_REQUEST['ordered_discount'] / 100) + @$_REQUEST['freight'];
 
 			// $due_amount = (float)$total_grand - @(float)$_REQUEST['paid_ammount'];
