@@ -355,28 +355,28 @@
 
 
     function getCuttingItemDetails(cuttingID, currentId) {
-    $.ajax({
-        url: 'php_action/custom_action.php',
-        type: 'POST',
-        data: {
-            get_selected_printing_items: cuttingID
-        },
-        dataType: 'json',
-        success: function(response) {
-            if (response.success) {
-                // Correct reference to printing_items
-                const data = response.printing_items;
+        $.ajax({
+            url: 'php_action/custom_action.php',
+            type: 'POST',
+            data: {
+                get_selected_printing_items: cuttingID
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    // Correct reference to printing_items
+                    const data = response.printing_items;
 
-                // Initialize variables for table header and body
-                let tableHead = "";
-                let tableBody = "";
+                    // Initialize variables for table header and body
+                    let tableHead = "";
+                    let tableBody = "";
 
-                const row = $(`#${currentId}`);
-                $('#table-body-id').html(""); // Clear previous table body
-                $('#table-head-id').html(""); // Clear previous table header
+                    const row = $(`#${currentId}`);
+                    $('#table-body-id').html(""); // Clear previous table body
+                    $('#table-head-id').html(""); // Clear previous table header
 
-                // Construct table header
-                tableHead += `
+                    // Construct table header
+                    tableHead += `
                     <tr>
                         <th>Item Lot No</th>
                         <th>Product</th>
@@ -387,9 +387,9 @@
                     </tr>
                 `;
 
-                // Construct table body from the response data
-                data.forEach(item => {
-                    tableBody += `
+                    // Construct table body from the response data
+                    data.forEach(item => {
+                        tableBody += `
                         <tr>
                             <td class="text-capitalize">${item.item_lot_no}</td>
                             <td class="text-capitalize">${item.product_name}</td>
@@ -403,22 +403,22 @@
                             </td>
                         </tr>
                     `;
-                });
+                    });
 
-                // Insert the constructed table head and body
-                $('#table-head-id').html(tableHead);  // Insert the table header
-                $('#table-body-id').html(tableBody);  // Insert the table body
-            } else {
-                console.error("Failed to fetch printing item details:", response.message);
-                $('#table-body-id').html('<tr><td colspan="6">No data found</td></tr>');  // Show message if no data
+                    // Insert the constructed table head and body
+                    $('#table-head-id').html(tableHead); // Insert the table header
+                    $('#table-body-id').html(tableBody); // Insert the table body
+                } else {
+                    console.error("Failed to fetch printing item details:", response.message);
+                    $('#table-body-id').html('<tr><td colspan="6">No data found</td></tr>'); // Show message if no data
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+                $('#table-body-id').html('<tr><td colspan="6">Error loading data</td></tr>'); // Show error message
             }
-        },
-        error: function(xhr, status, error) {
-            console.error("AJAX Error:", status, error);
-            $('#table-body-id').html('<tr><td colspan="6">Error loading data</td></tr>');  // Show error message
-        }
-    });
-}
+        });
+    }
 
 
     $(document).ready(function() {

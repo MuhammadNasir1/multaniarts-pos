@@ -140,7 +140,7 @@
                                             <div class="col-lg-5 m-0 mt-1 p-0 pl-3">
                                                 <button type="button" class="btn select_dyeing  mt-4 btn-primary btn-sm"
                                                     name="select_dyeing"
-                                                    id="select_dyeing"> Select Cutting </button>
+                                                    id="select_dyeing"> Select </button>
                                             </div>
 
                                         </div>
@@ -159,7 +159,7 @@
                                                 <select class="form-control searchableSelect" name="from_type[]" id="from_type<?= $i ?>" onchange="getStock(this.value, <?= $i ?>)">
                                                     <option disabled selected>Select Type</option>
                                                     <?php
-                                                    $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'cora_cutted' OR brand_id = 'dyed_cutted' AND status = 1");
+                                                    $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'cora_cutted' OR brand_id = 'dyed_cutted' OR brand_id = 'printed' AND status = 1");
                                                     while ($p = mysqli_fetch_assoc($products)) {
                                                     ?>
                                                         <option value="<?= $p['product_id'] ?>"><?= ucwords($p['product_name']) ?> (<?= ucwords($p['brand_id']) ?>)</option>
@@ -310,6 +310,12 @@
 
         getPrintingItemDetails(cuttingID, currentId);
     });
+    $(document).on("click", ".select-row5", function() {
+        const cuttingID = $(this).val();
+        const currentId = $("#show_dyeing_details").data("currentId");
+
+        getPrintingDetails(cuttingID, currentId);
+    });
     // getDyeingDetails(dyeingId, currentId);
 
     function getTableData(location_id) {
@@ -445,6 +451,7 @@
                     row.find('[name="color[]"]').val(data.color || '');
 
 
+                    $("#lot_no").val(data.item_lot_no);
                     $("#purchase_id").val(data.purchase_id);
                     $("#show_dyeing_details").modal("hide");
                 } else {
@@ -456,12 +463,12 @@
             }
         });
     }
-    function getPrintingItemDetails(cuttingID, currentId) {
+    function getPrintingDetails(cuttingID, currentId) {
         $.ajax({
             url: 'php_action/custom_action.php',
             type: 'POST',
             data: {
-                get_selected_printing_items: cuttingID
+                get_selected_printing: cuttingID
             },
             dataType: 'json',
             success: function(response) {
@@ -484,7 +491,7 @@
                     row.find('[name="small_cp[]"]').val(data.small_cp || '');
                     row.find('[name="color[]"]').val(data.color || '');
 
-
+                    $("#lot_no").val(data.item_lot_no);
                     $("#purchase_id").val(data.purchase_id);
                     $("#show_dyeing_details").modal("hide");
                 } else {
@@ -496,6 +503,7 @@
             }
         });
     }
+
 
     function getCuttingItemDetails(cuttingID, currentId) {
         $.ajax({
@@ -559,6 +567,72 @@
             },
             error: function(xhr, status, error) {
                 console.error("AJAX Error:", status, error);
+            }
+        });
+    }
+    function getPrintingItemDetails(cuttingID, currentId) {
+        $.ajax({
+            url: 'php_action/custom_action.php',
+            type: 'POST',
+            data: {
+                get_selected_printing_items: cuttingID
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    // Correct reference to printing_items
+                    const data = response.printing_items;
+
+                    // Initialize variables for table header and body
+                    let tableHead = "";
+                    let tableBody = "";
+
+                    const row = $(`#${currentId}`);
+                    $('#printTable-head-id').html(""); // Clear previous table body
+                    $('#printTable-body-id').html(""); // Clear previous table header
+
+                    // Construct table header
+                    tableHead += `
+                    <tr>
+                        <th>Item Lot No</th>
+                        <th>Product</th>
+                        <th>Thaan</th>
+                        <th>Quantity In Stock</th>
+                        <th>Customer Name</th>
+                        <th>Action</th>
+                    </tr>
+                `;
+
+                    // Construct table body from the response data
+                    data.forEach(item => {
+                        tableBody += `
+                        <tr>
+                            <td class="text-capitalize">${item.item_lot_no}</td>
+                            <td class="text-capitalize">${item.product_name}</td>
+                            <td>${item.thaan}</td>
+                            <td>${item.quantity_instock || item.qty}</td>
+                            <td>${item.customer_name}</td>
+                            <td>
+                                <button type="button" class="btn select-row5 btn-primary btn-sm" value="${item.printing_item_id}">
+                                    Apply
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    });
+
+                    // Insert the constructed table head and body
+                    $('#printTable-head-id').html(tableHead); // Insert the table header
+                    $('#printTable-body-id').html(tableBody); // Insert the table body
+                    $('#table-body-id').html('<tr><td colspan="6">No data found</td></tr>'); // Insert the table body
+                } else {
+                    console.error("Failed to fetch printing item details:", response.message);
+                    $('#table-body-id').html('<tr><td colspan="6">No data found</td></tr>'); // Show message if no data
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+                $('#table-body-id').html('<tr><td colspan="6">Error loading data</td></tr>'); // Show error message
             }
         });
     }
