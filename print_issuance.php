@@ -159,7 +159,7 @@
                                                 <select class="form-control searchableSelect" name="from_type[]" id="from_type<?= $i ?>" onchange="getStock(this.value, <?= $i ?>)">
                                                     <option disabled selected>Select Type</option>
                                                     <?php
-                                                    $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'cora_cutted' OR brand_id = 'dyed_cutted' status = 1");
+                                                    $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'cora_cutted' OR brand_id = 'dyed_cutted' OR brand_id = 'dyed' AND status = 1");
                                                     while ($p = mysqli_fetch_assoc($products)) {
                                                     ?>
                                                         <option value="<?= $p['product_id'] ?>"><?= ucwords($p['product_name']) ?> (<?= ucwords($p['brand_id']) ?>)</option>

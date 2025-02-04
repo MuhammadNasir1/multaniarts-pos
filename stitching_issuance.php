@@ -1,4 +1,4 @@
-<?php if (basename($_SERVER['REQUEST_URI']) == 'print_recieving.php') { ?>
+<?php if (basename($_SERVER['REQUEST_URI']) == 'stitching_issuance.php') { ?>
     <!DOCTYPE html>
     <html lang="en">
     <?php include_once 'includes/head.php';
@@ -19,7 +19,7 @@
 
                         <div class="row">
                             <div class="col-12 mx-auto h4">
-                                <b class="text-center card-text">Print Receiving</b>
+                                <b class="text-center card-text">Stitching Issuance</b>
                                 <a href="credit_purchase.php" class="btn btn-admin float-right btn-sm">Add New</a>
                             </div>
                         </div>
@@ -28,12 +28,11 @@
                     <div class="card-body">
                     <?php } ?>
 
-                    <form action="php_action/custom_action.php" method="POST" id="printing_form">
+                    <form action="php_action/custom_action.php" method="POST" id="embroidery_form">
                         <input type="hidden" name="product_purchase_id" value="<?= @empty($_REQUEST['edit_purchase_id']) ? "" : base64_decode($_REQUEST['edit_purchase_id']) ?>">
                         <input type="hidden" name="payment_type" id="payment_type" value="credit_purchase">
-                        <input type="hidden" name="printingReceivingForm" id="embroideryform" value="embroideryform">
+                        <input type="hidden" name="embroideryform" id="embroideryform" value="embroideryform">
                         <input type="hidden" name="purchase_id" id="purchase_id" value="">
-                        <input type="hidden" name="received_printing" id="received_printing" value="">
 
 
                         <div class="row form-group">
@@ -47,7 +46,7 @@
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label>Lot No</label>
-                                <input type="text" placeholder="Gate Pass" readonly value="" autocomplete="off" class="form-control " name="lot_no" id="lot_no">
+                                <input type="text" placeholder="Lot No" readonly value="" autocomplete="off" class="form-control " name="lot_no" id="lot_no">
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label for="emb_type">Emb Type</label>
@@ -62,7 +61,7 @@
                                 <select class="form-control searchableSelect" name="location" id="location" onchange="getTableData(this.value)">
                                     <option disabled selected>Select Location</option>
                                     <?php
-                                    $query = "SELECT * FROM customers WHERE customer_type IN ('printer')";
+                                    $query = "SELECT * FROM customers WHERE customer_type IN ('shop')";
                                     $result = mysqli_query($dbc, $query);
                                     while ($d = mysqli_fetch_assoc($result)) {
                                         echo "<option value='{$d['customer_id']}'>" . ucwords($d['customer_name']) . " (" . ucwords($d['customer_type']) . ")</option>";
@@ -71,25 +70,16 @@
                                 </select>
                             </div>
                             <div class="col-md-2 mt-3">
-                                <label for="embroidery">Print</label>
-                                <select class="form-control searchableSelect" name="print" id="print">
-                                    <option disabled selected>Select Printer</option>
-                                    <?php $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status = 1 AND (customer_type = 'dyeing' OR customer_type = 'shop' OR customer_type = 'shop' OR customer_type = 'packing' OR customer_type = 'printer') ORDER BY customer_type ASC;");
-                                    $type2 = '';
-                                    while ($r = mysqli_fetch_assoc($q)):
-                                        $type = $r['customer_type'];
+                                <label for="embroidery">Embroidery</label>
+                                <select class="form-control searchableSelect" name="embroidery" id="embroidery">
+                                    <option disabled selected>Select Embroidery</option>
+                                    <?php
+                                    $query = "SELECT * FROM customers WHERE customer_type IN ('embroidery')";
+                                    $result = mysqli_query($dbc, $query);
+                                    while ($d = mysqli_fetch_assoc($result)) {
+                                        echo "<option value='{$d['customer_id']}'>" . ucwords($d['customer_name']) . " (" . ucwords($d['customer_type']) . ")</option>";
+                                    }
                                     ?>
-                                        <?php if ($type != $type2): ?>
-                                            <optgroup label="<?= $r['customer_type'] ?>">
-                                            <?php endif ?>
-
-                                            <option <?= @($voucher['customer_id2'] == $r['customer_id']) ? "selected" : "" ?> value="<?= $r['customer_id'] ?>"><?= $r['customer_name'] ?></option>
-
-                                            <?php if ($type != $type2): ?>
-                                            </optgroup>
-                                        <?php endif ?>
-                                    <?php $type2 = $r['customer_type'];
-                                    endwhile; ?>
                                 </select>
                             </div>
                             <div class="col-md-2 mt-3">
@@ -113,8 +103,8 @@
                                 <input type="text" placeholder="Gate Pass" value="" autocomplete="off" class="form-control " name="manual_gp" id="manual_gp">
                             </div>
                             <div class="col-md-2 mt-3">
-                                <label for="cutting_man">Printing Man</label>
-                                <input type="text" placeholder="Cutting Man" value="" autocomplete="off" class="form-control " name="printing_man" id="cutting_man">
+                                <label for="cutting_man">Cutting Man</label>
+                                <input type="text" placeholder="Cutting Man" value="" autocomplete="off" class="form-control " name="cutting_man" id="cutting_man">
                             </div>
                             <div class="col-md-2 mt-3">
                                 <label for="sending_person">Sending Person</label>
@@ -143,7 +133,6 @@
                                 <div class="voucher_row2" id="row<?= $i ?>">
                                     <div class="row mt-3 m-0 p-0">
                                         <div class="col-lg-2 m-0 p-0  row">
-                                            <input type="hidden" name="printing_item_id[]" id="printing_item_id<?= $i ?>" value="">
                                             <div class="col-lg-6 m-0 p-0 pl-1">
                                                 <label for="sr">Sr</label>
                                                 <input type="text" class="form-control" id="sr<?= $i ?>" readonly value="<?= $i ?>">
@@ -151,7 +140,7 @@
                                             <div class="col-lg-5 m-0 mt-1 p-0 pl-3">
                                                 <button type="button" class="btn select_dyeing  mt-4 btn-primary btn-sm"
                                                     name="select_dyeing"
-                                                    id="select_dyeing"> Select Printing </button>
+                                                    id="select_dyeing"> Select Cutting </button>
                                             </div>
 
                                         </div>
@@ -170,7 +159,7 @@
                                                 <select class="form-control searchableSelect" name="from_type[]" id="from_type<?= $i ?>" onchange="getStock(this.value, <?= $i ?>)">
                                                     <option disabled selected>Select Type</option>
                                                     <?php
-                                                    $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'cora_cutted' OR brand_id = 'dyed_cutted' OR brand_id = 'dyed' AND status = 1");
+                                                    $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'cora_cutted' OR brand_id = 'dyed_cutted' AND status = 1");
                                                     while ($p = mysqli_fetch_assoc($products)) {
                                                     ?>
                                                         <option value="<?= $p['product_id'] ?>"><?= ucwords($p['product_name']) ?> (<?= ucwords($p['brand_id']) ?>)</option>
@@ -186,7 +175,7 @@
                                             <select class="form-control searchableSelect" name="type[]" id="type<?= $i ?>">
                                                 <option disabled selected>Select Type</option>
                                                 <?php
-                                                $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'printed' AND status = 1");
+                                                $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'embroidered' AND status = 1");
                                                 while ($p = mysqli_fetch_assoc($products)) {
                                                 ?>
                                                     <option value="<?= $p['product_id'] ?>"><?= ucwords($p['product_name']) ?> (<?= ucwords($p['brand_id']) ?>)</option>
@@ -231,7 +220,7 @@
                         <div class="modal-dialog modal-lg" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLongTitle">Printing Details</h5>
+                                    <h5 class="modal-title" id="exampleModalLongTitle">Cutting Details</h5>
                                     <input type="text" id="tableSearchInput" class="form-control ml-3" placeholder="Search Here" style="width: 50%;">
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="detailModalClose">
                                         <span aria-hidden="true">&times;</span>
@@ -243,9 +232,9 @@
                                     <table class="table table-bordered" id="purchaseDetailsTable">
                                         <thead id="table-head-id">
                                             <tr>
-                                                <th>Lot No</th>
-                                                <th>From</th>
                                                 <th>Issuance Date</th>
+                                                <th>Lot No</th>
+                                                <th>Cutting Man</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -261,7 +250,7 @@
                             </div>
                         </div>
                     </div>
-                    <?php if (basename($_SERVER['REQUEST_URI']) == 'print_recieving.php') { ?>
+                    <?php if (basename($_SERVER['REQUEST_URI']) == 'stitching_issuance.php') { ?>
                 </div>
             </div> <!-- .row -->
         </div> <!-- .container-fluid -->
@@ -277,9 +266,8 @@
 
 <?php
                         include_once 'includes/foot.php';
-                    } ?>
-
-
+                    }
+?>
 <script>
     $(document).on("click", ".select_dyeing", function() {
         const currentId = $(this).closest(".voucher_row2").attr("id");
@@ -304,125 +292,50 @@
     // getDyeingDetails(dyeingId, currentId);
 
     function getTableData(location_id) {
-        console.log('getTableData called for location_id:', location_id);
-
         $.ajax({
             url: 'php_action/custom_action.php',
             type: 'POST',
             data: {
-                printed_data_get: location_id
+                get_location_data: location_id
             },
-            dataType: 'json', // Updated to expect JSON response
+            dataType: 'text',
             success: function(response) {
-                console.log('AJAX Response:', response);
-
                 try {
-                    if (response.success && response.printing_items.length > 0) {
+                    let jsonResponse = JSON.parse(response);
+
+                    if (jsonResponse.success && jsonResponse.cutting_items) {
                         let tableBody = '';
 
-                        response.printing_items.forEach(printingItem => {
-                            console.log("Printing Item:", printingItem);
-
-                            // Display main printing data
+                        jsonResponse.cutting_items.forEach(row => {
                             tableBody += `
-                            <tr>
-                                <td>${printingItem.lot_no || ''}</td>
-                                <td>${printingItem.issuance_date || ''}</td>
-                                <td>${printingItem.customer_name || 'Unknown'}</td>
-                                <td>
-                                    <button type="button" class="btn select-row2 btn-primary btn-sm" value="${printingItem.lot_no}">Apply</button>
-                                </td>
-                            </tr>`;
-                        });
-
-                        $('#table-body-id').html(tableBody);
-                    } else {
-                        console.error("No printing data found.");
-                        $('#table-body-id').html('<tr><td colspan="7">No printing data found</td></tr>');
-                    }
-                } catch (error) {
-                    console.error('Error parsing JSON:', error);
-                    $('#table-body-id').html('<tr><td colspan="7">Error parsing data</td></tr>');
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('AJAX Error:', error);
-                $('#table-body-id').html('<tr><td colspan="7">AJAX error</td></tr>');
-            }
-        });
-    }
-
-
-
-    function getCuttingItemDetails(cuttingID, currentId) {
-    $.ajax({
-        url: 'php_action/custom_action.php',
-        type: 'POST',
-        data: {
-            get_selected_printing_items: cuttingID
-        },
-        dataType: 'json',
-        success: function(response) {
-            if (response.success) {
-                // Correct reference to printing_items
-                const data = response.printing_items;
-
-                // Initialize variables for table header and body
-                let tableHead = "";
-                let tableBody = "";
-
-                const row = $(`#${currentId}`);
-                $('#table-body-id').html(""); // Clear previous table body
-                $('#table-head-id').html(""); // Clear previous table header
-
-                // Construct table header
-                tableHead += `
-                    <tr>
-                        <th>Item Lot No</th>
-                        <th>Product</th>
-                        <th>Thaan</th>
-                        <th>Quantity In Stock</th>
-                        <th>Customer Name</th>
-                        <th>Action</th>
-                    </tr>
-                `;
-
-                // Construct table body from the response data
-                data.forEach(item => {
-                    tableBody += `
                         <tr>
-                            <td class="text-capitalize">${item.item_lot_no}</td>
-                            <td class="text-capitalize">${item.product_name}</td>
-                            <td>${item.thaan}</td>
-                            <td>${item.quantity_instock || item.qty}</td>
-                            <td>${item.customer_name}</td>
+                        <td>${row.issuance_date}</td>
+                        <td class="text-capitalize">${row.lot_no}</td>
+                        <td class="text-capitalize">${row.customer_name}</td>
                             <td>
-                                <button type="button" class="btn select-row btn-primary btn-sm" value="${item.printing_item_id}">
+                                <button type="button" class="btn select-row2 btn-primary btn-sm" value="${row.lot_no}">
                                     Apply
                                 </button>
                             </td>
                         </tr>
                     `;
-                });
+                        });
 
-                // Insert the constructed table head and body
-                $('#table-head-id').html(tableHead);  // Insert the table header
-                $('#table-body-id').html(tableBody);  // Insert the table body
-            } else {
-                console.error("Failed to fetch printing item details:", response.message);
-                $('#table-body-id').html('<tr><td colspan="6">No data found</td></tr>');  // Show message if no data
+                        $('#table-body-id').html(tableBody);
+                    } else {
+                        alert('No data found');
+                    }
+                } catch (error) {
+                    console.error('Error parsing JSON:', error);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error:', error);
             }
-        },
-        error: function(xhr, status, error) {
-            console.error("AJAX Error:", status, error);
-            $('#table-body-id').html('<tr><td colspan="6">Error loading data</td></tr>');  // Show error message
-        }
-    });
-}
-
-
+        });
+    }
     $(document).ready(function() {
-        $('#printing_form').on('submit', function(event) {
+        $('#embroidery_form').on('submit', function(event) {
             event.preventDefault(); // Prevent form default submission
 
             let formData = $(this).serialize();
@@ -444,7 +357,7 @@
                             location.reload();
                         });
 
-                        $('#printing_form')[0].reset();
+                        $('#embroidery_form')[0].reset();
                     } else {
                         Swal.fire({
                             icon: 'warning',
@@ -472,7 +385,7 @@
             url: 'php_action/custom_action.php',
             type: 'POST',
             data: {
-                get_selected_printing: cuttingID
+                get_selected_cutting: cuttingID
             },
             dataType: 'json',
             success: function(response) {
@@ -482,11 +395,10 @@
                     const row = $(`#${currentId}`); // Get the current row using currentId
 
                     // Fill in the fields with the response data
-                    row.find('[name="lat_no[]"]').val(data.lot_no || '');
+                    $('#lot_no').val(data.lot_no || '');
                     row.find('[name="d_lot_no[]"]').val(data.d_lat_no || '');
                     row.find('[name="pur_type[]"]').val(data.unit || '').change();
-                    row.find('[name="from_type[]"]').val(data.from_product_type || '').change();
-                    row.find('[name="type[]"]').val(data.product_id || '').change();
+                    row.find('[name="from_type[]"]').val(data.product_id || '').change();
                     row.find('[name="thaan[]"]').val(data.thaan || '');
                     row.find('[name="pur_thaan[]"]').val(data.qty_pur_thaan || '');
                     row.find('[name="qty[]"]').val(data.qty || '');
@@ -495,14 +407,77 @@
                     row.find('[name="r_khata[]"]').val(data.r_khata || '');
                     row.find('[name="small_cp[]"]').val(data.small_cp || '');
                     row.find('[name="color[]"]').val(data.color || '');
-                    row.find('[name="printing_item_id[]"]').val(data.printing_item_id || '');
 
-                    $("#lot_no").val(data.item_lot_no);
-                    $("#received_printing").val(data.printing_id);
+
                     $("#purchase_id").val(data.purchase_id);
                     $("#show_dyeing_details").modal("hide");
                 } else {
                     console.error("Failed to fetch dyeing details:", response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+            }
+        });
+    }
+
+    function getCuttingItemDetails(cuttingID, currentId) {
+        $.ajax({
+            url: 'php_action/custom_action.php',
+            type: 'POST',
+            data: {
+                get_selected_cutting_items: cuttingID
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    // Correct reference to cutting_items
+                    const data = response.cutting_items;
+
+                    // Initialize variables for table header and body
+                    let tableHead = "";
+                    let tableBody = "";
+
+                    const row = $(`#${currentId}`);
+                    $('#table-body-id').html(""); // Clear previous table body
+                    $('#table-head-id').html(""); // Clear previous table header
+
+                    // Construct table header
+                    tableHead += `
+                    <tr>
+                        <th>Lot No</th>
+                        <th>Product</th>
+                        <th>Thaan</th>
+                        <th>Quantity</th>
+                        <th>Cutting Man</th>
+                        <th>Action</th>
+                    </tr>
+                `;
+
+                    // Construct table body from the response data
+                    data.forEach(item => {
+                        tableBody += `
+                        <tr>
+                            <td class="text-capitalize">${item.lot_no}</td>
+                            <td class="text-capitalize">${item.product_name}</td>
+                            <td>${item.thaan}</td>
+                            <td>${item.quantity_instock || item.qty}</td>
+                            <td>${item.customer_name}</td>
+                            <td>
+                                <button type="button" class="btn select-row btn-primary btn-sm" value="${item.cutting_item_id}">
+                                    Apply
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    });
+
+                    // Insert the constructed table head and body
+                    $('#table-head-id').html(tableHead);
+                    $('#table-body-id').html(tableBody);
+
+                } else {
+                    console.error("Failed to fetch cutting item details:", response.message);
                 }
             },
             error: function(xhr, status, error) {

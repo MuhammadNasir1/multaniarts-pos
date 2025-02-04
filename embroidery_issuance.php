@@ -220,7 +220,7 @@
                         <div class="modal-dialog modal-lg" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLongTitle">Cutting Details</h5>
+                                    <h5 class="modal-title" id="exampleModalLongTitle">Cutting & Printing Details</h5>
                                     <input type="text" id="tableSearchInput" class="form-control ml-3" placeholder="Search Here" style="width: 50%;">
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="detailModalClose">
                                         <span aria-hidden="true">&times;</span>
@@ -239,6 +239,21 @@
                                             </tr>
                                         </thead>
                                         <tbody id="table-body-id">
+                                            <tr>
+                                                <td colspan="8" class="text-center">Select Location First</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <table class="table table-bordered" id="printingDetailsTable">
+                                        <thead id="printTable-head-id">
+                                            <tr>
+                                                <th>Issuance Date</th>
+                                                <th>Lot No</th>
+                                                <th>Cutting Man</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="printTable-body-id">
                                             <tr>
                                                 <td colspan="8" class="text-center">Select Location First</td>
                                             </tr>
@@ -289,51 +304,72 @@
 
         getCuttingItemDetails(cuttingID, currentId);
     });
+    $(document).on("click", ".select-row3", function() {
+        const cuttingID = $(this).val();
+        const currentId = $("#show_dyeing_details").data("currentId");
+
+        getPrintingItemDetails(cuttingID, currentId);
+    });
     // getDyeingDetails(dyeingId, currentId);
 
     function getTableData(location_id) {
-        $.ajax({
-            url: 'php_action/custom_action.php',
-            type: 'POST',
-            data: {
-                get_location_data: location_id
-            },
-            dataType: 'text',
-            success: function(response) {
-                try {
-                    let jsonResponse = JSON.parse(response);
+    $.ajax({
+        url: 'php_action/custom_action.php',
+        type: 'POST',
+        data: {
+            get_location_data: location_id
+        },
+        dataType: 'json',
+        success: function(response) {
+            try {
+                if (response.success) {
+                    let cuttingTableBody = ''; // Separate variables for each table
+                    let printingTableBody = '';
 
-                    if (jsonResponse.success && jsonResponse.cutting_items) {
-                        let tableBody = '';
-
-                        jsonResponse.cutting_items.forEach(row => {
-                            tableBody += `
-                        <tr>
-                        <td>${row.issuance_date}</td>
-                        <td class="text-capitalize">${row.lot_no}</td>
-                        <td class="text-capitalize">${row.customer_name}</td>
-                            <td>
-                                <button type="button" class="btn select-row2 btn-primary btn-sm" value="${row.lot_no}">
-                                    Apply
-                                </button>
-                            </td>
-                        </tr>
-                    `;
+                    if (response.cutting_items) {
+                        response.cutting_items.forEach(row => {
+                            cuttingTableBody += `
+                                <tr>
+                                    <td>${row.issuance_date}</td>
+                                    <td class="text-capitalize">${row.lot_no}</td>
+                                    <td class="text-capitalize">${row.customer_name}</td>
+                                    <td>
+                                        <button type="button" class="btn select-row2 btn-primary btn-sm" value="${row.lot_no}">Apply</button>
+                                    </td>
+                                </tr>
+                            `;
                         });
-
-                        $('#table-body-id').html(tableBody);
-                    } else {
-                        alert('No data found');
+                        $('#table-body-id').html(cuttingTableBody);
                     }
-                } catch (error) {
-                    console.error('Error parsing JSON:', error);
+
+                    if (response.printing_data) {
+                        response.printing_data.forEach(row => { // Iterate through the printing data array
+                            printingTableBody += `
+                                <tr>
+                                    <td>${row.issuance_date}</td>
+                                    <td>${row.lot_no}</td>
+                                    <td>${row.to_location}</td>
+                                    <td>
+                                        <button type="button" class="btn select-row3 btn-primary btn-sm" value="${row.lot_no}">Apply</button>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                        $('#printTable-body-id').html(printingTableBody);
+                    }
+
+                } else {
+                    alert('No data found');
                 }
-            },
-            error: function(xhr, status, error) {
-                console.error('AJAX Error:', error);
+            } catch (error) {
+                console.error('Error:', error);
             }
-        });
-    }
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX Error:', error);
+        }
+    });
+}
     $(document).ready(function() {
         $('#embroidery_form').on('submit', function(event) {
             event.preventDefault(); // Prevent form default submission
@@ -386,6 +422,46 @@
             type: 'POST',
             data: {
                 get_selected_cutting: cuttingID
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    const data = response.data;
+
+                    const row = $(`#${currentId}`); // Get the current row using currentId
+
+                    // Fill in the fields with the response data
+                    $('#lot_no').val(data.lot_no || '');
+                    row.find('[name="d_lot_no[]"]').val(data.d_lat_no || '');
+                    row.find('[name="pur_type[]"]').val(data.unit || '').change();
+                    row.find('[name="from_type[]"]').val(data.product_id || '').change();
+                    row.find('[name="thaan[]"]').val(data.thaan || '');
+                    row.find('[name="pur_thaan[]"]').val(data.qty_pur_thaan || '');
+                    row.find('[name="qty[]"]').val(data.qty || '');
+                    row.find('[name="unsettle[]"]').val(data.unsettle || '');
+                    row.find('[name="cp[]"]').val(data.cp || '');
+                    row.find('[name="r_khata[]"]').val(data.r_khata || '');
+                    row.find('[name="small_cp[]"]').val(data.small_cp || '');
+                    row.find('[name="color[]"]').val(data.color || '');
+
+
+                    $("#purchase_id").val(data.purchase_id);
+                    $("#show_dyeing_details").modal("hide");
+                } else {
+                    console.error("Failed to fetch dyeing details:", response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+            }
+        });
+    }
+    function getPrintingItemDetails(cuttingID, currentId) {
+        $.ajax({
+            url: 'php_action/custom_action.php',
+            type: 'POST',
+            data: {
+                get_selected_printing_items: cuttingID
             },
             dataType: 'json',
             success: function(response) {
@@ -475,6 +551,7 @@
                     // Insert the constructed table head and body
                     $('#table-head-id').html(tableHead);
                     $('#table-body-id').html(tableBody);
+                    $('#printTable-body-id').html("<tr><td colspan='8' class='text-center'>No Data Found</td></tr>");
 
                 } else {
                     console.error("Failed to fetch cutting item details:", response.message);
