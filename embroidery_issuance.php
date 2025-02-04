@@ -319,22 +319,22 @@
     // getDyeingDetails(dyeingId, currentId);
 
     function getTableData(location_id) {
-    $.ajax({
-        url: 'php_action/custom_action.php',
-        type: 'POST',
-        data: {
-            get_location_data: location_id
-        },
-        dataType: 'json',
-        success: function(response) {
-            try {
-                if (response.success) {
-                    let cuttingTableBody = ''; // Separate variables for each table
-                    let printingTableBody = '';
+        $.ajax({
+            url: 'php_action/custom_action.php',
+            type: 'POST',
+            data: {
+                get_location_data: location_id
+            },
+            dataType: 'json',
+            success: function(response) {
+                try {
+                    if (response.success) {
+                        let cuttingTableBody = ''; // Separate variables for each table
+                        let printingTableBody = '';
 
-                    if (response.cutting_items) {
-                        response.cutting_items.forEach(row => {
-                            cuttingTableBody += `
+                        if (response.cutting_items) {
+                            response.cutting_items.forEach(row => {
+                                cuttingTableBody += `
                                 <tr>
                                     <td>${row.issuance_date}</td>
                                     <td class="text-capitalize">${row.lot_no}</td>
@@ -344,13 +344,13 @@
                                     </td>
                                 </tr>
                             `;
-                        });
-                        $('#table-body-id').html(cuttingTableBody);
-                    }
+                            });
+                            $('#table-body-id').html(cuttingTableBody);
+                        }
 
-                    if (response.printing_data) {
-                        response.printing_data.forEach(row => { // Iterate through the printing data array
-                            printingTableBody += `
+                        if (response.printing_data) {
+                            response.printing_data.forEach(row => { // Iterate through the printing data array
+                                printingTableBody += `
                                 <tr>
                                     <td>${row.issuance_date}</td>
                                     <td>${row.lot_no}</td>
@@ -360,22 +360,22 @@
                                     </td>
                                 </tr>
                             `;
-                        });
-                        $('#printTable-body-id').html(printingTableBody);
-                    }
+                            });
+                            $('#printTable-body-id').html(printingTableBody);
+                        }
 
-                } else {
-                    alert('No data found');
+                    } else {
+                        alert('No data found');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
                 }
-            } catch (error) {
-                console.error('Error:', error);
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error:', error);
             }
-        },
-        error: function(xhr, status, error) {
-            console.error('AJAX Error:', error);
-        }
-    });
-}
+        });
+    }
     $(document).ready(function() {
         $('#embroidery_form').on('submit', function(event) {
             event.preventDefault(); // Prevent form default submission
@@ -463,6 +463,7 @@
             }
         });
     }
+
     function getPrintingDetails(cuttingID, currentId) {
         $.ajax({
             url: 'php_action/custom_action.php',
@@ -570,6 +571,7 @@
             }
         });
     }
+
     function getPrintingItemDetails(cuttingID, currentId) {
         $.ajax({
             url: 'php_action/custom_action.php',
