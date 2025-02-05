@@ -467,7 +467,7 @@
                     $("#lat_no").val(data.item_lot_no);
                     $("#dyeing_lot").val(data.d_lat_no);
                     $("#purchase_id").val(data.purchase_id);
-                    $("#received_embroidery").val(data.embroidery_id);
+                    $("#received_embroidery").val(data.stitching_id);
                     $("#show_dyeing_details").modal("hide");
                 } else {
                     console.error("Failed to fetch dyeing details:", response.message);
