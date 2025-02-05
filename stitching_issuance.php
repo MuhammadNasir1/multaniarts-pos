@@ -31,7 +31,7 @@
                     <form action="php_action/custom_action.php" method="POST" id="embroidery_form">
                         <input type="hidden" name="product_purchase_id" value="<?= @empty($_REQUEST['edit_purchase_id']) ? "" : base64_decode($_REQUEST['edit_purchase_id']) ?>">
                         <input type="hidden" name="payment_type" id="payment_type" value="credit_purchase">
-                        <input type="hidden" name="embroideryform" id="embroideryform" value="embroideryform">
+                        <input type="hidden" name="stitchingform" id="embroideryform" value="stitchingform">
                         <input type="hidden" name="purchase_id" id="purchase_id" value="">
 
 
@@ -140,7 +140,7 @@
                                             <div class="col-lg-5 m-0 mt-1 p-0 pl-3">
                                                 <button type="button" class="btn select_dyeing  mt-4 btn-primary btn-sm"
                                                     name="select_dyeing"
-                                                    id="select_dyeing"> Select Cutting </button>
+                                                    id="select_dyeing"> Select </button>
                                             </div>
 
                                         </div>
@@ -159,7 +159,7 @@
                                                 <select class="form-control searchableSelect" name="from_type[]" id="from_type<?= $i ?>" onchange="getStock(this.value, <?= $i ?>)">
                                                     <option disabled selected>Select Type</option>
                                                     <?php
-                                                    $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'cora_cutted' OR brand_id = 'dyed_cutted' AND status = 1");
+                                                    $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'cora_cutted' OR brand_id = 'dyed_cutted' OR brand_id = 'printed' OR brand_id = 'embroidered' AND status = 1");
                                                     while ($p = mysqli_fetch_assoc($products)) {
                                                     ?>
                                                         <option value="<?= $p['product_id'] ?>"><?= ucwords($p['product_name']) ?> (<?= ucwords($p['brand_id']) ?>)</option>
@@ -175,7 +175,7 @@
                                             <select class="form-control searchableSelect" name="type[]" id="type<?= $i ?>">
                                                 <option disabled selected>Select Type</option>
                                                 <?php
-                                                $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'embroidered' AND status = 1");
+                                                $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'stitched' AND status = 1");
                                                 while ($p = mysqli_fetch_assoc($products)) {
                                                 ?>
                                                     <option value="<?= $p['product_id'] ?>"><?= ucwords($p['product_name']) ?> (<?= ucwords($p['brand_id']) ?>)</option>
@@ -220,7 +220,7 @@
                         <div class="modal-dialog modal-lg" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLongTitle">Cutting Details</h5>
+                                    <h5 class="modal-title" id="exampleModalLongTitle">Cutting & Printing Details</h5>
                                     <input type="text" id="tableSearchInput" class="form-control ml-3" placeholder="Search Here" style="width: 50%;">
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="detailModalClose">
                                         <span aria-hidden="true">&times;</span>
@@ -239,6 +239,36 @@
                                             </tr>
                                         </thead>
                                         <tbody id="table-body-id">
+                                            <tr>
+                                                <td colspan="8" class="text-center">Select Location First</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <table class="table table-bordered" id="printingDetailsTable">
+                                        <thead id="printTable-head-id">
+                                            <tr>
+                                                <th>Issuance Date</th>
+                                                <th>Lot No</th>
+                                                <th>Cutting Man</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="printTable-body-id">
+                                            <tr>
+                                                <td colspan="8" class="text-center">Select Location First</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <table class="table table-bordered" id="embDetailsTable">
+                                        <thead id="embTable-head-id">
+                                            <tr>
+                                                <th>Issuance Date</th>
+                                                <th>Lot No</th>
+                                                <th>Cutting Man</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="embTable-body-id">
                                             <tr>
                                                 <td colspan="8" class="text-center">Select Location First</td>
                                             </tr>
@@ -289,6 +319,30 @@
 
         getCuttingItemDetails(cuttingID, currentId);
     });
+    $(document).on("click", ".select-row3", function() {
+        const cuttingID = $(this).val();
+        const currentId = $("#show_dyeing_details").data("currentId");
+
+        getPrintingItemDetails(cuttingID, currentId);
+    });
+    $(document).on("click", ".select-row5", function() {
+        const cuttingID = $(this).val();
+        const currentId = $("#show_dyeing_details").data("currentId");
+
+        getPrintingDetails(cuttingID, currentId);
+    });
+    $(document).on("click", ".select-row4", function() {
+        const cuttingID = $(this).val();
+        const currentId = $("#show_dyeing_details").data("currentId");
+
+        getEmbItemDetails(cuttingID, currentId);
+    });
+    $(document).on("click", ".select-row6", function() {
+        const cuttingID = $(this).val();
+        const currentId = $("#show_dyeing_details").data("currentId");
+
+        getEmbDetails(cuttingID, currentId);
+    });
     // getDyeingDetails(dyeingId, currentId);
 
     function getTableData(location_id) {
@@ -298,35 +352,67 @@
             data: {
                 get_location_data: location_id
             },
-            dataType: 'text',
+            dataType: 'json',
             success: function(response) {
                 try {
-                    let jsonResponse = JSON.parse(response);
+                    if (response.success) {
+                        let cuttingTableBody = ''; // Separate variables for each table
+                        let printingTableBody = '';
+                        let embTableBody = '';
 
-                    if (jsonResponse.success && jsonResponse.cutting_items) {
-                        let tableBody = '';
+                        if (response.cutting_items) {
+                            response.cutting_items.forEach(row => {
+                                cuttingTableBody += `
+                                <tr>
+                                    <td>${row.issuance_date}</td>
+                                    <td class="text-capitalize">${row.lot_no}</td>
+                                    <td class="text-capitalize">${row.customer_name}</td>
+                                    <td>
+                                        <button type="button" class="btn select-row2 btn-primary btn-sm" value="${row.lot_no}">Apply</button>
+                                    </td>
+                                </tr>
+                            `;
+                            });
+                            $('#table-body-id').html(cuttingTableBody);
+                        }
 
-                        jsonResponse.cutting_items.forEach(row => {
-                            tableBody += `
-                        <tr>
-                        <td>${row.issuance_date}</td>
-                        <td class="text-capitalize">${row.lot_no}</td>
-                        <td class="text-capitalize">${row.customer_name}</td>
-                            <td>
-                                <button type="button" class="btn select-row2 btn-primary btn-sm" value="${row.lot_no}">
-                                    Apply
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                        });
+                        if (response.printing_data) {
+                            response.printing_data.forEach(row => { // Iterate through the printing data array
+                                printingTableBody += `
+                                <tr>
+                                    <td>${row.issuance_date}</td>
+                                    <td>${row.lot_no}</td>
+                                    <td>${row.to_location}</td>
+                                    <td>
+                                        <button type="button" class="btn select-row3 btn-primary btn-sm" value="${row.lot_no}">Apply</button>
+                                    </td>
+                                </tr>
+                            `;
+                            });
+                            $('#printTable-body-id').html(printingTableBody);
+                        }
 
-                        $('#table-body-id').html(tableBody);
+                        if (response.embroidery_data) {
+                            response.embroidery_data.forEach(row => { // Iterate through the printing data array
+                                embTableBody += `
+                                <tr>
+                                    <td>${row.issuance_date}</td>
+                                    <td>${row.lot_no}</td>
+                                    <td>${row.to_location}</td>
+                                    <td>
+                                        <button type="button" class="btn select-row4 btn-primary btn-sm" value="${row.lot_no}">Apply</button>
+                                    </td>
+                                </tr>
+                            `;
+                            });
+                            $('#embTable-body-id').html(embTableBody);
+                        }
+
                     } else {
                         alert('No data found');
                     }
                 } catch (error) {
-                    console.error('Error parsing JSON:', error);
+                    console.error('Error:', error);
                 }
             },
             error: function(xhr, status, error) {
@@ -409,6 +495,7 @@
                     row.find('[name="color[]"]').val(data.color || '');
 
 
+                    $("#lot_no").val(data.item_lot_no);
                     $("#purchase_id").val(data.purchase_id);
                     $("#show_dyeing_details").modal("hide");
                 } else {
@@ -420,6 +507,89 @@
             }
         });
     }
+
+    function getPrintingDetails(cuttingID, currentId) {
+        $.ajax({
+            url: 'php_action/custom_action.php',
+            type: 'POST',
+            data: {
+                get_selected_printing: cuttingID
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    const data = response.data;
+
+                    const row = $(`#${currentId}`); // Get the current row using currentId
+
+                    // Fill in the fields with the response data
+                    $('#lot_no').val(data.lot_no || '');
+                    row.find('[name="d_lot_no[]"]').val(data.d_lat_no || '');
+                    row.find('[name="pur_type[]"]').val(data.unit || '').change();
+                    row.find('[name="from_type[]"]').val(data.product_id || '').change();
+                    row.find('[name="thaan[]"]').val(data.thaan || '');
+                    row.find('[name="pur_thaan[]"]').val(data.qty_pur_thaan || '');
+                    row.find('[name="qty[]"]').val(data.qty || '');
+                    row.find('[name="unsettle[]"]').val(data.unsettle || '');
+                    row.find('[name="cp[]"]').val(data.cp || '');
+                    row.find('[name="r_khata[]"]').val(data.r_khata || '');
+                    row.find('[name="small_cp[]"]').val(data.small_cp || '');
+                    row.find('[name="color[]"]').val(data.color || '');
+
+                    $("#lot_no").val(data.item_lot_no);
+                    $("#purchase_id").val(data.purchase_id);
+                    $("#show_dyeing_details").modal("hide");
+                } else {
+                    console.error("Failed to fetch dyeing details:", response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+            }
+        });
+    }
+    function getEmbDetails(cuttingID, currentId) {
+        $.ajax({
+            url: 'php_action/custom_action.php',
+            type: 'POST',
+            data: {
+                get_selected_emb: cuttingID
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    const data = response.data;
+
+                    const row = $(`#${currentId}`); // Get the current row using currentId
+
+                    // Fill in the fields with the response data
+                    $('#lot_no').val(data.lot_no || '');
+                    row.find('[name="d_lot_no[]"]').val(data.d_lat_no || '');
+                    row.find('[name="pur_type[]"]').val(data.unit || '').change();
+                    row.find('[name="from_type[]"]').val(data.product_id || '').change();
+                    row.find('[name="thaan[]"]').val(data.thaan || '');
+                    row.find('[name="pur_thaan[]"]').val(data.qty_pur_thaan || '');
+                    row.find('[name="qty[]"]').val(data.qty || '');
+                    row.find('[name="unsettle[]"]').val(data.unsettle || '');
+                    row.find('[name="cp[]"]').val(data.cp || '');
+                    row.find('[name="r_khata[]"]').val(data.r_khata || '');
+                    row.find('[name="small_cp[]"]').val(data.small_cp || '');
+                    row.find('[name="color[]"]').val(data.color || '');
+
+                    $("#lot_no").val(data.item_lot_no);
+                    $("#purchase_id").val(data.purchase_id);
+                    $("#show_dyeing_details").modal("hide");
+                } else {
+                    console.error("Failed to fetch dyeing details:", response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+            }
+        });
+    }
+    
+
 
     function getCuttingItemDetails(cuttingID, currentId) {
         $.ajax({
@@ -475,6 +645,7 @@
                     // Insert the constructed table head and body
                     $('#table-head-id').html(tableHead);
                     $('#table-body-id').html(tableBody);
+                    $('#printTable-body-id').html("<tr><td colspan='8' class='text-center'>No Data Found</td></tr>");
 
                 } else {
                     console.error("Failed to fetch cutting item details:", response.message);
@@ -482,6 +653,141 @@
             },
             error: function(xhr, status, error) {
                 console.error("AJAX Error:", status, error);
+            }
+        });
+    }
+
+    function getPrintingItemDetails(cuttingID, currentId) {
+        $.ajax({
+            url: 'php_action/custom_action.php',
+            type: 'POST',
+            data: {
+                get_selected_printing_items: cuttingID
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    // Correct reference to printing_items
+                    const data = response.printing_items;
+
+                    // Initialize variables for table header and body
+                    let tableHead = "";
+                    let tableBody = "";
+
+                    const row = $(`#${currentId}`);
+                    $('#printTable-head-id').html(""); // Clear previous table body
+                    $('#printTable-body-id').html(""); // Clear previous table header
+
+                    // Construct table header
+                    tableHead += `
+                    <tr>
+                        <th>Item Lot No</th>
+                        <th>Product</th>
+                        <th>Thaan</th>
+                        <th>Quantity In Stock</th>
+                        <th>Customer Name</th>
+                        <th>Action</th>
+                    </tr>
+                `;
+
+                    // Construct table body from the response data
+                    data.forEach(item => {
+                        tableBody += `
+                        <tr>
+                            <td class="text-capitalize">${item.item_lot_no}</td>
+                            <td class="text-capitalize">${item.product_name}</td>
+                            <td>${item.thaan}</td>
+                            <td>${item.quantity_instock || item.qty}</td>
+                            <td>${item.customer_name}</td>
+                            <td>
+                                <button type="button" class="btn select-row5 btn-primary btn-sm" value="${item.printing_item_id}">
+                                    Apply
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    });
+
+                    // Insert the constructed table head and body
+                    $('#printTable-head-id').html(tableHead); // Insert the table header
+                    $('#printTable-body-id').html(tableBody); // Insert the table body
+                    $('#table-body-id').html('<tr><td colspan="6">No data found</td></tr>'); // Insert the table body
+                    $('#embTable-body-id').html('<tr><td colspan="6">No data found</td></tr>'); // Insert the table body
+                } else {
+                    console.error("Failed to fetch printing item details:", response.message);
+                    $('#table-body-id').html("<tr><td colspan='8' class='text-center'>No Data Found</td></tr>"); // Show message if no data
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+                $('#table-body-id').html('<tr><td colspan="6">Error loading data</td></tr>'); // Show error message
+            }
+        });
+    }
+    function getEmbItemDetails(cuttingID, currentId) {
+        $.ajax({
+            url: 'php_action/custom_action.php',
+            type: 'POST',
+            data: {
+                get_selected_emb_items: cuttingID
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    // Correct reference to printing_items
+                    const data = response.embroidery_items;
+
+                    // Initialize variables for table header and body
+                    let tableHead = "";
+                    let tableBody = "";
+
+                    const row = $(`#${currentId}`);
+                    $('#embTable-body-id').html(""); // Clear previous table body
+                    $('#embTable-head-id').html(""); // Clear previous table header
+
+                    // Construct table header
+                    tableHead += `
+                    <tr>
+                        <th>Item Lot No</th>
+                        <th>Product</th>
+                        <th>Thaan</th>
+                        <th>Quantity In Stock</th>
+                        <th>Customer Name</th>
+                        <th>Action</th>
+                    </tr>
+                `;
+
+                    // Construct table body from the response data
+                    data.forEach(item => {
+                        tableBody += `
+                        <tr>
+                            <td class="text-capitalize">${item.item_lot_no}</td>
+                            <td class="text-capitalize">${item.product_name}</td>
+                            <td>${item.thaan}</td>
+                            <td>${item.quantity_instock || item.qty}</td>
+                            <td>${item.customer_name}</td>
+                            <td>
+                                <button type="button" class="btn select-row6 btn-primary btn-sm" value="${item.embroidery_item_id}">
+                                    Apply
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    });
+
+                    // Insert the constructed table head and body
+                    $('#embTable-head-id').html(tableHead); // Insert the table header
+                    $('#embTable-body-id').html(tableBody); // Insert the table body
+                    $('#table-body-id').html('<tr><td colspan="6" class="text-center">No data found</td></tr>'); // Insert the table body
+                    $('#printTable-body-id').html('<tr><td colspan="6" class="text-center">No data found</td></tr>'); // Insert the table body
+                } else {
+                    console.error("Failed to fetch embroidery item details:", response.message);
+                    $('#table-body-id').html("<tr><td colspan='8' class='text-center'>No Data Found</td></tr>"); // Show message if no data
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+                $('#table-body-id').html('<tr><td colspan="6">Error loading data</td></tr>'); // Show error message
             }
         });
     }

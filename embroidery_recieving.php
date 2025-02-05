@@ -157,7 +157,7 @@
                                                     <select class="form-control searchableSelect" name="from_type[]" id="from_type<?= $i ?>" onchange="getStock(this.value, <?= $i ?>)">
                                                         <option disabled selected>Select Type</option>
                                                         <?php
-                                                        $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'cora_cutted' OR brand_id = 'dyed_cutted' AND status = 1");
+                                                        $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'cora_cutted' OR brand_id = 'dyed_cutted' OR brand_id = 'printed ' AND status = 1");
                                                         while ($p = mysqli_fetch_assoc($products)) {
                                                         ?>
                                                             <option value="<?= $p['product_id'] ?>"><?= ucwords($p['product_name']) ?> (<?= ucwords($p['brand_id']) ?>)</option>
@@ -261,14 +261,11 @@
 
                                 <div class="modal-body">
                                     <table class="table table-bordered" id="purchaseDetailsTable">
-                                        <thead>
+                                        <thead id="table-head-id">
                                             <tr>
                                                 <th>Lot No</th>
+                                                <th>Issuance Date</th>
                                                 <th>Embroidery</th>
-                                                <th>Product</th>
-                                                <th>Thaan</th>
-                                                <th>Unit</th>
-                                                <th>Quantity</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -317,6 +314,12 @@
 
         getEmbDetails(embID, currentId);
     });
+    $(document).on("click", ".select-row2", function() {
+        const embID = $(this).val();
+        const currentId = $("#show_dyeing_details").data("currentId");
+
+        getEmbItemDetails(embID, currentId);
+    });
 
     function getTableData(location_id) {
         $.ajax({
@@ -333,17 +336,14 @@
                     if (jsonResponse.success && jsonResponse.embroidery_items) {
                         let tableBody = '';
 
-                        jsonResponse.embroidery_items.forEach(row => {
+                        jsonResponse.embroidery.forEach(row => {
                             tableBody += `
                         <tr>
-                            <td class="text-capitalize">${row.item_lot_no}</td>
+                            <td class="text-capitalize">${row.lot_no}</td>
+                            <td class="text-capitalize">${row.issuance_date}</td>
                             <td class="text-capitalize">${row.customer_name}</td>
-                            <td class="text-capitalize">${row.product_name}</td>
-                            <td>${row.thaan}</td>
-                            <td class="text-capitalize">${row.unit}</td>
-                            <td>${row.qty}</td>
                             <td>
-                                <button type="button" class="btn select-row btn-primary btn-sm" value="${row.embroidery_item_id}">
+                                <button type="button" class="btn select-row2 btn-primary btn-sm" value="${row.lot_no}">
                                     Apply
                                 </button>
                             </td>
@@ -364,6 +364,75 @@
             }
         });
     }
+
+    function getEmbItemDetails(cuttingID, currentId) {
+        $.ajax({
+            url: 'php_action/custom_action.php',
+            type: 'POST',
+            data: {
+                get_selected_embroidery_items: cuttingID
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    let data = response.data;
+
+                    // Extract product_name if available
+                    let productName = data.product_name || '';
+
+                    // Convert object to an array (excluding non-numeric keys)
+                    let dataArray = Object.values(data).filter(item => typeof item === 'object');
+
+                    // Initialize table header and body
+                    let tableHead = "";
+                    let tableBody = "";
+
+                    $('#table-body-id').html(""); // Clear previous table body
+                    $('#table-head-id').html(""); // Clear previous table header
+
+                    // Construct table header
+                    tableHead += `
+                    <tr>
+                        <th>Item Lot No</th>
+                        <th>Product</th>
+                        <th>Thaan</th>
+                        <th>Quantity In Stock</th>
+                        <th>Action</th>
+                    </tr>
+                `;
+
+                    // Construct table body from the response data
+                    dataArray.forEach(item => {
+                        tableBody += `
+                        <tr>
+                            <td class="text-capitalize">${item.item_lot_no || '-'}</td>
+                            <td class="text-capitalize">${productName || 'Unknown'}</td>
+                            <td>${item.thaan || '-'}</td>
+                            <td>${item.quantity_instock || item.qty || '-'}</td>
+                            <td>
+                                <button type="button" class="btn select-row btn-primary btn-sm" value="${item.embroidery_item_id}">
+                                    Apply
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    });
+
+                    // Insert the constructed table head and body
+                    $('#table-head-id').html(tableHead);
+                    $('#table-body-id').html(tableBody);
+                } else {
+                    console.error("Failed to fetch embroidery item details:", response.message);
+                    $('#table-body-id').html('<tr><td colspan="5">No data found</td></tr>');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+                $('#table-body-id').html('<tr><td colspan="5">Error loading data</td></tr>');
+            }
+        });
+    }
+
 
     function getEmbDetails(embID, currentId) {
         $.ajax({

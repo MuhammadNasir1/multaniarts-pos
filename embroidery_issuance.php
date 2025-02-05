@@ -451,7 +451,7 @@
                     row.find('[name="color[]"]').val(data.color || '');
 
 
-                    $("#lot_no").val(data.item_lot_no);
+                    $("#lot_no").val(data.lot_no);
                     $("#purchase_id").val(data.purchase_id);
                     $("#show_dyeing_details").modal("hide");
                 } else {
