@@ -2460,6 +2460,7 @@ if (isset($_POST['get_location_data'])) {
 	$cutting = [];
 	$printing = [];
 	$embroidery = [];
+	$stitching = [];
 
 	$productData = mysqli_query($dbc, "SELECT * FROM cutting WHERE cutting_man = '$id'");
 	while ($product = mysqli_fetch_assoc($productData)) {
@@ -2472,16 +2473,33 @@ if (isset($_POST['get_location_data'])) {
 
 	$printingResult = mysqli_query($dbc, "SELECT * FROM printing WHERE to_location = '$id' AND status = 'received'");
 	while ($printData = mysqli_fetch_assoc($printingResult)) {
+		$doneById = $printData['done_by'];
+		$customerQuery = mysqli_query($dbc, "SELECT customer_name FROM customers WHERE customer_id = '$doneById'");
+		$customerResult = mysqli_fetch_assoc($customerQuery);
+		$printData['customer_name'] = $customerResult['customer_name'] ?? 'Unknown';
 		$printing[] = $printData;
 	}
 
 	$embResult = mysqli_query($dbc, "SELECT * FROM embroidery WHERE to_location = '$id' AND status = 'received'");
 	while ($embData = mysqli_fetch_assoc($embResult)) {
+		$doneById = $embData['done_by'];
+		$customerQuery = mysqli_query($dbc, "SELECT customer_name FROM customers WHERE customer_id = '$doneById'");
+		$customerResult = mysqli_fetch_assoc($customerQuery);
+		$embData['customer_name'] = $customerResult['customer_name'] ?? 'Unknown';
 		$embroidery[] = $embData;
 	}
 
-	if (!empty($cutting) || !empty($printing) || !empty($embroidery)) {
-		echo json_encode(['success' => true, 'cutting_items' => $cutting, 'printing_data' => $printing , 'embroidery_data'=> $embroidery ]);
+	$stitchingResult = mysqli_query($dbc, "SELECT * FROM  stitching WHERE to_location = '$id' AND status = 'received'");
+	while ($stitchingData = mysqli_fetch_assoc($stitchingResult)) {
+		$doneById = $stitchingData['done_by'];
+		$customerQuery = mysqli_query($dbc, "SELECT customer_name FROM customers WHERE customer_id = '$doneById'");
+		$customerResult = mysqli_fetch_assoc($customerQuery);
+		$stitchingData['customer_name'] = $customerResult['customer_name'] ?? 'Unknown';
+		$stitching[] = $stitchingData;
+	}
+
+	if (!empty($cutting) || !empty($printing) || !empty($embroidery) || !empty($crechingResult)) {
+		echo json_encode(['success' => true, 'cutting_items' => $cutting, 'printing_data' => $printing, 'embroidery_data' => $embroidery, 'stitching_data' => $stitching]);
 	} else {
 		echo json_encode(['success' => false, 'data' => null]);
 	}
@@ -2776,6 +2794,47 @@ if (isset($_POST['get_selected_emb_items'])) {
 	}
 }
 
+if (isset($_POST['get_selected_stitching_items'])) {// Ensure the database connection file is included
+
+    $id = $dbc->real_escape_string($_POST['get_selected_stitching_items']);
+    $cutting = []; // Initialize empty array
+
+    $productData = mysqli_query($dbc, "SELECT * FROM stitching WHERE lot_no = '$id' AND status = 'received'");
+    
+    while ($product = mysqli_fetch_assoc($productData)) {
+        $doneById = $product['done_by'];
+        $customerQuery = mysqli_query($dbc, "SELECT customer_name FROM customers WHERE customer_id = '$doneById'");
+        $customerResult = mysqli_fetch_assoc($customerQuery);
+        $product['customer_name'] = $customerResult['customer_name'] ?? 'Unknown';
+        $cutting[] = $product;
+    }
+
+    if (!empty($cutting)) {
+        $cuttingItems = []; // Initialize empty array
+
+        foreach ($cutting as $cut) {
+            $cuttingId = $cut['stitching_id'];
+
+            $itemsData = mysqli_query($dbc, "SELECT * FROM stitching_items WHERE stitching_id = '$cuttingId'");
+            while ($item = mysqli_fetch_assoc($itemsData)) {
+                $productId = $item['product_id'];
+                $productNameQuery = mysqli_query($dbc, "SELECT product_name FROM product WHERE product_id = '$productId'");
+                $productNameResult = mysqli_fetch_assoc($productNameQuery);
+                $item['product_name'] = $productNameResult['product_name'] ?? 'Unknown';
+                $item['customer_name'] = $cut['customer_name'];
+                $cuttingItems[] = $item;
+            }
+        }
+
+        // Send JSON response
+        echo json_encode(['success' => true, 'stitching_items' => $cuttingItems], JSON_UNESCAPED_UNICODE);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'No data found']);
+    }
+    exit;
+}
+
+
 if (isset($_POST['purchase_selected'])) {
 	$id = $dbc->real_escape_string($_POST['purchase_selected']);
 
@@ -3042,6 +3101,122 @@ if (isset($_POST['stitchingform'])) {
 	echo json_encode($response);
 	exit;
 }
+if (isset($_POST['packingform'])) {
+	$embroidery_data = [
+		'status' => 'sent',
+		'entry_from' => 'packing_isssuance',
+		'done_by' => $_POST['embroidery'],
+		'transaction_id' => $_POST['transaction'],
+		'issuance_date' => $_POST['issuance_date'],
+		'lot_no' => $_POST['lot_no'],
+		'dyeing_lot_no' => $_POST['dyeing_lot'],
+		'manual_gp' => $_POST['manual_gp'],
+		'cutting_man' => $_POST['cutting_man'],
+		'sending_person' => $_POST['sending_person'],
+		'carrier_person' => $_POST['carrier_person'],
+		'carrier_contact' => $_POST['carrier_contact'],
+		'remarks' => $_POST['remarks'],
+		'program_id' => $_POST['program'],
+		'emb_type' => $_POST['emb_type'],
+		'from_location' => $_POST['location'],
+		'to_location' => $_POST['embroidery']
+	];
+
+	// Insert embroidery data
+	if (insert_data($dbc, "packing", $embroidery_data)) {
+		$embroidery_id = mysqli_insert_id($dbc);
+		$items_data = [];
+		$errors = [];
+
+		// Ensure the form has at least one row
+		if (!empty($_POST['qty'])) {
+			// Process each row of items
+			foreach ($_POST['qty'] as $key => $quantity) {
+				// Skip rows without quantity
+				if (empty($quantity)) {
+					continue;
+				}
+
+				// Retrieve row data
+				$quantity = (float)$quantity;
+				$from_product_id = @$_POST['from_type'][$key];
+
+				// Validate and check stock for from_product_id
+				if (!empty($from_product_id)) {
+					$from_quantity_result = mysqli_query($dbc, "SELECT quantity_instock FROM product WHERE product_id='$from_product_id'");
+
+					if ($from_quantity_result && $from_quantity_result->num_rows > 0) {
+						$from_quantity_data = $from_quantity_result->fetch_assoc();
+						$from_quantity_instock = (float)$from_quantity_data['quantity_instock'];
+
+						if ($quantity > $from_quantity_instock) {
+							$errors[] = "Insufficient stock for Product ID $from_product_id in row $key.";
+							continue; // Skip this row
+						}
+					} else {
+						$errors[] = "Product ID $from_product_id does not exist in the inventory for row $key.";
+						continue; // Skip this row
+					}
+				} else {
+					$errors[] = "From type is not specified for row $key.";
+					continue; // Skip this row
+				}
+
+				// Update stock for the destination product
+				$product_id = @$_POST['type'][$key];
+
+				// Prepare item data for insertion
+				$items_data[] = [
+					'packing_id' => $embroidery_id,
+					'unit' => $_POST['pur_type'][$key],
+					'purchase_id' => $_POST['purchase_id'],
+					'from_product_type' => $from_product_id,
+					'product_id' => $product_id,
+					'thaan' => $_POST['thaan'][$key],
+					'item_lot_no' => $_POST['lot_no'],
+					'qty_pur_thaan' => $_POST['pur_thaan'][$key],
+					'qty' => $quantity,
+					'status' => 'sent',
+					'packing_entry_form' => 'packing_issuance',
+					'quantity_instock' => $quantity
+				];
+			}
+
+			// Insert items into the database
+			foreach ($items_data as $item) {
+				if (!insert_data($dbc, "packing_items", $item)) {
+					$errors[] = "Error inserting item: " . mysqli_error($dbc);
+				}
+			}
+		} else {
+			$errors[] = "No valid rows were submitted.";
+		}
+
+		// Prepare response
+		if (empty($errors)) {
+			$response = [
+				'sts' => 'success',
+				'msg' => 'Packing and items added successfully.',
+			];
+		} else {	
+			$response = [
+				'sts' => 'warning',
+				'msg' => 'Some items could not be added: ' . implode(", ", $errors),
+			];
+		}
+	} else {
+		// Handle embroidery data insertion failure
+		$response = [
+			'sts' => 'warning',
+			'msg' => "Something went wrong: " . mysqli_error($dbc),
+		];
+	}
+
+	// Return response
+	header('Content-Type: application/json');
+	echo json_encode($response);
+	exit;
+}
 if (isset($_POST['printingForm'])) {
 	$embroidery_data = [
 		'status' => 'sent',
@@ -3255,6 +3430,22 @@ if (isset($_POST['get_selected_emb'])) {
 	}
 }
 
+if (isset($_POST['get_selected_stitching'])) {
+	$id = $dbc->real_escape_string($_POST['get_selected_stitching']);
+
+	// Fetch data from the cutting table
+	$embroideryData = mysqli_query($dbc, "SELECT * FROM stitching_items WHERE stitching_item_id = '$id'");
+
+	$embroidery = $embroideryData->fetch_assoc();
+
+	// Check if any data was returned
+	if ($embroidery) {
+		echo json_encode(['success' => true, 'data' => $embroidery]);
+	} else {
+		echo json_encode(['success' => false, 'message' => 'No data found for the selected stitching.']);
+	}
+}
+
 if (isset($_POST['get_embroidery_data'])) {
 	$id = $dbc->real_escape_string($_POST['get_embroidery_data']);
 	$cutting = [];
@@ -3355,21 +3546,7 @@ if (isset($_POST['get_selected_embroidery'])) {
 		echo json_encode(['success' => false, 'message' => 'No data found for the selected Embroidery.']);
 	}
 }
-if (isset($_POST['get_selected_stitching'])) {
-	$id = $dbc->real_escape_string($_POST['get_selected_stitching']);
 
-	// Fetch data from the cutting table
-	$embroideryData = mysqli_query($dbc, "SELECT * FROM stitching_items WHERE stitching_item_id = '$id'");
-
-	$embroidery = $embroideryData->fetch_assoc();
-
-	// Check if any data was returned
-	if ($embroidery) {
-		echo json_encode(['success' => true, 'data' => $embroidery]);
-	} else {
-		echo json_encode(['success' => false, 'message' => 'No data found for the selected Embroidery.']);
-	}
-}
 
 if (isset($_POST['embroideryRecform'])) {
 	$embroidery_data = [
@@ -3810,50 +3987,49 @@ if (isset($_POST['printingReceivingForm'])) {
 // Print Recieving 
 
 if (isset($_POST['get_selected_embroidery_items'])) {
-    $lot_id = $dbc->real_escape_string($_POST['get_selected_embroidery_items']);
-    $printing_dat = [];
+	$lot_id = $dbc->real_escape_string($_POST['get_selected_embroidery_items']);
+	$printing_dat = [];
 
-    $item = mysqli_query($dbc, "SELECT * FROM embroidery_items WHERE item_lot_no = '$lot_id' AND status = 'sent'");
-	
-    if (mysqli_num_rows($item) > 0) {
+	$item = mysqli_query($dbc, "SELECT * FROM embroidery_items WHERE item_lot_no = '$lot_id' AND status = 'sent'");
+
+	if (mysqli_num_rows($item) > 0) {
 		while ($each_item = mysqli_fetch_assoc($item)) {
 			$printing_dat[] =  $each_item;
-            $product_id = $each_item["product_id"];
+			$product_id = $each_item["product_id"];
 
 
-            $product = fetchRecord($dbc, 'product', 'product_id', $product_id);
-            $product_name = $product['product_name'] ?? 'Unknown';
+			$product = fetchRecord($dbc, 'product', 'product_id', $product_id);
+			$product_name = $product['product_name'] ?? 'Unknown';
 
-            $printing_dat['product_name'] =  $product_name;
-        }
+			$printing_dat['product_name'] =  $product_name;
+		}
 
-        echo json_encode(['success' => true, 'data' => $printing_dat]);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'No data found for the selected printing items.']);
-    }
+		echo json_encode(['success' => true, 'data' => $printing_dat]);
+	} else {
+		echo json_encode(['success' => false, 'message' => 'No data found for the selected printing items.']);
+	}
 }
 // Stitching Recieving
 if (isset($_POST['get_selected_stitching_items'])) {
-    $lot_id = $dbc->real_escape_string($_POST['get_selected_stitching_items']);
-    $printing_dat = [];
+	$lot_id = $dbc->real_escape_string($_POST['get_selected_stitching_items']);
+	$printing_dat = [];
 
-    $item = mysqli_query($dbc, "SELECT * FROM stitching_items WHERE item_lot_no = '$lot_id' AND status = 'sent'");
-	
-    if (mysqli_num_rows($item) > 0) {
+	$item = mysqli_query($dbc, "SELECT * FROM stitching_items WHERE item_lot_no = '$lot_id' AND status = 'sent'");
+
+	if (mysqli_num_rows($item) > 0) {
 		while ($each_item = mysqli_fetch_assoc($item)) {
 			$printing_dat[] =  $each_item;
-            $product_id = $each_item["product_id"];
+			$product_id = $each_item["product_id"];
 
 
-            $product = fetchRecord($dbc, 'product', 'product_id', $product_id);
-            $product_name = $product['product_name'] ?? 'Unknown';
+			$product = fetchRecord($dbc, 'product', 'product_id', $product_id);
+			$product_name = $product['product_name'] ?? 'Unknown';
 
-            $printing_dat['product_name'] =  $product_name;
-        }
+			$printing_dat['product_name'] =  $product_name;
+		}
 
-        echo json_encode(['success' => true, 'data' => $printing_dat]);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'No data found for the selected printing items.']);
-    }
+		echo json_encode(['success' => true, 'data' => $printing_dat]);
+	} else {
+		echo json_encode(['success' => false, 'message' => 'No data found for the selected printing items.']);
+	}
 }
-

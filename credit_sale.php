@@ -19,7 +19,7 @@
 
            <div class="row">
              <div class="col-12 mx-auto h4">
-               <b class="text-center card-text pb-3"><?= @$credit_sale_type_text ?> Credit Sale</b>
+               <b class="text-center card-text pb-3">Sale </b>
 
 
                <a href="#" onclick="reload_page()" class="btn btn-admin float-right btn-sm">Add New</a>
@@ -49,26 +49,8 @@
                </div>
                <input type="hidden" name="credit_sale_type" value="<?= @$credit_sale_type ?>" id="credit_sale_type">
                <div class="col-sm-3">
-                 <label>Customer Account</label>
-                 <div class="input-group">
-
-                   <select class="form-control" onchange="getBalance(this.value,'customer_account_exp')" name="credit_order_client_name" id="credit_order_client_name" required aria-label="Username" aria-describedby="basic-addon1">
-                     <option value="">Customer Account</option>
-                     <?php
-                      $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status =1 AND customer_type='customer'");
-                      while ($r = mysqli_fetch_assoc($q)) {
-                      ?>
-                       <option <?= @($fetchOrder['customer_account'] == $r['customer_id']) ? "selected" : "" ?> data-id="<?= $r['customer_id'] ?>" data-contact="<?= $r['customer_phone'] ?>" value="<?= $r['customer_name'] ?>"><?= $r['customer_name'] ?></option>
-                     <?php   } ?>
-                   </select>
-
-                   <div class="input-group-prepend">
-                     <span class="input-group-text" id="basic-addon1">Balance : <span id="customer_account_exp">0</span>
-                       <!-- <span class="input-group-text" id="basic-addon1">Limit : <span id="customer_Limit">0</span> </span>
-                           <span class="input-group-text" id="basic-addon1">R Limit : <span id="R_Limit">0</span> </span> -->
-                   </div>
-                 </div>
-
+                 <label>Customer Name</label>
+                 <input type="text" autocomplete="off" placeholder="Customer Name" name="credit_order_client_name" id="credit_order_client_name" value="<?= @$fetchOrder['customer_name'] ?>" class="form-control">
 
                  <input type="hidden" name="customer_account" id="customer_account" value="<?= @$fetchOrder['customer_account'] ?>">
                  <input type="hidden" name="client_contact" id="client_contact" value="<?= @$fetchOrder['client_contact'] ?>">
@@ -76,27 +58,13 @@
 
                </div>
                <div class="col-sm-2">
-                 <label>Remarks</label>
-                 <input type="text" autocomplete="off" name="order_narration" id="order_narration" value="<?= @$fetchOrder['order_narration'] ?>" class="form-control">
-
-               </div>
-               <div class="col-sm-2">
-                 <label>Vehicle NO </label>
-                 <input type="text" id="vehicle_no" value="<?= @$fetchOrder['vehicle_no'] ?>" class="form-control" autocomplete="off" name="vehicle_no" list="vehicle_no_list">
-                 <datalist id="vehicle_no_list">
-                   <?php
-                    $q = mysqli_query($dbc, "SELECT DISTINCT vehicle_no FROM orders");
-                    while ($r = mysqli_fetch_assoc($q)) {
-                    ?>
-                     <option value="<?= $r['vehicle_no'] ?>"><?= $r['vehicle_no'] ?></option>
-                   <?php   } ?>
-                 </datalist>
-               </div>
-
-               <div class="col-sm-2">
                  <label>Voucher No.</label>
                  <input type="text" id="voucher_no" value="<?= @$fetchOrder['voucher_no'] ?>" class="form-control" autocomplete="off" name="voucher_no" required>
 
+               </div>
+               <div class="col-sm-4">
+                 <label>Remarks</label>
+                 <input type="text" autocomplete="off" name="order_narration" id="order_narration" value="<?= @$fetchOrder['order_narration'] ?>" class="form-control">
                </div>
 
              </div> <!-- end of form-group -->
@@ -138,8 +106,8 @@
                </div>
 
              </div> -->
-             <div class="form-group row">
-               <div class="col-sm-2 d-flex">
+             <div class="form-group row ">
+               <div class="col-sm-2 d-flex ml-auto">
                  <div>
                    <label>Products ( <span class="text-center w-100">instock: <span id="instockQty">0</span></span> )</label>
                    <input type="hidden" id="add_pro_type" value="add">
@@ -168,19 +136,11 @@
                  <input type="number" min="0" <?= ($_SESSION['user_role'] == "admin") ? "" : "readonly" ?> class="form-control" id="get_product_price">
                </div>
                <div class="col-sm-2">
-                 <label>Thaan</label>
-                 <input type="number" min="0" placeholder="Thaan Here" value="" autocomplete="off" class="form-control" name="pur_thaan" id="get_pur_thaan">
-               </div>
-               <div class="col-sm-2">
-                 <label>Gzanah</label>
-                 <input type="number" min="0" placeholder="Gzanah Here" value="" autocomplete="off" class="form-control" name="pur_gzanah" id="get_pur_gzanah">
-               </div>
-               <div class="col-sm-2">
                  <label>Quantity</label>
                  <input type="number" class="form-control" id="get_product_quantity" value="1" min="1" name="quantity">
                </div>
 
-               <div class="col-sm-2  d-flex align-items-center">
+               <div class="col-sm-2  d-flex align-items-center mr-auto">
                  <div>
                    <label>Unit</label>
                    <input type="text" placeholder="Unit Here" value="" autocomplete="off" class="form-control " name="pur_unit" id="get_pur_unit">
