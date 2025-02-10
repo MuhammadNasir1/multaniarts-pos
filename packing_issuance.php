@@ -70,9 +70,9 @@
                                 </select>
                             </div>
                             <div class="col-md-2 mt-3">
-                                <label for="embroidery">Embroidery</label>
+                                <label for="embroidery">Packing</label>
                                 <select class="form-control searchableSelect" name="embroidery" id="embroidery">
-                                    <option disabled selected>Select Embroidery</option>
+                                    <option disabled selected>Select Packing</option>
                                     <?php
                                     $query = "SELECT * FROM customers WHERE customer_type IN ('embroidery')";
                                     $result = mysqli_query($dbc, $query);
@@ -220,7 +220,7 @@
                         <div class="modal-dialog modal-lg" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLongTitle">Cutting & Printing Details</h5>
+                                    <h5 class="modal-title" id="exampleModalLongTitle">Stitching Details</h5>
                                     <input type="text" id="tableSearchInput" class="form-control ml-3" placeholder="Search Here" style="width: 50%;">
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="detailModalClose">
                                         <span aria-hidden="true">&times;</span>

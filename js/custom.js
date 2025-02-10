@@ -1908,3 +1908,193 @@ function getDyerData(partyId) {
 // }
 
 // Add
+
+$("#addProductSale").on("click", function () {
+  var total_price = 0;
+  var payment_type = $("#payment_type").val();
+
+  var name = $("#get_product_name :selected").text();
+  var pro_details = $("#get_product_detail").val();
+  var price = $("#get_product_price_sale").val();
+  var sale_price = $("#get_product_sale_price").val();
+  var id = $("#get_product_name :selected").val();
+  var code = $("#get_product_code").val();
+  var product_quantity = parseInt($("#get_product_quantity_sale").val());
+  var pro_type = $("#add_pro_type").val();
+  var max_qty = parseInt($("#get_product_quantity_sale").attr("max"));
+
+  if (payment_type == "cash_purchase" || payment_type == "credit_purchase") {
+    max_qty = getRandomInt(99999999999);
+  }
+
+  var GrandTotalAva = parseFloat($("#remaining_ammount").val()) || 0;
+  var ThisTotal = price * product_quantity + GrandTotalAva;
+  var RThisPersonLIMIT = $("#R_LimitInput").val();
+
+  if (
+    id != "" &&
+    product_quantity > 0 &&
+    max_qty >= product_quantity &&
+    code != ""
+  ) {
+    $("#get_product_name").prop("selectedIndex", 0);
+    $("#add_pro_type").val("add");
+    $(
+      "#get_product_code, #get_product_price_sale, #get_product_sale_price"
+    ).val("");
+    $("#get_product_quantity_sale").val("1");
+    $("#get_product_code").focus();
+
+    if ($("#product_idN_" + id).length) {
+      $(".product_ids").each(function () {
+        var quantity = parseInt($(this).data("quantity"));
+        total_price = 0;
+        var val = $(this).val();
+
+        if (val == id) {
+          var Currentquantity =
+            pro_type === "add" ? quantity + product_quantity : product_quantity;
+
+          total_price = parseFloat(price) * Currentquantity;
+
+          if (Currentquantity <= max_qty) {
+            $("#product_idN_" + id).replaceWith(`
+              <tr id="product_idN_${id}">
+                  <input type="hidden" data-price="${price}" data-quantity="${Currentquantity}" 
+                        id="product_ids_${id}" class="product_ids" name="product_ids[]" value="${id}">
+                  <input type="hidden" id="product_quantites_${id}" name="product_quantites[]" value="${product_quantity}">
+                  <input type="hidden" id="product_rate_${id}" name="product_rates[]" value="${price}">
+                  <input type="hidden" id="product_totalrate_${id}" name="product_totalrates[]" value="${total_price}">
+                  <input type="hidden" id="product_salerate_${id}" name="product_salerates[]" value="${sale_price}">
+                  <td>${name}</td>
+                  <td>${price}</td>
+                  ${sale_price ? `<td>${sale_price}</td>` : ""}
+                  <td>${Currentquantity}</td>
+                  <td>${total_price}</td>
+                  <td>
+                      <button type="button" onclick="removeByid('#product_idN_${id}')" 
+                              class="fa fa-trash text-danger"></button>
+                      <button type="button" onclick="editByid(${id}, '${code}', '${price}', '${product_quantity}')" 
+                              class="fa fa-edit text-success"></button>
+                  </td>
+              </tr>
+            `);
+          } else {
+            Swal.fire("Cannot Add Quantity more than stock", "", "error");
+          }
+        }
+      });
+    } else {
+      total_price = parseFloat(price) * product_quantity;
+
+      $("#purchase_product_tb").append(`
+        <tr id="product_idN_${id}">
+            <input type="hidden" data-price="${price}" data-quantity="${product_quantity}" 
+                   id="product_ids_${id}" class="product_ids" name="product_ids[]" value="${id}">
+            <input type="hidden" id="product_quantites_${id}" name="product_quantites[]" value="${product_quantity}">
+            <input type="hidden" id="product_rate_${id}" name="product_rates[]" value="${price}">
+            <input type="hidden" id="product_totalrate_${id}" name="product_totalrates[]" value="${total_price}">
+            <input type="hidden" id="product_salerate_${id}" name="product_salerates[]" value="${sale_price}">
+            <td>${name}</td>
+            <td>${price}</td>
+            ${sale_price ? `<td>${sale_price}</td>` : ""}
+            <td>${product_quantity}</td>
+            <td>${total_price}</td>
+            <td>
+                <button type="button" onclick="removeByid('#product_idN_${id}')" 
+                        class="fa fa-trash text-danger"></button>
+                <button type="button" onclick="editByid(${id}, '${code}', '${price}', '${product_quantity}')" 
+                        class="fa fa-edit text-success"></button>
+            </td>
+        </tr>
+      `);
+    }
+    getSaleTotal();
+    getRemaingAmount();
+  } else {
+    if (max_qty < product_quantity) {
+      Swal.fire("Cannot Add Quantity more than stock", "", "error");
+    } else if (code == "") {
+      Swal.fire("Select The Product first", "", "error");
+    }
+  }
+});
+
+function removeByid(id) {
+  $(id).remove();
+  getSaleTotal();
+}
+
+function getSaleTotal() {
+  var payment_type = $("#payment_type").val();
+  var total_bill = 0, grand_total = 0;
+
+  // Calculate total bill based on product quantity and rates
+  $(".product_ids").each(function () {
+    var quantity = parseFloat($(this).data("quantity")) || 0;
+    var rates = parseFloat($(this).data("price")) || 0;
+    total_bill += rates * quantity;
+  });
+
+  // Fetch discount values
+  var discount_percentage = parseFloat($("#ordered_discount").val()) || 0;
+  var discount = (discount_percentage / 100) * total_bill; // Apply discount as percentage
+
+  // Log values for debugging
+  console.log("Total Bill: ", total_bill);
+  console.log("Discount Percentage: ", discount_percentage);
+  console.log("Discount Amount: ", discount);
+
+  // Calculate grand total without freight
+  grand_total = total_bill - discount;
+
+  // Log the grand total for debugging
+  console.log("Grand Total (After Discount): ", grand_total);
+
+  // Update the displayed total amounts
+  $("#product_total_amount").html(total_bill.toFixed(2));
+  $("#product_grand_total_amount").html(grand_total.toFixed(2));
+
+  // Handle the paid amount input based on payment type
+  if (payment_type === "cash_in_hand" || payment_type === "cash_purchase") {
+    $("#paid_ammount").val(grand_total).attr("max", grand_total).prop("required", true);
+    if (payment_type === "cash_in_hand") {
+      $("#full_payment_check").prop("checked", true);
+    }
+  } else {
+    $("#paid_ammount").val("0").prop("required", false);
+  }
+
+  // Ensure payment account field is required if there's a grand total
+  $("input[name='payment_account']").prop("required", grand_total > 0);
+  
+  getRemaingAmount(); // Ensure remaining amount calculation runs
+}
+
+
+
+function editByid(id, code, price, qty) {
+  $(".searchableSelect").val(id);
+  $("#get_product_code").val(code);
+  $("#get_product_quantity_sale").val(qty);
+  $("#add_pro_type").val("update");
+
+  $(".searchableSelect").select2().trigger("change");
+
+  setTimeout(function () {
+    $("#get_product_price_sale").val(price);
+  }, 500);
+}
+
+
+function countFrieght(value) {
+  var total = parseFloat($("#product_grand_total_amount").text()) || 0;
+  var freight = parseFloat(value) || 0;
+  var grand_total = total + freight;
+
+  $("#product_grand_total_amount").text(grand_total.toFixed(2));
+  getRemaingAmount();
+}
+
+
+

@@ -21,7 +21,7 @@
              <div class="col-12 mx-auto h4">
                <b class="text-center card-text pb-3">Sale </b>
 
-
+  
                <a href="#" onclick="reload_page()" class="btn btn-admin float-right btn-sm">Add New</a>
              </div>
            </div>
@@ -33,7 +33,7 @@
              <div class="row form-group">
                <input type="hidden" name="payment_type" id="payment_type" value="credit_purchase">
                <div class="col-md-1">
-                 <label>Order ID#</label>
+                 <label class="font-weight-bold text-dark">Order ID#</label>
                  <?php $result = mysqli_query($dbc, "
     SHOW TABLE STATUS LIKE 'orders'
 ");
@@ -42,14 +42,14 @@
                  <input type="text" name="next_increment" id="next_increment" value="<?= @empty($_REQUEST['edit_order_id']) ? $next_increment : $fetchOrder['order_id'] ?>" readonly class="form-control">
                </div>
                <div class="col-md-2">
-                 <label>Order Date</label>
+                 <label class="font-weight-bold text-dark">Order Date</label>
 
 
                  <input type="text" name="order_date" id="order_date" value="<?= @empty($_REQUEST['edit_order_id']) ? date('Y-m-d') : $fetchOrder['order_date'] ?>" readonly class="form-control">
                </div>
                <input type="hidden" name="credit_sale_type" value="<?= @$credit_sale_type ?>" id="credit_sale_type">
                <div class="col-sm-3">
-                 <label>Customer Name</label>
+                 <label class="font-weight-bold text-dark">Customer Name</label>
                  <input type="text" autocomplete="off" placeholder="Customer Name" name="credit_order_client_name" id="credit_order_client_name" value="<?= @$fetchOrder['customer_name'] ?>" class="form-control">
 
                  <input type="hidden" name="customer_account" id="customer_account" value="<?= @$fetchOrder['customer_account'] ?>">
@@ -57,13 +57,14 @@
                  <input type="hidden" name="R_Limit" id="R_LimitInput" />
 
                </div>
+            
                <div class="col-sm-2">
-                 <label>Voucher No.</label>
+                 <label class="font-weight-bold text-dark">Bill No.</label>
                  <input type="text" id="voucher_no" value="<?= @$fetchOrder['voucher_no'] ?>" class="form-control" autocomplete="off" name="voucher_no" required>
 
                </div>
                <div class="col-sm-4">
-                 <label>Remarks</label>
+                 <label class="font-weight-bold text-dark">Remarks</label>
                  <input type="text" autocomplete="off" name="order_narration" id="order_narration" value="<?= @$fetchOrder['order_narration'] ?>" class="form-control">
                </div>
 
@@ -109,7 +110,7 @@
              <div class="form-group row ">
                <div class="col-sm-2 d-flex ml-auto">
                  <div>
-                   <label>Products ( <span class="text-center w-100">instock: <span id="instockQty">0</span></span> )</label>
+                   <label class="font-weight-bold text-dark">Products ( <span class="text-center w-100">instock: <span id="instockQty">0</span></span> )</label>
                    <input type="hidden" id="add_pro_type" value="add">
                    <select class="form-control searchableSelect" id="get_product_name" name="product_id">
                      <option value="">Select Product</option>
@@ -132,21 +133,17 @@
                  </div>
                </div>
                <div class="col-sm-2">
-                 <label>Rate</label>
-                 <input type="number" min="0" <?= ($_SESSION['user_role'] == "admin") ? "" : "readonly" ?> class="form-control" id="get_product_price">
+                 <label class="font-weight-bold text-dark">Rate</label>
+                 <input type="number" min="0" <?= ($_SESSION['user_role'] == "admin") ? "" : "readonly" ?> class="form-control" id="get_product_price_sale">
                </div>
                <div class="col-sm-2">
-                 <label>Quantity</label>
-                 <input type="number" class="form-control" id="get_product_quantity" value="1" min="1" name="quantity">
+                 <label class="font-weight-bold text-dark">Quantity</label>
+                 <input type="number" class="form-control" id="get_product_quantity_sale" value="1" min="1" name="quantity">
                </div>
 
                <div class="col-sm-2  d-flex align-items-center mr-auto">
-                 <div>
-                   <label>Unit</label>
-                   <input type="text" placeholder="Unit Here" value="" autocomplete="off" class="form-control " name="pur_unit" id="get_pur_unit">
-                 </div>
                  <div class="ml-3 mt-3">
-                   <button type="button" class="btn btn-success btn-sm mt-2 " id="addProductPurchase"><i class="fa fa-plus"></i> <b>Add</b></button>
+                   <button type="button" class="btn btn-success btn-sm mt-2 " id="addProductSale"><i class="fa fa-plus"></i> <b>Add</b></button>
                  </div>
                </div>
              </div>
@@ -156,14 +153,11 @@
                  <table class="table  saleTable" id="myDiv">
                    <thead class="table-bordered">
                      <tr>
-                       <th>Product Name</th>
-                       <th>Thaan</th>
-                       <th>Gzanah</th>
-                       <th>Unit</th>
-                       <th>Rate</th>
-                       <th>Quantity</th>
-                       <th>Total Price</th>
-                       <th>Action</th>
+                       <th class="font-weight-bold text-dark">Product Name</th>
+                       <th class="font-weight-bold text-dark">Rate</th>
+                       <th class="font-weight-bold text-dark">Quantity</th>
+                       <th class="font-weight-bold text-dark">Total Price</th>
+                       <th class="font-weight-bold text-dark">Action</th>
                      </tr>
                    </thead>
                    <tbody class="table table-bordered" id="purchase_product_tb">
@@ -178,13 +172,7 @@
                            <input type="hidden" id="product_quantites_<?= $r['product_id'] ?>" name="product_quantites[]" value="<?= $r['quantity'] ?>">
                            <input type="hidden" id="product_rate_<?= $r['product_id'] ?>" name="product_rates[]" value="<?= $r['rate'] ?>">
                            <input type="hidden" id="product_totalrate_<?= $r['product_id'] ?>" name="product_totalrates[]" value="<?= $r['rate'] ?>">
-                           <input type="hidden" id="pur_thaan_<?= $r['product_id'] ?>'" name="pur_thaan[]" value="<?= $r['pur_thaan'] ?>">
-                           <input type="hidden" id="pur_gzanah_<?= $r['product_id'] ?>" name="pur_gzanah[]" value="<?= $r['pur_gzanah'] ?>">
-                           <input type="hidden" id="pur_unit_<?= $r['product_id'] ?>" name="pur_unit[]" value="<?= $r['pur_unit'] ?>">
                            <td><?= $r['product_name'] ?></td>
-                           <td><?= $r['pur_thaan'] ?></td>
-                           <td><?= $r['pur_gzanah'] ?></td>
-                           <td><?= $r['pur_unit'] ?></td>
                            <td><?= $r['rate'] ?></td>
                            <td><?= $r['quantity'] ?></td>
                            <td><?= (float)$r['rate'] * (float)$r['quantity'] ?></?>
@@ -203,7 +191,7 @@
 
                    <tfoot>
                      <tr>
-                       <td colspan="4"></td>
+                       <td colspan="1"></td>
 
                        <td class="table-bordered"> Sub Total :</td>
                        <td class="table-bordered" id="product_total_amount"><?= @$fetchOrder['total_amount'] ?></td>
@@ -213,11 +201,11 @@
 
                            <div class="col-sm-6 pr-0">
 
-                             <input onkeyup="getOrderTotal()" type="number" id="ordered_discount" class="form-control form-control-sm " value="<?= @empty($_REQUEST['edit_order_id']) ? "0" : $fetchOrder['discount'] ?>" min="0" max="100" name="ordered_discount">
+                             <input onkeyup="getSaleTotal()" type="number" id="ordered_discount" class="form-control form-control-sm " value="<?= @empty($_REQUEST['edit_order_id']) ? "0" : $fetchOrder['discount'] ?>" min="0" max="100" name="ordered_discount">
 
                            </div>
                            <div class="col-sm-6 pl-3">
-                             <input onkeyup="getOrderTotal()" type="number" id="freight" class="form-control form-control-sm " placeholder="Freight" value="<?= @$fetchOrder['pur_freight'] ?>" min="0" name="freight">
+                             <input onkeyup="countFrieght(this.value)" type="number" id="freight_sale" class="form-control form-control-sm " placeholder="Freight" value="<?= @$fetchOrder['pur_freight'] ?>" min="0" name="freight">
 
 
                            </div>
@@ -226,7 +214,7 @@
                        </td>
                      </tr>
                      <tr>
-                       <td colspan="4" class="border-none"></td>
+                       <td colspan="1" class="border-none"></td>
                        <td class="table-bordered"> <strong>Grand Total :</strong> </td>
                        <td class="table-bordered" id="product_grand_total_amount"><?= @$fetchOrder['grand_total'] ?></td>
                        <td class="table-bordered">Paid :</td>
@@ -245,7 +233,7 @@
                        </td>
                      </tr>
                      <tr>
-                       <td colspan="4" class="border-none"></td>
+                       <td colspan="1" class="border-none"></td>
                        <td class="table-bordered">Remaing Amount :</td>
                        <td class="table-bordered"><input type="number" class="form-control form-control-sm" id="remaining_ammount" required readonly name="remaining_ammount" value="<?= @$fetchOrder['due'] ?>">
                        </td>
@@ -314,7 +302,4 @@
    </script>
  <?php
   }
-
-
-
   ?>

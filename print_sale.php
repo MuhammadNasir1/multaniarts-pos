@@ -144,7 +144,7 @@
                         <table class="table">
                             <tr>
                                 <th class="border pr-5 font-weight-bold">Customer Name</th>
-                                <th class="border pr-5"><?= ucwords($order['client_name']) ?></th>
+                                <th class="border pr-5 text-capitalize"><?= $order['client_name'] ?></th>
                             </tr>
                             <?php
                             if ($_REQUEST['type'] == "purchase") {
@@ -157,20 +157,15 @@
                                     <th class="border pr-5 font-weight-bold">Gate Pass</th>
                                     <th class="border pr-5"><?= ucwords(@$order['gate_pass']) ?></th>
                                 </tr>
-                            <?php } else { ?>
-                                <tr>
-                                    <th class="border pr-5 font-weight-bold">Order Date</th>
-                                    <th class="border pr-5"><?= ucwords(@$order['order_date']) ?></th>
-                                </tr>
-                            <?php } ?>
+                            <?php }?>
                         </table>
                     </div>
                     <div class="m-0 p-0">
                         <table class="table" align="left">
 
                             <tr>
-                                <th class="border pr-5 font-weight-bold">Customer Contact</th>
-                                <th class="border pr-5"><?= ucwords(@$order['client_contact']) ?></th>
+                                <th class="border pr-5 font-weight-bold">Order Date</th>
+                                <th class="border pr-5"><?= ucwords(@$order['order_date']) ?></th>
                             </tr>
                             <?php
                             if ($_REQUEST['type'] == "purchase") {
@@ -182,11 +177,6 @@
                                 <tr>
                                     <th class="border pr-5 font-weight-bold">Bilty No</th>
                                     <th class="border pr-5"><?= ucwords(@$order['bilty_no']) ?></th>
-                                </tr>
-                            <?php } else { ?>
-                                <tr>
-                                    <th class="border pr-5 font-weight-bold">Vehicle No</th>
-                                    <th class="border pr-5"><?= ucwords(@$order['vehicle_no']) ?></th>
                                 </tr>
                             <?php } ?>
                         </table>
@@ -250,44 +240,78 @@
                 <div class="col-sm-12 p-0">
                     <table class="w-100">
                         <thead class="thead_row">
-                            <th>Sr</th>
-                            <th>PRODUCT</th>
-                            <th>PRICE</th>
-                            <th>QUANTITY</th>
-                            <th>Thaan</th>
-                            <th>Gzanah</th>
-                            <th>Unit</th>
-                            <th>TOTAL</th>
+                            <?php
+                            if ($_REQUEST['type'] == "purchase") {
+                            ?>
+                                <th>Sr</th>
+                                <th>PRODUCT</th>
+                                <th>PRICE</th>
+                                <th>QUANTITY</th>
+                                <th>Thaan</th>
+                                <th>Gzanah</th>
+                                <th>Unit</th>
+                                <th>TOTAL</th>
+                            <?php } else { ?>
+                                <th>Sr</th>
+                                <th>PRODUCT</th>
+                                <th>PRICE</th>
+                                <th>QUANTITY</th>
+                                <th>TOTAL</th>
+                            <?php } ?>
                         </thead>
                         <tbody class="tbody_row">
 
-                            <tr class="text-capitalize">
-                                <td>01</td>
-                                <td>
-                                    <?php
-                                    $p = fetchRecord($dbc, "product", "product_id", $order['product_id']);
-                                   echo  $p['product_name']
-                                    ?>
-                                </td>
-                                <td><?= $order['pur_rate'] ?></td>
-                                <td><?= $order['quantity'] ?></td>
-                                <td><?= $order['pur_thaan'] ?></td>
-                                <td><?= $order['pur_gzanah'] ?></td>
-                                <td><?= ucwords($order['pur_type']) ?></td>
-                                <td><?= $order['pur_rate'] * $order['quantity'] ?></td>
-                            </tr>
+                            <?php
+                            if ($_REQUEST['type'] == "purchase") {
+                            ?>
 
+                                <tr class="text-capitalize">
+                                    <td>01</td>
+                                    <td>
+                                        <?php
+                                        $p = fetchRecord($dbc, "product", "product_id", $order['product_id']);
+                                        echo  $p['product_name']
+                                        ?>
+                                    </td>
+                                    <td><?= $order['pur_rate'] ?></td>
+                                    <td><?= $order['quantity'] ?></td>
+                                    <td><?= $order['pur_thaan'] ?></td>
+                                    <td><?= $order['pur_gzanah'] ?></td>
+                                    <td><?= ucwords($order['pur_type']) ?></td>
+                                    <td><?= $order['pur_rate'] * $order['quantity'] ?></td>
 
+                                </tr>
+
+                                <?php } else {
+                                $a = 0;
+                                while ($ord = mysqli_fetch_assoc($order_item)) {
+                                    $a++;
+                                ?>
+
+                                    <tr class="text-capitalize">
+                                        <td><?= $a ?></td>
+                                        <td>
+                                            <?php
+                                            $p = fetchRecord($dbc, "product", "product_id", $ord['product_id']);
+                                            echo  $p['product_name']
+                                            ?>
+                                        </td>
+                                        <td><?= $ord['rate'] ?></td>
+                                        <td><?= $ord['quantity'] ?></td>
+                                        <td><?= $ord['rate'] * $ord['quantity'] ?></td>
+                                    </tr>
+                            <?php }
+                            } ?>
                         </tbody>
                         <tfoot class="tfoot_row">
 
                             <tr>
-                                <td colspan="6"></td>
+                                <td colspan="<?= isset($_REQUEST['type']) && $_REQUEST['type'] == 'purchase' ? '6' : '3' ?>"></td>
                                 <td class="border"><b>Sub Total</b></td>
                                 <td class="border"><?= $order['total_amount'] ?></td>
                             </tr>
                             <tr>
-                                <td colspan="6"></td>
+                                <td colspan="<?= isset($_REQUEST['type']) && $_REQUEST['type'] == 'purchase' ? '6' : '3' ?>"></td>
                                 <td class="border"><b>Total Quantity</b></td>
                                 <td class="border"><?= $totalQTY ?></td>
                             </tr>
@@ -297,21 +321,23 @@
 
                             ?>
                                 <tr>
-                                    <td colspan="6"></td>
+                                    <td colspan="<?= isset($_REQUEST['type']) && $_REQUEST['type'] == 'purchase' ? '6' : '3' ?>"></td>
                                     <td class="border">DISCOUNT%</td>
                                     <td class="border"><?= $order['discount'] ?>%</td>
                                 </tr>
+
+
                             <?php
                             }
                             ?>
                             <tr>
-                                <td colspan="6"></td>
+                                <td colspan="<?= isset($_REQUEST['type']) && $_REQUEST['type'] == 'purchase' ? '6' : '3' ?>"></td>
                                 <td class="border">FREIGHT</td>
 
                                 <td class="border"><b><?= empty($order['pur_freight']) ? "0" : $order['pur_freight'] ?></b></td>
                             </tr>
                             <tr>
-                                <td colspan="6"></td>
+                                <td colspan="<?= isset($_REQUEST['type']) && $_REQUEST['type'] == 'purchase' ? '6' : '3' ?>"></td>
                                 <td class="border">GRAND TOTAL</td>
 
                                 <td class="border"><b><?= number_format($order['grand_total'], 2) ?></b></td>
@@ -319,13 +345,13 @@
                             <?php if ($order['payment_type'] == "credit_purchase" || $order['payment_type'] == "credit_sale") : ?>
 
                                 <tr>
-                                    <td colspan="6"></td>
+                                    <td colspan="<?= isset($_REQUEST['type']) && $_REQUEST['type'] == 'purchase' ? '6' : '3' ?>"></td>
                                     <td class="border">Previous Balance</td>
 
                                     <td class="border"><b><?= getcustomerBlance($dbc, $order['customer_account']) + $order['due'] ?></b></td>
                                 </tr>
                                 <tr>
-                                    <td colspan="6"></td>
+                                    <td colspan="<?= isset($_REQUEST['type']) && $_REQUEST['type'] == 'purchase' ? '6' : '3' ?>"></td>
                                     <td class="border">Current Balance</td>
 
                                     <td class="border"><b><?= number_format(getcustomerBlance($dbc, $order['customer_account']), 2) ?></b></td>

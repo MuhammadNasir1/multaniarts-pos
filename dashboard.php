@@ -716,7 +716,7 @@ $end_of_month= date('Y-m-t', strtotime($current_date));
                        ?>
                        <tr>
                           
-                          <td><?=ucwords($r['client_name'])?> (<?=$r['client_contact']?>)</td>
+                          <td><?=ucwords($r['client_name'])?> </td>
                           
                           <td><?=$r['order_date']?></td>
                            <td><?=$next_date?></td>

@@ -703,9 +703,9 @@ if (isset($_REQUEST['credit_order_client_name'])) {
 					$order_items = [
 						'product_id' => $_REQUEST['product_ids'][$x],
 						'rate' => $product_rates,
-						'pur_thaan' => $_REQUEST['pur_thaan'][$x],
-						'pur_gzanah' => $_REQUEST['pur_gzanah'][$x],
-						'pur_unit' => $_REQUEST['pur_unit'][$x],
+						'pur_thaan' => @$_REQUEST['pur_thaan'][$x],
+						'pur_gzanah' => @$_REQUEST['pur_gzanah'][$x],
+						'pur_unit' => @$_REQUEST['pur_unit'][$x],
 						'total' => $total,
 						'order_id' => $last_id,
 						'quantity' => $product_quantites,
@@ -3445,6 +3445,21 @@ if (isset($_POST['get_selected_stitching'])) {
 		echo json_encode(['success' => false, 'message' => 'No data found for the selected stitching.']);
 	}
 }
+if (isset($_POST['get_selected_packing'])) {
+	$id = $dbc->real_escape_string($_POST['get_selected_packing']);
+
+	// Fetch data from the cutting table
+	$embroideryData = mysqli_query($dbc, "SELECT * FROM packing_items WHERE packing_item_id = '$id'");
+
+	$embroidery = $embroideryData->fetch_assoc();
+
+	// Check if any data was returned
+	if ($embroidery) {
+		echo json_encode(['success' => true, 'data' => $embroidery]);
+	} else {
+		echo json_encode(['success' => false, 'message' => 'No data found for the selected packing.']);
+	}
+}
 
 if (isset($_POST['get_embroidery_data'])) {
 	$id = $dbc->real_escape_string($_POST['get_embroidery_data']);
@@ -3524,6 +3539,47 @@ if (isset($_POST['get_stitching_data'])) {
 		}
 
 		echo json_encode(['success' => true, 'embroidery_items' => $embroideryItems, 'embroidery' => $cutting]);
+	} else {
+		echo json_encode(['success' => false, 'data' => null]);
+	}
+}
+if (isset($_POST['get_packing_data'])) {
+	$id = $dbc->real_escape_string($_POST['get_packing_data']);
+	$cutting = [];
+
+	$productData = mysqli_query($dbc, "SELECT * FROM packing WHERE to_location = '$id' and status = 'sent'");
+	while ($product = mysqli_fetch_assoc($productData)) {
+
+		$doneById = $product['done_by'];
+		$customerQuery = mysqli_query($dbc, "SELECT customer_name FROM customers WHERE customer_id = '$doneById'");
+		$customerResult = mysqli_fetch_assoc($customerQuery);
+
+		$product['customer_name'] = $customerResult['customer_name'] ?? 'Unknown';
+
+		$cutting[] = $product;
+	}
+
+	if (!empty($cutting)) {
+		$embroideryItems = [];
+
+		foreach ($cutting as $cut) {
+			$cuttingId = $cut['packing_id'];
+
+			$itemsData = mysqli_query($dbc, "SELECT * FROM packing_items WHERE packing_id = '$cuttingId' AND status = 'sent'");
+			while ($item = mysqli_fetch_assoc($itemsData)) {
+				$productId = $item['product_id'];
+				$productNameQuery = mysqli_query($dbc, "SELECT product_name FROM product WHERE product_id = '$productId'");
+				$productNameResult = mysqli_fetch_assoc($productNameQuery);
+
+				$item['product_name'] = $productNameResult['product_name'] ?? 'Unknown';
+
+				$item['customer_name'] = $cut['customer_name'];
+
+				$embroideryItems[] = $item;
+			}
+		}
+
+		echo json_encode(['success' => true, 'packing_items' => $embroideryItems, 'packing' => $cutting]);
 	} else {
 		echo json_encode(['success' => false, 'data' => null]);
 	}
@@ -3837,6 +3893,151 @@ if (isset($_POST['stitchingRecform'])) {
 	echo json_encode($response);
 	exit;
 }
+if (isset($_POST['packingRecform'])) {
+	$embroidery_data = [
+		'status' => 'received',
+		'entry_from' => 'packing_receiving',
+		'done_by' => $_POST['to_location'],
+		'transaction_id' => $_POST['transaction'],
+		'received_packing' => $_POST['received_embroidery'],
+		'purchase_id' => $_POST['purchase_id'],
+		'party_gp' => $_POST['party_gp'],
+		'issuance_date' => $_POST['issuance_date'],
+		'lot_no' => $_POST['lat_no'],
+		'dyeing_lot_no' => $_POST['d_lat_no'],
+		'manual_gp' => $_POST['manual_gp'],
+		'manual_lot' => $_POST['manual_lot'],
+		'main_color' => $_POST['main_color'],
+		'remarks' => $_POST['remarks'],
+		'program_id' => $_POST['program'],
+		'emb_type' => $_POST['emb_type'],
+		'from_location' => $_POST['location'],
+		'to_location' => $_POST['to_location']
+	];
+
+	// Insert embroidery data
+	if (insert_data($dbc, "packing", $embroidery_data)) {
+		$embroidery_id = mysqli_insert_id($dbc);
+		$items_data = [];
+		$errors = [];
+
+		// Ensure the form has at least one row
+		if (!empty($_POST['qty'])) {
+			// Process each row of items
+			foreach ($_POST['qty'] as $key => $quantity) {
+				// Skip rows without quantity
+				if (empty($quantity)) {
+					continue;
+				}
+
+				// Retrieve row data
+				$quantity = (float)$quantity;
+				$from_product_id = @$_POST['from_type'][$key];
+
+				// Validate and check stock for from_product_id
+				if (!empty($from_product_id)) {
+					$from_quantity_result = mysqli_query($dbc, "SELECT quantity_instock FROM product WHERE product_id='$from_product_id'");
+
+					if ($from_quantity_result && $from_quantity_result->num_rows > 0) {
+						$from_quantity_data = $from_quantity_result->fetch_assoc();
+						$from_quantity_instock = (float)$from_quantity_data['quantity_instock'];
+
+						if ($quantity > $from_quantity_instock) {
+							$errors[] = "Insufficient stock in row $key.";
+							continue; // Skip this row
+						}
+					} else {
+						$errors[] = "Product ID $from_product_id does not exist in the inventory for row $key.";
+						continue; // Skip this row
+					}
+				} else {
+					$errors[] = "From type is not specified for row $key.";
+					continue; // Skip this row
+				}
+
+				// Update stock for the destination product
+				$product_id = @$_POST['type'][$key];
+				$quantity_instock_result = mysqli_query($dbc, "SELECT quantity_instock FROM product WHERE product_id='$product_id'");
+
+				if ($quantity_instock_result && $quantity_instock_result->num_rows > 0) {
+					$quantity_instock_data = $quantity_instock_result->fetch_assoc();
+					$quantity_instock = (float)$quantity_instock_data['quantity_instock'];
+					$new_qty = $quantity_instock + $quantity;
+					mysqli_query($dbc, "UPDATE product SET quantity_instock='$new_qty' WHERE product_id='$product_id'");
+				}
+
+				// Subtract the quantity from the from_type product
+				$new_from_qty = $from_quantity_instock - $quantity;
+				mysqli_query($dbc, "UPDATE product SET quantity_instock='$new_from_qty' WHERE product_id='$from_product_id'");
+
+				// Prepare item data for insertion
+				$idForUpdateData = $_POST['embroidery_item_id'][$key];
+
+				// Update status to 'received' for the corresponding embroidery item
+				$update_status_query = "UPDATE packing_items SET status = 'received' WHERE packing_item_id = '$idForUpdateData'";
+				if (!mysqli_query($dbc, $update_status_query)) {
+					$errors[] = "Error updating status for item ID $idForUpdateData: " . mysqli_error($dbc);
+				}
+
+				// Prepare the item data for insertion
+				$items_data[] = [
+					'design' => @$_POST['design'][$key],
+					'received_packing' => $idForUpdateData,
+					'calender' => @$_POST['calender'][$key],
+					'rate' => @$_POST['rate'][$key],
+					'calender_unit' => @$_POST['calender_unit'][$key],
+					'value' => @$_POST['value'][$key],
+					'recv_suit' => @$_POST['recv_suit'][$key],
+					'packing_id' => $embroidery_id,
+					'unit' => @$_POST['pur_type'][$key],
+					'purchase_id' => $_POST['purchase_id'],
+					'from_product_type' => $from_product_id,
+					'product_id' => $product_id,
+					'thaan' => @$_POST['thaan'][$key],
+					'qty_pur_thaan' => @$_POST['pur_thaan'][$key],
+					'qty' => $quantity,
+					'packing_entry_form' => 'packing_receiving',
+					'status' => 'received',
+					'quantity_instock' => $quantity,
+					'item_lot_no' => $_POST['lat_no'],
+				];
+			}
+
+			// Insert items into the database
+			foreach ($items_data as $item) {
+				if (!insert_data($dbc, "packing_items", $item)) {
+					$errors[] = "Error inserting item: " . mysqli_error($dbc);
+				}
+			}
+		} else {
+			$errors[] = "No valid rows were submitted.";
+		}
+
+		// Prepare response
+		if (empty($errors)) {
+			$response = [
+				'sts' => 'success',
+				'msg' => 'Packing and items added successfully.',
+			];
+		} else {
+			$response = [
+				'sts' => 'warning',
+				'msg' => 'Some items could not be added: ' . implode(", ", $errors),
+			];
+		}
+	} else {
+		// Handle embroidery data insertion failure
+		$response = [
+			'sts' => 'warning',
+			'msg' => "Something went wrong: " . mysqli_error($dbc),
+		];
+	}
+
+	// Return response
+	header('Content-Type: application/json');
+	echo json_encode($response);
+	exit;
+}
 if (isset($_POST['printingReceivingForm'])) {
 	$embroidery_data = [
 		'status' => 'received',
@@ -4031,5 +4232,29 @@ if (isset($_POST['get_selected_stitching_items'])) {
 		echo json_encode(['success' => true, 'data' => $printing_dat]);
 	} else {
 		echo json_encode(['success' => false, 'message' => 'No data found for the selected printing items.']);
+	}
+}
+// Packing Recieving
+if (isset($_POST['get_selected_packing_items'])) {
+	$lot_id = $dbc->real_escape_string($_POST['get_selected_packing_items']);
+	$printing_dat = [];
+
+	$item = mysqli_query($dbc, "SELECT * FROM packing_items WHERE item_lot_no = '$lot_id' AND status = 'sent'");
+
+	if (mysqli_num_rows($item) > 0) {
+		while ($each_item = mysqli_fetch_assoc($item)) {
+			$printing_dat[] =  $each_item;
+			$product_id = $each_item["product_id"];
+
+
+			$product = fetchRecord($dbc, 'product', 'product_id', $product_id);
+			$product_name = $product['product_name'] ?? 'Unknown';
+
+			$printing_dat['product_name'] =  $product_name;
+		}
+
+		echo json_encode(['success' => true, 'data' => $printing_dat]);
+	} else {
+		echo json_encode(['success' => false, 'message' => 'No data found for the selected packing items.']);
 	}
 }
