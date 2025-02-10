@@ -1,4 +1,4 @@
-<?php if (basename($_SERVER['REQUEST_URI']) == 'embroidery_recieving.php') { ?>
+<?php if (basename($_SERVER['REQUEST_URI']) == 'stitching_receiving.php') { ?>
     <!DOCTYPE html>
     <html lang="en">
     <?php include_once 'includes/head.php';
@@ -19,7 +19,7 @@
 
                         <div class="row">
                             <div class="col-12 mx-auto h4">
-                                <b class="text-center card-text">Embroidery Recieving</b>
+                                <b class="text-center card-text">Stitching Recieving</b>
 
                                 <a href="credit_purchase.php" class="btn btn-admin float-right btn-sm">Add New</a>
                             </div>
@@ -32,7 +32,7 @@
                     <form action="" method="POST" id="embroidery_rec_form">
                         <input type="hidden" name="product_purchase_id" value="<?= @empty($_REQUEST['edit_purchase_id']) ? "" : base64_decode($_REQUEST['edit_purchase_id']) ?>">
                         <input type="hidden" name="payment_type" id="payment_type" value="credit_purchase">
-                        <input type="hidden" name="embroideryRecform" id="embroideryRecform" value="embroideryRecform">
+                        <input type="hidden" name="stitchingRecform" id="embroideryRecform" value="stitchingRecform">
                         <input type="hidden" name="purchase_id" id="purchase_id" value="">
                         <input type="hidden" name="received_embroidery" id="received_embroidery" value="">
 
@@ -139,7 +139,7 @@
                                                 <div class="col-lg-9 m-0 mt-1 p-0 pl-3">
                                                     <button type="button" class="btn select_dyeing mt-4 btn-primary btn-sm"
                                                         name="select_dyeing"
-                                                        id="select_dyeing">Embroidery</button>
+                                                        id="select_dyeing">Stitching</button>
                                                 </div>
                                             </div>
                                             <div class="col-lg-1 m-0 p-0 pl-1">
@@ -157,7 +157,7 @@
                                                     <select class="form-control searchableSelect" name="from_type[]" id="from_type<?= $i ?>" onchange="getStock(this.value, <?= $i ?>)">
                                                         <option disabled selected>Select Type</option>
                                                         <?php
-                                                        $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'cora_cutted' OR brand_id = 'dyed_cutted' OR brand_id = 'printed ' AND status = 1");
+                                                        $products = mysqli_query($dbc, "SELECT * FROM product WHERE brand_id = 'cora_cutted' OR brand_id = 'dyed_cutted' OR brand_id = 'printed' OR brand_id = 'embroidered' AND status = 1");
                                                         while ($p = mysqli_fetch_assoc($products)) {
                                                         ?>
                                                             <option value="<?= $p['product_id'] ?>"><?= ucwords($p['product_name']) ?> (<?= ucwords($p['brand_id']) ?>)</option>
@@ -173,7 +173,7 @@
                                                 <select class="form-control searchableSelect" name="type[]" id="type<?= $i ?>">
                                                     <option disabled selected>Select Type</option>
                                                     <?php
-                                                    $products = mysqli_query($dbc, "SELECT * FROM product WHERE (brand_id = 'embroidered') AND status = 1");
+                                                    $products = mysqli_query($dbc, "SELECT * FROM product WHERE (brand_id = 'stitched') AND status = 1");
                                                     while ($p = mysqli_fetch_assoc($products)) {
                                                     ?>
                                                         <option value="<?= $p['product_id'] ?>"><?= ucwords($p['product_name']) ?> (<?= ucwords($p['brand_id']) ?>)</option>
@@ -251,7 +251,7 @@
                         <div class="modal-dialog modal-lg" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLongTitle">Embroidery Details</h5>
+                                    <h5 class="modal-title" id="exampleModalLongTitle">Stitching Details</h5>
                                     <input type="text" id="tableSearchInput" class="form-control ml-3" placeholder="Search Here" style="width: 50%;">
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="detailModalClose">
                                         <span aria-hidden="true">&times;</span>
@@ -281,7 +281,7 @@
                             </div>
                         </div>
                     </div>
-                    <?php if (basename($_SERVER['REQUEST_URI']) == 'embroidery_recieving.php') { ?>
+                    <?php if (basename($_SERVER['REQUEST_URI']) == 'stitching_receiving.php') { ?>
                     </div>
                 </div> <!-- .row -->
             </div> <!-- .container-fluid -->
@@ -326,7 +326,7 @@
             url: 'php_action/custom_action.php',
             type: 'POST',
             data: {
-                get_embroidery_data: location_id
+                get_stitching_data: location_id
             },
             dataType: 'text',
             success: function(response) {
@@ -370,7 +370,7 @@
             url: 'php_action/custom_action.php',
             type: 'POST',
             data: {
-                get_selected_embroidery_items: cuttingID
+                get_selected_stitching_items: cuttingID
             },
             dataType: 'json',
             success: function(response) {
@@ -410,7 +410,7 @@
                             <td>${item.thaan || '-'}</td>
                             <td>${item.quantity_instock || item.qty || '-'}</td>
                             <td>
-                                <button type="button" class="btn select-row btn-primary btn-sm" value="${item.embroidery_item_id}">
+                                <button type="button" class="btn select-row btn-primary btn-sm" value="${item.stitching_item_id}">
                                     Apply
                                 </button>
                             </td>
@@ -439,7 +439,7 @@
             url: 'php_action/custom_action.php',
             type: 'POST',
             data: {
-                get_selected_embroidery: embID
+                get_selected_stitching: embID
             },
             dataType: 'json',
             success: function(response) {
@@ -462,12 +462,12 @@
                     row.find('[name="r_khata[]"]').val(data.r_khata || '');
                     row.find('[name="small_cp[]"]').val(data.small_cp || '');
                     row.find('[name="color[]"]').val(data.color || '');
-                    row.find('[name="embroidery_item_id[]"]').val(data.embroidery_item_id || '');
+                    row.find('[name="embroidery_item_id[]"]').val(data.stitching_item_id || '');
 
                     $("#lat_no").val(data.item_lot_no);
                     $("#dyeing_lot").val(data.d_lat_no);
                     $("#purchase_id").val(data.purchase_id);
-                    $("#received_embroidery").val(data.stitching_id);
+                    $("#received_embroidery").val(data.embroidery_id);
                     $("#show_dyeing_details").modal("hide");
                 } else {
                     console.error("Failed to fetch dyeing details:", response.message);
