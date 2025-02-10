@@ -14,7 +14,7 @@ if (isset($_REQUEST['id'])) {
         <div class="card">
           <div class="card-header card-bg">
             <div class="col-12 mx-auto h4">
-              <b class="text-center card-text text-center"><?= ucwords(str_replace('_', ' ', $_REQUEST['act'])) ?></b>
+              <b class="text-center card-text text-center"><?= ucwords(str_replace('_', ' ', @$_REQUEST['type'])) ?> Payment</b>
 
               <?php if (@$userPrivileges['nav_add'] == 1 || $fetchedUserRole == "admin"): ?>
                 <a href="<?= $getpage ?>" class="btn btn-admin float-right btn-sm hide"> Add New</a>
@@ -32,7 +32,7 @@ if (isset($_REQUEST['id'])) {
                 <div class="col-sm-12">
                   <form action="php_action/custom_action.php" method="POST" id="voucher_general_fm">
                     <div class="form-group row">
-                      <div class="col-sm-2 text-right">
+                      <div class="col-sm-1 text-right">
                         Date
                       </div>
                       <div class="col-sm-4">
@@ -47,10 +47,11 @@ if (isset($_REQUEST['id'])) {
                         <input type="hidden" class="form-control" name="voucher_group" value="general_voucher">
                       </div>
 
-                      <div class="col-sm-2 text-right">
+                      <input type="hidden" class="form-control" name="voucher_payment_type" value="<?= $_REQUEST['type'] ?>">
+                      <div class="col-sm-1 text-right">
                         Type
                       </div>
-                      <div class="col-sm-4">
+                      <div class="col-sm-5">
                         <select class="form-control" name="voucher_type">
                           <option <?= @($voucher['voucher_type'] == "general_voucher") ? "checked" : "" ?> value="general_voucher">General Voucher</option>
                           <option <?= @($voucher['voucher_type'] == "payment_clearance") ? "checked" : "" ?> value="payment_clearance ">Payment Clearance </option>
@@ -62,14 +63,14 @@ if (isset($_REQUEST['id'])) {
 
 
                     <div class="form-group row">
-                      <div class="col-sm-2 text-right">To Account</div>
+                      <div class="col-sm-1 text-right">Account</div>
                       <div class="col-sm-4">
                         <div class="input-group mb-3">
                           <select class="form-control" id="voucher_from_account" onchange="getBalance(this.value,'from_account_bl')" name="voucher_from_account" aria-label="Username" aria-describedby="basic-addon1" id="">
                             <option value="">Select Account</option>
 
 
-                            <?php $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status =1 ORDER BY customer_type ASC  ");
+                            <?php $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status =1 AND customer_type != 'bank' ORDER BY customer_type ASC  ");
                             $type2 = '';
                             while ($r = mysqli_fetch_assoc($q)):
                               $type = $r['customer_type'];
@@ -93,25 +94,32 @@ if (isset($_REQUEST['id'])) {
                           </div>
                         </div>
                       </div>
-                      <div class="col-sm-2 text-right">
-                        Debit
+                      <div class="col-sm-1 text-right <?= ($_REQUEST['type'] == 'send') ? '' : 'd-none' ?>">
+                        Credit
+                      </div>
+                      <div class="col-sm-5 <?= ($_REQUEST['type'] == 'send') ? '' : 'd-none' ?>">
+                        <input type="text" onkeyup="sameValue(this.value,'#voucher_debit')" value="<?= @$voucher['voucher_amount'] ?>" id="voucher_credit1" name="voucher_credit" class="form-control" required>
                       </div>
 
-                      <div class="col-sm-4">
-                        <input type="number" onkeyup="sameValue(this.value,'#voucher_credit1')" min="0" required name="voucher_debit" value="<?= @$voucher['voucher_amount'] ?>" class="form-control">
+                      <div class="col-sm-1 text-right <?= ($_REQUEST['type'] == 'receive') ? '' : 'd-none' ?>">
+                        Debit
                       </div>
+                      <div class="col-sm-5 <?= ($_REQUEST['type'] == 'receive') ? '' : 'd-none' ?>">
+                        <input type="number" onkeyup="sameValue(this.value,'#voucher_credit1')" min="0" required name="voucher_debit" id="voucher_debit" value="<?= @$voucher['voucher_amount'] ?>" class="form-control">
+                      </div>
+
                     </div> <!-- end of formgr0up -->
 
                     <div class="form-group row">
 
-                      <div class="col-sm-2 text-right">From Account</div>
-                      <div class="col-sm-4">
+                      <div class="col-sm-2 text-right d-none">From Account</div>
+                      <div class="col-sm-4 d-none">
                         <div class="input-group mb-3">
                           <select class="form-control" id="voucher_to_account" name="voucher_to_account" onchange="getBalance(this.value,'to_account_bl')" aria-label="Username" aria-describedby="basic-addon1">
                             <option value="">Select Account</option>
 
 
-                            <?php $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status =1 ORDER BY customer_type ASC ");
+                            <?php $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status =1 and customer_type = 'bank' ");
                             $type2 = '';
                             while ($r = mysqli_fetch_assoc($q)):
                               $type = $r['customer_type'];
@@ -120,7 +128,7 @@ if (isset($_REQUEST['id'])) {
                                 <optgroup label="<?= $r['customer_type'] ?>">
                                 <?php endif ?>
 
-                                <option <?= @($voucher['customer_id2'] == $r['customer_id']) ? "selected" : "" ?> value="<?= $r['customer_id'] ?>"><?= $r['customer_name'] ?></option>
+                                <option selected value="<?= $r['customer_id'] ?>"><?= $r['customer_name'] ?></option>
 
                                 <?php if ($type != $type2): ?>
                                 </optgroup>
@@ -135,26 +143,21 @@ if (isset($_REQUEST['id'])) {
                           </div>
                         </div>
                       </div>
-                      <div class="col-sm-2 text-right">Credit
-                      </div>
 
-                      <div class="col-sm-4">
-                        <input type="text" readonly value="<?= @$voucher['voucher_amount'] ?>" id="voucher_credit1" name="voucher_credit" class="form-control" required>
-                      </div>
 
                     </div>
                     <div class="form-group ">
                       <div class="row">
 
-                        <div class="col-sm-2 text-right">Hint
+                        <div class="col-sm-1 text-right">Remarks
                         </div>
-                        <div class="col-sm-10 mx-auto">
+                        <div class="col-sm-10 ">
                           <input type="text" name="voucher_hint" class="form-control" value="<?= @$voucher['voucher_hint'] ?>" required>
                         </div>
 
                       </div>
                     </div>
-                    <div class="form-group row">
+                    <!-- <div class="form-group row">
                       <div class="col-sm-2 text-right">DD/ Check No.</div>
                       <div class="col-sm-4">
                         <input type="text" class="form-control" name="td_check_no" value="<?= @$voucher['td_check_no'] ?>">
@@ -178,7 +181,7 @@ if (isset($_REQUEST['id'])) {
                     <div class="form-group row">
                       <div class="col-sm-2 text-right">DD/ Check Date</div>
                       <div class="col-sm-4">
-                        <input type="date" class="form-control" name="td_check_date" value="<?= @$voucher['td_check_date'] ?>">
+                        <input type="date" class="form-control" name="td_check_date" >
                       </div>
 
                       <div class="col-sm-2 text-right">Type</div>
@@ -197,7 +200,7 @@ if (isset($_REQUEST['id'])) {
 
                       </div>
 
-                    </div>
+                    </div> -->
                     <hr>
                     <div class="row">
                       <div class="col-sm-2 offset-10">

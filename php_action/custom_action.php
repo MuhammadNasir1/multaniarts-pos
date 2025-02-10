@@ -91,27 +91,49 @@ if (isset($_REQUEST['new_voucher_date'])) {
 				insert_data($dbc, "checks", $data_checks);
 			}
 
-
-			$debit = [
-				'debit' => @$_REQUEST['voucher_debit'],
-				'credit' => 0,
-				'customer_id' => @$_REQUEST['voucher_from_account'],
-				'transaction_from' => 'voucher',
-				'transaction_type' => @$_REQUEST['voucher_type'],
-				'transaction_remarks' => @$_REQUEST['voucher_hint'],
-				'transaction_date' => @$_REQUEST['new_voucher_date'],
-			];
-			insert_data($dbc, "transactions", $debit);
-			$transaction_id1 = mysqli_insert_id($dbc);
-			$credit = [
-				'credit' => @$_REQUEST['voucher_debit'],
-				'debit' => 0,
-				'customer_id' => @$_REQUEST['voucher_to_account'],
-				'transaction_from' => 'voucher',
-				'transaction_type' => @$_REQUEST['voucher_type'],
-				'transaction_remarks' => @$_REQUEST['voucher_hint'],
-				'transaction_date' => @$_REQUEST['new_voucher_date'],
-			];
+			if ($_REQUEST['voucher_payment_type'] == 'send') {
+				$debit = [
+					'debit' => 0,
+					'credit' => @$_REQUEST['voucher_debit'],
+					'customer_id' => @$_REQUEST['voucher_from_account'],
+					'transaction_from' => 'voucher',
+					'transaction_type' => @$_REQUEST['voucher_type'],
+					'transaction_remarks' => @$_REQUEST['voucher_hint'],
+					'transaction_date' => @$_REQUEST['new_voucher_date'],
+				];
+				insert_data($dbc, "transactions", $debit);
+				$transaction_id1 = mysqli_insert_id($dbc);
+				$credit = [
+					'credit' => 0,
+					'debit' => @$_REQUEST['voucher_debit'],
+					'customer_id' => @$_REQUEST['voucher_to_account'],
+					'transaction_from' => 'voucher',
+					'transaction_type' => @$_REQUEST['voucher_type'],
+					'transaction_remarks' => @$_REQUEST['voucher_hint'],
+					'transaction_date' => @$_REQUEST['new_voucher_date'],
+				];
+			} elseif ($_REQUEST['voucher_payment_type'] == 'receive') {
+				$debit = [
+					'debit' => @$_REQUEST['voucher_debit'],
+					'credit' => 0,
+					'customer_id' => @$_REQUEST['voucher_from_account'],
+					'transaction_from' => 'voucher',
+					'transaction_type' => @$_REQUEST['voucher_type'],
+					'transaction_remarks' => @$_REQUEST['voucher_hint'],
+					'transaction_date' => @$_REQUEST['new_voucher_date'],
+				];
+				insert_data($dbc, "transactions", $debit);
+				$transaction_id1 = mysqli_insert_id($dbc);
+				$credit = [
+					'credit' => @$_REQUEST['voucher_debit'],
+					'debit' => 0,
+					'customer_id' => @$_REQUEST['voucher_to_account'],
+					'transaction_from' => 'voucher',
+					'transaction_type' => @$_REQUEST['voucher_type'],
+					'transaction_remarks' => @$_REQUEST['voucher_hint'],
+					'transaction_date' => @$_REQUEST['new_voucher_date'],
+				];
+			}
 
 			insert_data($dbc, "transactions", $credit);
 			$transaction_id2 = mysqli_insert_id($dbc);
@@ -2794,44 +2816,44 @@ if (isset($_POST['get_selected_emb_items'])) {
 	}
 }
 
-if (isset($_POST['get_selected_stitching_items'])) {// Ensure the database connection file is included
+if (isset($_POST['get_selected_stitching_items'])) { // Ensure the database connection file is included
 
-    $id = $dbc->real_escape_string($_POST['get_selected_stitching_items']);
-    $cutting = []; // Initialize empty array
+	$id = $dbc->real_escape_string($_POST['get_selected_stitching_items']);
+	$cutting = []; // Initialize empty array
 
-    $productData = mysqli_query($dbc, "SELECT * FROM stitching WHERE lot_no = '$id' AND status = 'received'");
-    
-    while ($product = mysqli_fetch_assoc($productData)) {
-        $doneById = $product['done_by'];
-        $customerQuery = mysqli_query($dbc, "SELECT customer_name FROM customers WHERE customer_id = '$doneById'");
-        $customerResult = mysqli_fetch_assoc($customerQuery);
-        $product['customer_name'] = $customerResult['customer_name'] ?? 'Unknown';
-        $cutting[] = $product;
-    }
+	$productData = mysqli_query($dbc, "SELECT * FROM stitching WHERE lot_no = '$id' AND status = 'received'");
 
-    if (!empty($cutting)) {
-        $cuttingItems = []; // Initialize empty array
+	while ($product = mysqli_fetch_assoc($productData)) {
+		$doneById = $product['done_by'];
+		$customerQuery = mysqli_query($dbc, "SELECT customer_name FROM customers WHERE customer_id = '$doneById'");
+		$customerResult = mysqli_fetch_assoc($customerQuery);
+		$product['customer_name'] = $customerResult['customer_name'] ?? 'Unknown';
+		$cutting[] = $product;
+	}
 
-        foreach ($cutting as $cut) {
-            $cuttingId = $cut['stitching_id'];
+	if (!empty($cutting)) {
+		$cuttingItems = []; // Initialize empty array
 
-            $itemsData = mysqli_query($dbc, "SELECT * FROM stitching_items WHERE stitching_id = '$cuttingId'");
-            while ($item = mysqli_fetch_assoc($itemsData)) {
-                $productId = $item['product_id'];
-                $productNameQuery = mysqli_query($dbc, "SELECT product_name FROM product WHERE product_id = '$productId'");
-                $productNameResult = mysqli_fetch_assoc($productNameQuery);
-                $item['product_name'] = $productNameResult['product_name'] ?? 'Unknown';
-                $item['customer_name'] = $cut['customer_name'];
-                $cuttingItems[] = $item;
-            }
-        }
+		foreach ($cutting as $cut) {
+			$cuttingId = $cut['stitching_id'];
 
-        // Send JSON response
-        echo json_encode(['success' => true, 'stitching_items' => $cuttingItems], JSON_UNESCAPED_UNICODE);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'No data found']);
-    }
-    exit;
+			$itemsData = mysqli_query($dbc, "SELECT * FROM stitching_items WHERE stitching_id = '$cuttingId'");
+			while ($item = mysqli_fetch_assoc($itemsData)) {
+				$productId = $item['product_id'];
+				$productNameQuery = mysqli_query($dbc, "SELECT product_name FROM product WHERE product_id = '$productId'");
+				$productNameResult = mysqli_fetch_assoc($productNameQuery);
+				$item['product_name'] = $productNameResult['product_name'] ?? 'Unknown';
+				$item['customer_name'] = $cut['customer_name'];
+				$cuttingItems[] = $item;
+			}
+		}
+
+		// Send JSON response
+		echo json_encode(['success' => true, 'stitching_items' => $cuttingItems], JSON_UNESCAPED_UNICODE);
+	} else {
+		echo json_encode(['success' => false, 'message' => 'No data found']);
+	}
+	exit;
 }
 
 
@@ -3198,7 +3220,7 @@ if (isset($_POST['packingform'])) {
 				'sts' => 'success',
 				'msg' => 'Packing and items added successfully.',
 			];
-		} else {	
+		} else {
 			$response = [
 				'sts' => 'warning',
 				'msg' => 'Some items could not be added: ' . implode(", ", $errors),

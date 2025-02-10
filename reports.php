@@ -283,7 +283,7 @@
                               $invoice_id = filter_var($row['transaction_remarks'], FILTER_SANITIZE_NUMBER_INT);
 
                               $fetchinvoive = fetchRecord($dbc, "orders", "order_id", $invoice_id);
-                              $invoice_type = $fetchinvoive['credit_sale_type'];
+                              $invoice_type = @$fetchinvoive['credit_sale_type'];
                               if ($check_remaing_balance < 0) {
 
                                 $Date = date('Y-m-d');
@@ -333,7 +333,7 @@
                                 $invoice_type =  $invoice_type2['voucher_id'];
                               }
                             }
-                            @$total_credit += $row['credit'];
+                            @$total_credit += (float) $row['credit'];
                             if ($row['debit'] !== 0 and $row['credit'] !== 0):
                         ?>
                               <tr>
@@ -361,7 +361,7 @@
                                   ?>
                                   - <?= @$fetchinvoive['order_narration'] ?> <?= @$fetchinvoive['purchase_narration'] ?> </td>
                                 <td class="text-primary h6"><?= @number_format((int)$row['debit']) ?></td>
-                                <td class="text-success h6 font-weight-bolder"><?= @number_format($row['credit']) ?></td>
+                                <td class="text-success h6 font-weight-bolder"><?= $row['credit'] ?></td>
 
 
                                 <?php if ($check_remaing_balance < 0 and $row['transaction_from'] == "invoice"): ?>

@@ -2036,20 +2036,22 @@ function getSaleTotal() {
     total_bill += rates * quantity;
   });
 
-  // Fetch discount values
-  var discount_percentage = parseFloat($("#ordered_discount").val()) || 0;
+  // Fetch discount value and ensure it's properly retained
+  var discount_percentage = parseFloat($("#ordered_discount").val().trim()) || 0;
   var discount = (discount_percentage / 100) * total_bill; // Apply discount as percentage
 
   // Log values for debugging
-  console.log("Total Bill: ", total_bill);
-  console.log("Discount Percentage: ", discount_percentage);
-  console.log("Discount Amount: ", discount);
+  console.log("Total Bill:", total_bill);
+  console.log("Discount Percentage:", discount_percentage);
+  console.log("Discount Amount:", discount);
 
-  // Calculate grand total without freight
+  // Calculate grand total after discount
   grand_total = total_bill - discount;
 
-  // Log the grand total for debugging
-  console.log("Grand Total (After Discount): ", grand_total);
+  // Log grand total for debugging
+  console.log("Grand Total (After Discount):", grand_total);
+
+  getRemaingAmount(); // Ensure remaining amount calculation runs
 
   // Update the displayed total amounts
   $("#product_total_amount").html(total_bill.toFixed(2));
@@ -2067,9 +2069,17 @@ function getSaleTotal() {
 
   // Ensure payment account field is required if there's a grand total
   $("input[name='payment_account']").prop("required", grand_total > 0);
-  
-  getRemaingAmount(); // Ensure remaining amount calculation runs
 }
+
+// Ensure getSaleTotal() updates when discount input changes
+$("#ordered_discount").on("input change", function () {
+  getSaleTotal();
+});
+
+// Debugging event listener to check if discount input resets on focusout
+$("#ordered_discount").on("focusout", function () {
+  console.log("Discount on blur:", $(this).val());
+});
 
 
 
