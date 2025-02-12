@@ -260,7 +260,7 @@
                       <td class="table-bordered">
 
                         <div class="input-group">
-                          <select class="form-control" onchange="getBalance(this.value,'payment_account_bl')" name="payment_account" id="payment_account" aria-label="Username" aria-describedby="basic-addon1">
+                          <select class="form-control" onload="getBalance(this.value,'payment_account_bl')" name="payment_account" id="payment_account" aria-label="Username" aria-describedby="basic-addon1">
 
                             <?php if ($_SESSION['user_role'] == 'admin') {
                               $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status =1 AND customer_type='bank'");
@@ -334,5 +334,8 @@
       let value = $(this).val(); 
       $("#addProduct").attr('value', value); 
     });
+
+    let payment_account = $("#payment_account").val();
+    getBalance(payment_account, 'payment_account_bl');
   });
 </script>
