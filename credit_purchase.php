@@ -78,7 +78,11 @@
                 <br>
                 <a href="customers.php?type=supplier" class="btn btn-admin2 btn-sm mt-2">Add</a>
               </div>
-              <div class="col-md-2">
+              <div class="col-md-1">
+                <label for="volume_no">Volume No</label>
+                <input type="number" min="0" class="form-control" id="volume_no" required value="" name="volume_no" placeholder="Volume No">
+              </div>
+              <div class="col-md-1">
                 <label for="lat_no">Lot No</label>
                 <input type="text" class="form-control" id="lat_no" required value="" name="lat_no" placeholder="Lot No">
               </div>
@@ -166,14 +170,14 @@
                     ?>
 
                       <option data-price="<?= $row["current_rate"] ?>" <?= empty($r['product_id']) ? "" : "selected" ?> value="<?= $row["product_id"] ?>">
-                        <?= $row["product_name"] ?> | <?= @$getBrand["brand_name"] ?>(<?= @$getCat["categories_name"] ?>) </option>
+                        <?= $row["product_name"] ?> | (<?= @$row["category_id"] ?>) </option>
 
                     <?php   } ?>
                   </select>
                 </div>
                 <div class="ml-3">
                   <label class="invisible d-block">.</label>
-                  <button type="button" class="btn btn-danger btn-sm pt-1 pb-1" data-toggle="modal" data-target="#add_product_modal"> <i class="fa fa-plus"></i> </button>
+                  <button type="button" class="btn btn-danger btn-sm pt-1 pb-1" onclick="openProductModal(this.value)" value="" id="addProduct"> <i class="fa fa-plus"></i> </button>
                 </div>
               </div>
               <div class="col-sm-2">
@@ -324,4 +328,11 @@
       }
     });
   }
+
+  $(document).ready(function() {
+    $("#volume_no").on('input', function() {
+      let value = $(this).val(); 
+      $("#addProduct").attr('value', value); 
+    });
+  });
 </script>

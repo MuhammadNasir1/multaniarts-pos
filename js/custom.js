@@ -286,7 +286,7 @@ $(document).ready(function () {
     e.preventDefault();
     var form = $(this);
     var fd = new FormData(this);
-    var files = $("#product_image")[0].files[0];
+    // var files = $("#product_image")[0].files[0];
 
     $.ajax({
       url: form.attr("action"),
@@ -335,7 +335,7 @@ $(document).ready(function () {
             this.reset();
           });
           $("#tableData").load(location.href + " #tableData");
-        }
+        }4
         $("#voucher_general_btn").prop("disabled", false);
 
         Swal.fire({
@@ -2027,7 +2027,8 @@ function removeByid(id) {
 
 function getSaleTotal() {
   var payment_type = $("#payment_type").val();
-  var total_bill = 0, grand_total = 0;
+  var total_bill = 0,
+    grand_total = 0;
 
   // Calculate total bill based on product quantity and rates
   $(".product_ids").each(function () {
@@ -2037,7 +2038,8 @@ function getSaleTotal() {
   });
 
   // Fetch discount value and ensure it's properly retained
-  var discount_percentage = parseFloat($("#ordered_discount").val().trim()) || 0;
+  var discount_percentage =
+    parseFloat($("#ordered_discount").val().trim()) || 0;
   var discount = (discount_percentage / 100) * total_bill; // Apply discount as percentage
 
   // Log values for debugging
@@ -2059,7 +2061,10 @@ function getSaleTotal() {
 
   // Handle the paid amount input based on payment type
   if (payment_type === "cash_in_hand" || payment_type === "cash_purchase") {
-    $("#paid_ammount").val(grand_total).attr("max", grand_total).prop("required", true);
+    $("#paid_ammount")
+      .val(grand_total)
+      .attr("max", grand_total)
+      .prop("required", true);
     if (payment_type === "cash_in_hand") {
       $("#full_payment_check").prop("checked", true);
     }
@@ -2081,8 +2086,6 @@ $("#ordered_discount").on("focusout", function () {
   console.log("Discount on blur:", $(this).val());
 });
 
-
-
 function editByid(id, code, price, qty) {
   $(".searchableSelect").val(id);
   $("#get_product_code").val(code);
@@ -2096,7 +2099,6 @@ function editByid(id, code, price, qty) {
   }, 500);
 }
 
-
 function countFrieght(value) {
   var total = parseFloat($("#product_grand_total_amount").text()) || 0;
   var freight = parseFloat(value) || 0;
@@ -2106,5 +2108,8 @@ function countFrieght(value) {
   getRemaingAmount();
 }
 
-
-
+// Open Product Modal With Volume No
+let openProductModal = (value) => {
+  $("#add_product_modal").modal("show");
+  $("#volumeNo").val(value);
+};

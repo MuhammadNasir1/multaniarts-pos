@@ -88,12 +88,12 @@
                  <input type="text" class="form-control" id="product_name" placeholder="Product Name" name="product_name" required value="<?= @$fetchproduct['product_name'] ?>">
                </div>
                <div class="col-sm-6 mb-3 mb-sm-0">
-                 <label for="">Product Code</label>
-                 <input type="text" class="form-control" id="product_code" placeholder="Product Code" name="product_code" required value="<?= @$fetchproduct['product_code'] ?>">
+                 <label for="">Sale Rate</label>
+                 <input type="number" class="form-control" id="current_rate" placeholder=" Rate" name="current_rate" required value="<?= @$fetchproduct['current_rate'] ?>">
                </div>
              </div>
 
-             <div class="form-group row">
+             <div class="form-group row d-none">
                <div class="col-sm-6">
                  <label for="">Product Brand</label>
                  <select class="form-control searchableSelect" required name="brand_id" id="brand_id" size="1">
@@ -103,14 +103,15 @@
                     while ($row = mysqli_fetch_array($result)) {
                     ?>
 
-                     <option <?= @($fetchproduct['brand_id'] != $row["brand_id"]) ? "" : "selected" ?> value="<?= $row["brand_id"] ?>"><?= $row["brand_name"] ?></option>
+                     <option selected  value="<?= $row["brand_id"] ?>"><?= $row["brand_name"] ?></option>
 
                    <?php   } ?>
                  </select>
                </div>
                <div class="col-sm-6">
                  <label for="">Product Category</label>
-                 <select class="form-control searchableSelect" required name="category_id" id="tableData1" size="1">
+                 <input type="text" name="add_category_name" id="volumeNo">
+                 <!-- <select class="form-control searchableSelect" required name="category_id" id="tableData1" size="1">
                    <option value="">Select Category</option>
                    <?php
                     $result = mysqli_query($dbc, "select * from categories");
@@ -118,25 +119,31 @@
                     ?>
                      <option <?= @($fetchproduct['category_id'] != $row["categories_id"]) ? "" : "selected" ?> value="<?= $row["categories_id"] ?>"><?= $row["categories_name"] ?></option>
                    <?php   } ?>
-                 </select>
+                 </select> -->
                </div>
              </div>
              <div class="form-group row">
-               <div class="col-sm-4 mb-3 mb-sm-0">
-                 <label for=""> Rate</label>
-                 <input type="number" class="form-control" id="current_rate" placeholder=" Rate" name="current_rate" required value="<?= @$fetchproduct['current_rate'] ?>">
-               </div>
-               <div class="col-sm-4 mb-3 mb-sm-0">
-                 <label for="">15 Days Sale Rate</label>
-                 <input type="number" class="form-control" id="f_days" placeholder="15 Days Sale Rate" name="f_days" value="<?= @$fetchproduct['f_days'] ?>">
-               </div>
-               <div class="col-sm-4 mb-3 mb-sm-0">
-                 <label for="">30 Days Sale Rate</label>
-                 <input type="number" class="form-control" id="t_days" placeholder="30 Days Sale Rate" name="t_days" value="<?= @$fetchproduct['t_days'] ?>">
-               </div>
+              
+               <!-- <div class="col-sm-6 mb-3 mb-sm-0">
+
+                 <label for="">Status</label>
+                 <select class="form-control" required name="availability" id="availability">
+                   <option value="1">Available</option>
+                   <option value="0">Not Available</option>
+                 </select>
+
+               </div> -->
 
              </div>
-             <div class="form-group row">
+             <!-- <div class="col-sm-4 mb-3 mb-sm-0">
+                <label for="">15 Days Sale Rate</label>
+                <input type="number" class="form-control" id="f_days" placeholder="15 Days Sale Rate" name="f_days" value="<?= @$fetchproduct['f_days'] ?>">
+              </div>
+              <div class="col-sm-4 mb-3 mb-sm-0">
+                <label for="">30 Days Sale Rate</label>
+                <input type="number" class="form-control" id="t_days" placeholder="30 Days Sale Rate" name="t_days" value="<?= @$fetchproduct['t_days'] ?>">
+              </div> -->
+             <!-- <div class="form-group row">
                <div class="col-sm-6">
                  <label for="">Product Alert on Quantity</label>
                  <input type="text" required class="form-control" value="<?= (empty($fetchproduct)) ? 5 : $fetchproduct['alert_at'] ?>" id="alert_at" placeholder="Product Stock Alert" name="alert_at">
@@ -146,22 +153,14 @@
 
                  <input type="file" class="form-control" id="product_image" name="product_image" accept="image/*">
                </div>
-             </div>
+             </div> -->
              <div class="form-group row">
-               <div class="col-sm-6 mb-3 mb-sm-0">
+               <!-- <div class="col-sm-6 mb-3 mb-sm-0">
                  <label for="">Product Description</label>
 
                  <textarea class="form-control" name="product_description" placeholder="Product Description"><?= @$fetchproduct['product_description'] ?></textarea>
-               </div>
-               <div class="col-sm-6 mb-3 mb-sm-0">
+               </div> -->
 
-                 <label for="">Status</label>
-                 <select class="form-control" required name="availability" id="availability">
-                   <option value="1">Available</option>
-                   <option value="0">Not Available</option>
-                 </select>
-
-               </div>
              </div>
 
 

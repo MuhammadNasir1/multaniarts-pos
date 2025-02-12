@@ -342,25 +342,64 @@ if (isset($_REQUEST['new_sin_voucher_date'])) {
 }
 if (!empty($_REQUEST['action']) and $_REQUEST['action'] == "product_module") {
 	$purchase_rate = $total = 0;
-	$category_price = fetchRecord($dbc, "categories", "categories_id", $_REQUEST['category_id']);
+	$category_price = fetchRecord($dbc, "categories", "categories_id",@$_REQUEST['category_id']);
 	$purchase_rate = round($purchase_rate);
-
 	$data_array = [
-		'product_name' => $_REQUEST['product_name'],
-		'product_code' => @$_REQUEST['product_code'],
-		'brand_id' => @$_REQUEST['brand_id'],
-		'category_id' => @$_REQUEST['category_id'],
-		'current_rate' => 0,
-		'product_description' => @$_REQUEST['product_description'],
-		'alert_at' => @$_REQUEST['alert_at'],
-		'availability' => @$_REQUEST['availability'],
-		'purchase_rate' => $purchase_rate,
-		'status' => 1,
+		'categories_name' => $_REQUEST['add_category_name'],
+		'categories_status' => 1,
 	];
-	if ($_REQUEST['product_id'] == "") {
+	if (insert_data($dbc, "categories", $data_array)) {
+		$cat_id = $_REQUEST['add_category_name'];
+		$data_array = [
+			'product_name' => $_REQUEST['product_name'],
+			'product_code' => @$_REQUEST['product_code'],
+			'brand_id' => @$_REQUEST['brand_id'],
+			'category_id' => $cat_id,
+			'current_rate' => 0,
+			'product_description' => @$_REQUEST['product_description'],
+			'alert_at' => @$_REQUEST['alert_at'],
+			'availability' => @$_REQUEST['availability'],
+			'purchase_rate' => $purchase_rate,
+			'status' => 1,
+		];
+		if ($_REQUEST['product_id'] == "") {
 
-		if (insert_data($dbc, "product", $data_array)) {
-			$last_id = mysqli_insert_id($dbc);
+			if (insert_data($dbc, "product", $data_array)) {
+				$last_id = mysqli_insert_id($dbc);
+
+
+				// if ($_FILES['product_image']['tmp_name']) {
+				// 	upload_pic($_FILES['product_image'], '../img/uploads/');
+				// 	$product_image = $_SESSION['pic_name'];
+				// 	$data_image = [
+				// 		'product_image' => $product_image,
+				// 	];
+				// 	update_data($dbc, "product", $data_image, "product_id", $last_id);
+				// }
+
+
+				$response = [
+					"msg" => "Product Has Been Added",
+					"sts" => "success",
+					"id" => base64_encode($last_id),
+					"link" => base64_encode('add_stock'),
+				];
+			} else {
+				$response = [
+					"msg" => mysqli_error($dbc),
+					"sts" => "error"
+				];
+			}
+		} else {
+			$response = [
+				"msg" => mysqli_error($dbc),
+				"sts" => "danger"
+			];
+			exit;
+		}
+	} else {
+		if (update_data($dbc, "product", $data_array, "product_id", base64_decode($_REQUEST['product_id']))) {
+			$last_id = $_REQUEST['product_id'];
 
 			// if ($_FILES['product_image']['tmp_name']) {
 			// 	upload_pic($_FILES['product_image'], '../img/uploads/');
@@ -370,32 +409,6 @@ if (!empty($_REQUEST['action']) and $_REQUEST['action'] == "product_module") {
 			// 	];
 			// 	update_data($dbc, "product", $data_image, "product_id", $last_id);
 			// }
-
-
-			$response = [
-				"msg" => "Product Has Been Added",
-				"sts" => "success",
-				"id" => base64_encode($last_id),
-				"link" => base64_encode('add_stock'),
-			];
-		} else {
-			$response = [
-				"msg" => mysqli_error($dbc),
-				"sts" => "error"
-			];
-		}
-	} else {
-		if (update_data($dbc, "product", $data_array, "product_id", base64_decode($_REQUEST['product_id']))) {
-			$last_id = $_REQUEST['product_id'];
-
-			if ($_FILES['product_image']['tmp_name']) {
-				upload_pic($_FILES['product_image'], '../img/uploads/');
-				$product_image = $_SESSION['pic_name'];
-				$data_image = [
-					'product_image' => $product_image,
-				];
-				update_data($dbc, "product", $data_image, "product_id", $last_id);
-			}
 
 			$response = [
 				"msg" => "Product Updated",
@@ -954,6 +967,7 @@ if (isset($_REQUEST['cash_purchase_supplier'])) {
 		'lot_no' => $_REQUEST['lat_no'],
 		'client_name' => @$_REQUEST['cash_purchase_supplier'],
 		'client_contact' => @$_REQUEST['client_contact'],
+		'volume_no' => @$_REQUEST['volume_no'],
 		'purchase_narration' => @$_REQUEST['purchase_narration'],
 		'payment_account' => @$_REQUEST['payment_account'],
 		'customer_account' => @$_REQUEST['customer_account'],
