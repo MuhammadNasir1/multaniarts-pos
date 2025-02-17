@@ -335,7 +335,8 @@ $(document).ready(function () {
             this.reset();
           });
           $("#tableData").load(location.href + " #tableData");
-        }4
+        }
+        4;
         $("#voucher_general_btn").prop("disabled", false);
 
         Swal.fire({
@@ -2056,6 +2057,9 @@ function getSaleTotal() {
   getRemaingAmount(); // Ensure remaining amount calculation runs
 
   // Update the displayed total amounts
+  let sale_type = $("#sale_type").val();
+  console.log("Sale Type:", sale_type);
+  saleType(sale_type);
   $("#product_total_amount").html(total_bill.toFixed(2));
   $("#product_grand_total_amount").html(grand_total.toFixed(2));
 
@@ -2112,4 +2116,13 @@ function countFrieght(value) {
 let openProductModal = (value) => {
   $("#add_product_modal").modal("show");
   $("#volumeNo").val(value);
+};
+
+let saleType = (value) => {
+  if (value === "cash") {
+    let total_amount = $("#product_grand_total_amount").text();
+    $("#paid_ammount").val(total_amount);
+    $("#paid_ammount").attr("readonly", true);
+    $("#remaining_ammount").val(0);
+  }
 };

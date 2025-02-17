@@ -6,6 +6,9 @@
   if (!empty($_REQUEST['edit_purchase_id'])) {
     # code...
     $fetchPurchase = fetchRecord($dbc, "purchase", "purchase_id", base64_decode($_REQUEST['edit_purchase_id']));
+    // echo "<pre>";
+    // print_r($fetchPurchase);
+    // echo "</pre>";
   }
   ?>
 
@@ -80,11 +83,11 @@
               </div>
               <div class="col-md-1">
                 <label for="volume_no">Volume No</label>
-                <input type="number" min="0" class="form-control" id="volume_no" required value="" name="volume_no" placeholder="Volume No">
+                <input type="number" min="0" class="form-control" id="volume_no" required value="<?= @$fetchPurchase['volume_no'] ?>" name="volume_no" placeholder="Volume No">
               </div>
               <div class="col-md-1">
                 <label for="lat_no">Lot No</label>
-                <input type="text" class="form-control" id="lat_no" required value="" name="lat_no" placeholder="Lot No">
+                <input type="text" class="form-control" id="lat_no" required  value="<?= @$fetchPurchase['lot_no'] ?>"name="lat_no" placeholder="Lot No">
               </div>
               <div class="col-md-2">
                 <label class="text-dark" for="purchase_for">Purchase For</label>
@@ -123,7 +126,7 @@
                       <optgroup label="<?= $r['customer_type'] ?>">
                       <?php endif ?>
 
-                      <option <?= @($voucher['customer_id2'] == $r['customer_id']) ? "selected" : "" ?> value="<?= $r['customer_id'] ?>"><?= $r['customer_name'] ?></option>
+                      <option <?= @($fetchPurchase['pur_location'] == $r['customer_id']) ? "selected" : "" ?> value="<?= $r['customer_id'] ?>"><?= $r['customer_name'] ?></option>
 
                       <?php if ($type != $type2): ?>
                       </optgroup>
@@ -169,7 +172,7 @@
                       $getCat = fetchRecord($dbc, "categories", "categories_id", $row['category_id']);
                     ?>
 
-                      <option data-price="<?= $row["current_rate"] ?>" <?= empty($r['product_id']) ? "" : "selected" ?> value="<?= $row["product_id"] ?>">
+                      <option data-price="<?= $row["current_rate"] ?>" <?= @($fetchPurchase['product_id'] == $row['product_id']) ? "selected" : "" ?>  value="<?= $row["product_id"] ?>">
                         <?= $row["product_name"] ?> | (<?= @$row["category_id"] ?>) </option>
 
                     <?php   } ?>
@@ -182,19 +185,19 @@
               </div>
               <div class="col-sm-2">
                 <label>Rate</label>
-                <input type="number" required min="0" <?= ($_SESSION['user_role'] == "admin") ? "" : "readonly" ?> class="form-control" id="get_product_price" name="product_price">
+                <input type="number" required min="0" <?= ($_SESSION['user_role'] == "admin") ? "" : "readonly" ?> value="<?= @$fetchPurchase['pur_rate'] ?>" class="form-control" id="get_product_price" name="product_price">
               </div>
               <div class="col-sm-2">
                 <label>Thaan</label>
-                <input type="number" min="0" placeholder="Thaan Here" value="" autocomplete="off" class="form-control" name="pur_thaan" id="get_pur_thaan">
+                <input type="number" min="0" placeholder="Thaan Here" value="<?= @$fetchPurchase['pur_thaan'] ?>" autocomplete="off" class="form-control" name="pur_thaan" id="get_pur_thaan">
               </div>
               <div class="col-sm-2">
                 <label>Gzanah</label>
-                <input type="number" min="0" placeholder="Gzanah Here" value="" autocomplete="off" class="form-control" name="pur_gzanah" id="get_pur_gzanah">
+                <input type="number" min="0" placeholder="Gzanah Here" value="<?= @$fetchPurchase['pur_gzanah'] ?>" autocomplete="off" class="form-control" name="pur_gzanah" id="get_pur_gzanah">
               </div>
               <div class="col-sm-2">
                 <label>Quantity</label>
-                <input type="number" class="form-control" required id="get_product_quantity" value="1" min="1" name="quantity">
+                <input type="number" class="form-control" required id="get_product_quantity" value="<?= isset($fetchPurchase['quantity']) ? $fetchPurchase['quantity'] : 1 ?>"  min="1" name="quantity">
               </div>
 
               <div class="col-sm-2  d-flex align-items-center">
@@ -240,7 +243,7 @@
                       <td class="table-bordered">
                         <div class="form-group row">
                           <div class="col-sm-6">
-                            <input type="number" min="0" class="form-control form-control-sm" id="paid_ammount" required onkeyup="getRemaingAmount()" name="paid_ammount">
+                            <input type="number" min="0" class="form-control form-control-sm" value="<?= isset($fetchPurchase['paid']) ? @$fetchPurchase['paid'] : 0 ?>" id="paid_ammount" required onkeyup="getRemaingAmount()" name="paid_ammount">
                           </div>
                           <div class=" col-sm-6">
                             <div class="custom-control custom-switch">

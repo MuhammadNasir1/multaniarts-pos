@@ -42,7 +42,7 @@
                </div>
                <div class="col-md-2">
                  <label for="Sale Type" class="font-weight-bold text-dark">Sale Type</label>
-                 <select name="sale_type" class="form-control searchableSelect" id="sale_type">
+                 <select name="sale_type" onchange="saleType(this.value)" class="form-control searchableSelect" id="sale_type">
                    <option value="cash" <?= @$fetchOrder['sale_type'] == "cash" ? "selected" : "" ?>>Cash</option>
                    <option selected value="credit" <?= @$fetchOrder['sale_type'] == "credit" ? "selected" : "" ?>>Credit</option>
                    <option value="advance" <?= @$fetchOrder['sale_type'] == "advance" ? "selected" : "" ?>>Advance</option>
@@ -65,23 +65,23 @@
                  <input type="hidden" name="credit_sale_type" value="<?= @$credit_sale_type ?>" id="credit_sale_type">
                  <label class="font-weight-bold text-dark">Customer</label>
                  <div class="input-group ">
-                   
-                     <select class="form-control searchableSelect" aria-required="true" name="credit_order_client_name" id="credit_order_client_name" required onchange="getBalance(this.value,'customer_account_exp')" aria-label="Username" aria-describedby="basic-addon1">
-                       <option value="">Select Customer</option>
-                       <?php
-                        $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status =1 AND customer_type='customer'");
-                        while ($r = mysqli_fetch_assoc($q)) {
-                          $customer_name = ucwords(strtolower($r['customer_name']));
-                        ?>
-                         <option <?= @($fetchPurchase['customer_account'] == $r['customer_id']) ? "selected" : "" ?>
-                           data-id="<?= $r['customer_id'] ?>"
-                           data-contact="<?= $r['customer_phone'] ?>"
-                           value="<?= $customer_name ?>">
-                           <?= $customer_name ?>
-                         </option>
-                       <?php } ?>
-                     </select>
-                  
+
+                   <select class="form-control searchableSelect" aria-required="true" name="credit_order_client_name" id="credit_order_client_name" required onchange="getBalance(this.value,'customer_account_exp')" aria-label="Username" aria-describedby="basic-addon1">
+                     <option value="">Select Customer</option>
+                     <?php
+                      $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status =1 AND customer_type='customer'");
+                      while ($r = mysqli_fetch_assoc($q)) {
+                        $customer_name = ucwords(strtolower($r['customer_name']));
+                      ?>
+                       <option <?= @($fetchPurchase['customer_account'] == $r['customer_id']) ? "selected" : "" ?>
+                         data-id="<?= $r['customer_id'] ?>"
+                         data-contact="<?= $r['customer_phone'] ?>"
+                         value="<?= $customer_name ?>">
+                         <?= $customer_name ?>
+                       </option>
+                     <?php } ?>
+                   </select>
+
                    <div class="input-group-prepend">
                      <span class="input-group-text" id="basic-addon1">Balance : <span id="customer_account_exp">0</span></span>
                    </div>
@@ -323,9 +323,15 @@
  </body>
 
  </html>
-
  <?php include_once 'includes/foot.php'; ?>
 
+
+ <script>
+   $(document).ready(function() {
+     let payment_account = $("#payment_account").val();
+     getBalance(payment_account, 'payment_account_bl');
+   });
+ </script>
 
  <?php
   if (!empty($_REQUEST['edit_order_id'])) {

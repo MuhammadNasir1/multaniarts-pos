@@ -342,7 +342,7 @@ if (isset($_REQUEST['new_sin_voucher_date'])) {
 }
 if (!empty($_REQUEST['action']) and $_REQUEST['action'] == "product_module") {
 	$purchase_rate = $total = 0;
-	$category_price = fetchRecord($dbc, "categories", "categories_id",@$_REQUEST['category_id']);
+	$category_price = fetchRecord($dbc, "categories", "categories_id", @$_REQUEST['category_id']);
 	$purchase_rate = round($purchase_rate);
 	$data_array = [
 		'categories_name' => $_REQUEST['add_category_name'],
@@ -718,7 +718,7 @@ if (isset($_REQUEST['credit_order_client_name'])) {
 			'payment_account' => @$_REQUEST['payment_account'],
 			'customer_account' => @$_REQUEST['customer_account'],
 			'payment_type' => 'credit_sale',
-			'credit_sale_type' => @$_REQUEST['credit_sale_type'],
+			'credit_sale_type' => @$_REQUEST['sale_type'],
 			'vehicle_no' => @$_REQUEST['vehicle_no'],
 			'pur_freight' => @$_REQUEST['freight'],
 			'voucher_no' => @$_REQUEST['voucher_no'],
@@ -761,36 +761,39 @@ if (isset($_REQUEST['credit_order_client_name'])) {
 				$total_grand = @(float)$_REQUEST['freight'] + $total_ammount - $total_ammount * ((float)$_REQUEST['ordered_discount'] / 100);
 				$due_amount = (float)$total_grand - @(float)$_REQUEST['paid_ammount'];
 
-				$credit = [
-					'debit' => $due_amount,
-					'credit' => 0,
-					'customer_id' => @$_REQUEST['customer_account'],
-					'transaction_from' => 'invoice',
-					'transaction_type' => "credit_sale",
-					'transaction_remarks' => "credit_sale by order id#" . $last_id,
-					'transaction_date' => $_REQUEST['order_date'],
-				];
-				if ($due_amount > 0) {
-					$payment_status = 0; //pending
-					insert_data($dbc, 'transactions', $credit);
-					$transaction_id = mysqli_insert_id($dbc);
-				} else {
+				if ($_REQUEST['sale_type'] == 'credit') {
+					
+					$paidAmount = @(float)$_REQUEST['remaining_ammount'];
+					if ($paidAmount > 0) {
+						$credit1 = [
+							'credit' => 0,
+							'debit' => $paidAmount,
+							'customer_id' => @$_REQUEST['customer_account'],
+							'transaction_from' => 'invoice',
+							'transaction_type' => "credit_sale",
+							'transaction_remarks' => "credit_sale by order id#" . $last_id,
+							'transaction_date' => $_REQUEST['order_date'],
+						];
+						insert_data($dbc, 'transactions', $credit1);
+						$transaction_paid_id = mysqli_insert_id($dbc);
+					}
+					$payment_status = 0; //completed
+				} elseif ($_REQUEST['sale_type'] == 'cash') {
+					$paidAmount = @(float)$_REQUEST['paid_ammount'];
+					if ($paidAmount > 0) {
+						$debit = [
+							'debit' => 0,
+							'credit' => @$_REQUEST['paid_ammount'],
+							'customer_id' => @$_REQUEST['payment_account'],
+							'transaction_from' => 'invoice',
+							'transaction_type' => "cash_in_hand",
+							'transaction_remarks' => "cash_sale by order id#" . $last_id,
+							'transaction_date' => $_REQUEST['order_date'],
+						];
+						insert_data($dbc, 'transactions', $debit);
+						$transaction_paid_id = mysqli_insert_id($dbc);
+					}
 					$payment_status = 1; //completed
-					$transaction_id = 0;
-				}
-				$paidAmount = @(float)$_REQUEST['paid_ammount'];
-				if ($paidAmount > 0) {
-					$credit1 = [
-						'credit' => @$_REQUEST['paid_ammount'],
-						'debit' => 0,
-						'customer_id' => @$_REQUEST['payment_account'],
-						'transaction_from' => 'invoice',
-						'transaction_type' => "credit_sale",
-						'transaction_remarks' => "credit_sale by order id#" . $last_id,
-						'transaction_date' => $_REQUEST['order_date'],
-					];
-					insert_data($dbc, 'transactions', $credit1);
-					$transaction_paid_id = mysqli_insert_id($dbc);
 				}
 
 
@@ -1033,56 +1036,56 @@ if (isset($_REQUEST['cash_purchase_supplier'])) {
 			}
 
 
-			// $total_grand = $total_ammount - $total_ammount * ((float)@$_REQUEST['ordered_discount'] / 100) + @$_REQUEST['freight'];
+			$total_grand = $total_ammount - $total_ammount * ((float)@$_REQUEST['ordered_discount'] / 100) + @$_REQUEST['freight'];
 
-			// $due_amount = (float)$total_grand - @(float)$_REQUEST['paid_ammount'];
-			// if ($_REQUEST['payment_type'] == "credit_purchase") :
-			// 	if ($due_amount > 0) {
-			// 		$debit = [
-			// 			'debit' => 0,
-			// 			'credit' => $due_amount,
-			// 			'customer_id' => @$_REQUEST['customer_account'],
-			// 			'transaction_from' => 'purchase',
-			// 			'transaction_type' => $_REQUEST['payment_type'],
-			// 			'transaction_remarks' => "purchased on  purchased id#" . $last_id,
-			// 			'transaction_date' => $_REQUEST['purchase_date'],
-			// 		];
-			// 		insert_data($dbc, 'transactions', $debit);
-			// 		$transaction_id = mysqli_insert_id($dbc);
-			// 	}
-			// endif;
-			// $paidAmount = @(float)$_REQUEST['paid_ammount'];
-			// if ($paidAmount > 0) {
-			// 	$credit = [
-			// 		'credit' => 0,
-			// 		'debit' => @$_REQUEST['paid_ammount'],
-			// 		'customer_id' => @$_REQUEST['payment_account'],
-			// 		'transaction_from' => 'purchase',
-			// 		'transaction_type' => $_REQUEST['payment_type'],
-			// 		'transaction_remarks' => "purchased by purchased id#" . $last_id,
-			// 		'transaction_date' => $_REQUEST['purchase_date'],
-			// 	];
-			// 	insert_data($dbc, 'transactions', $credit);
-			// 	$transaction_paid_id = mysqli_insert_id($dbc);
-			// }
+			$due_amount = $_REQUEST['remaining_ammount'];
+			if ($_REQUEST['payment_type'] == "credit_purchase") :
+				if ($due_amount > 0) {
+					$debit = [
+						'debit' => $due_amount,
+						'credit' => 0,
+						'customer_id' => @$_REQUEST['customer_account'],
+						'transaction_from' => 'purchase',
+						'transaction_type' => $_REQUEST['payment_type'],
+						'transaction_remarks' => "purchased on  purchased id#" . $last_id,
+						'transaction_date' => $_REQUEST['purchase_date'],
+					];
+					insert_data($dbc, 'transactions', $debit);
+					$transaction_id = mysqli_insert_id($dbc);
+				}
+			endif;
+			$paidAmount = @(float)$_REQUEST['paid_ammount'];
+			if ($paidAmount > 0) {
+				$credit = [
+					'credit' => @$_REQUEST['paid_ammount'],
+					'debit' => 0,
+					'customer_id' => @$_REQUEST['payment_account'],
+					'transaction_from' => 'purchase',
+					'transaction_type' => $_REQUEST['payment_type'],
+					'transaction_remarks' => "purchased by purchased id#" . $last_id,
+					'transaction_date' => $_REQUEST['purchase_date'],
+				];
+				insert_data($dbc, 'transactions', $credit);
+				$transaction_paid_id = mysqli_insert_id($dbc);
+			}
 
-			// $newOrder = [
-			// 	'total_amount' => $total_ammount,
-			// 	'discount' => @$_REQUEST['ordered_discount'],
-			// 	'grand_total' => @$total_grand,
-			// 	'due' => $due_amount,
-			// 	'transaction_paid_id' => @$transaction_paid_id,
-			// 	'transaction_id' => @$transaction_id,
-			// ];
-			// if (update_data($dbc, 'purchase', $newOrder, 'purchase_id', $last_id)) {
-			// 	# code...
-			// 	//echo "<script>alert('company Updated....!')</script>";
-			// 	$msg = "Purchase Has been Added";
-			// 	$sts = 'success';
-			// } else {
-			// 	$msg = mysqli_error($dbc);
-			// 	$sts = "danger";
-			// }
+			$newOrder = [
+				'total_amount' => $total_ammount,
+				'discount' => @$_REQUEST['ordered_discount'],
+				'grand_total' => @$total_grand,
+				'due' => $due_amount,
+				'transaction_paid_id' => @$transaction_paid_id,
+				'transaction_id' => @$transaction_id,
+			];
+			if (update_data($dbc, 'purchase', $newOrder, 'purchase_id', $last_id)) {
+				# code...
+				//echo "<script>alert('company Updated....!')</script>";
+				$msg = "Purchase Has been Added";
+				$sts = 'success';
+			} else {
+				$msg = mysqli_error($dbc);
+				$sts = "danger";
+			}
 			$msg = "Purchase Has been Added";
 			$sts = 'success';
 		} else {
@@ -1106,7 +1109,7 @@ if (isset($_REQUEST['cash_purchase_supplier'])) {
 			}
 			deleteFromTable($dbc, "purchase_item", 'purchase_id', $_REQUEST['product_purchase_id']);
 			$x = 0;
-			foreach ($_REQUEST['product_ids'] as $key => $value) {
+			foreach (@$_REQUEST['product_ids'] as $key => $value) {
 
 
 				$total = $qty = 0;
