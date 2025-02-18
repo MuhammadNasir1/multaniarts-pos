@@ -5,6 +5,9 @@
   if (!empty($_REQUEST['edit_order_id'])) {
     # code...
     $fetchOrder = fetchRecord($dbc, "orders", "order_id", base64_decode($_REQUEST['edit_order_id']));
+    // echo "<pre>";
+    // print_r($fetchOrder);
+    // echo "</pre>";
   }
 
   ?>
@@ -73,7 +76,7 @@
                       while ($r = mysqli_fetch_assoc($q)) {
                         $customer_name = ucwords(strtolower($r['customer_name']));
                       ?>
-                       <option <?= @($fetchPurchase['customer_account'] == $r['customer_id']) ? "selected" : "" ?>
+                       <option <?= @($fetchOrder['customer_account'] == $r['customer_id']) ? "selected" : "" ?>
                          data-id="<?= $r['customer_id'] ?>"
                          data-contact="<?= $r['customer_phone'] ?>"
                          value="<?= $customer_name ?>">
@@ -198,10 +201,12 @@
                    </thead>
                    <tbody class="table table-bordered" id="purchase_product_tb">
                      <?php if (isset($_REQUEST['edit_order_id'])):
-                        $q = mysqli_query($dbc, "SELECT  product.*,brands.*,order_item.* FROM order_item INNER JOIN product ON product.product_id=order_item.product_id INNER JOIN brands ON product.brand_id=brands.brand_id   WHERE order_item.order_id='" . base64_decode($_REQUEST['edit_order_id']) . "'");
+                        $q = mysqli_query($dbc, "SELECT  product.*,order_item.* FROM order_item INNER JOIN product ON product.product_id=order_item.product_id  WHERE order_item.order_id='" . base64_decode($_REQUEST['edit_order_id']) . "'");
 
                         while ($r = mysqli_fetch_assoc($q)) {
-
+                          // echo "<pre>";
+                          // print_r($r);
+                          // echo "</pre>";
                       ?>
                          <tr id="product_idN_<?= $r['product_id'] ?>">
                            <input type="hidden" data-price="<?= $r['rate'] ?>" data-quantity="<?= $r['quantity'] ?>" id="product_ids_<?= $r['product_id'] ?>" class="product_ids" name="product_ids[]" value="<?= $r['product_id'] ?>">
@@ -237,7 +242,7 @@
 
                            <div class="col-sm-12 pr-0">
 
-                             <input onkeyup="getSaleTotal()" type="number" id="ordered_discount" class="form-control form-control-sm " value="<?= @empty($_REQUEST['edit_order_id']) ? "0" : $fetchOrder['discount'] ?>" min="0" max="100" name="ordered_discount">
+                             <input onkeyup="getSaleTotal()" type="number" id="ordered_discount" class="form-control form-control-sm "min="0" max="100" name="ordered_discount">
 
                            </div>
                            <!-- <div class="col-sm-6 pl-3">
@@ -252,12 +257,12 @@
                      <tr>
                        <td colspan="1" class="border-none"></td>
                        <td class="table-bordered"> <strong>Grand Total :</strong> </td>
-                       <td class="table-bordered" id="product_grand_total_amount"><?= @$fetchOrder['grand_total'] ?></td>
+                       <td class="table-bordered" id="product_grand_total_amount"></td>
                        <td class="table-bordered">Paid :</td>
                        <td class="table-bordered">
                          <div class="form-group row">
                            <div class="col-sm-6">
-                             <input type="text" min="0" class="form-control form-control-sm" id="paid_ammount" required onkeyup="getRemaingAmount()" name="paid_ammount" value=" <?= @isset($fetchOrder['paid']) ? $fetchOrder['paid'] : "0" ?>">
+                             <input type="text" min="0" class="form-control form-control-sm" id="paid_ammount" required onkeyup="getRemaingAmount()" name="paid_ammount" value="0">
                            </div>
                            <div class="col-sm-6">
                              <div class="custom-control custom-switch">
@@ -271,7 +276,7 @@
                      <tr>
                        <td colspan="1" class="border-none"></td>
                        <td class="table-bordered">Remaing Amount :</td>
-                       <td class="table-bordered"><input type="number" class="form-control form-control-sm" id="remaining_ammount" required readonly name="remaining_ammount" value="<?= @$fetchOrder['due'] ?>">
+                       <td class="table-bordered"><input type="number" class="form-control form-control-sm" id="remaining_ammount" required readonly name="remaining_ammount">
                        </td>
                        <td class="table-bordered">Account :</td>
                        <td class="table-bordered">
@@ -332,7 +337,15 @@
      getBalance(payment_account, 'payment_account_bl');
    });
  </script>
-
+<script>
+    setTimeout(function() {
+        $('#product_grand_total_amount').text("<?= @$fetchOrder['grand_total'] ?>");  
+        $('#product_total_amount').text("<?= @$fetchOrder['total_amount'] ?>");  
+        $('#remaining_ammount').val("<?= @$fetchOrder['due'] ?>");  
+        $('#ordered_discount').val("<?= @$fetchOrder['discount'] ?>"); 
+        $('#paid_ammount').val("<?= @$fetchOrder['paid'] ?>");  
+    }, 500); 
+</script>
  <?php
   if (!empty($_REQUEST['edit_order_id'])) {
   ?>
