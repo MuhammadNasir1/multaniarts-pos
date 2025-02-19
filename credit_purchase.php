@@ -35,6 +35,7 @@
           <form action="php_action/custom_action.php" method="POST" id="sale_order_fm">
             <input type="hidden" name="product_purchase_id" value="<?= @empty($_REQUEST['edit_purchase_id']) ? "" : base64_decode($_REQUEST['edit_purchase_id']) ?>">
             <input type="hidden" name="payment_type" id="payment_type" value="credit_purchase">
+            <input type="hidden" name="transaction_id" id="transaction_id" value="<?= @$fetchPurchase['transaction_id'] ?>">
 
 
             <div class="row form-group">
@@ -57,11 +58,13 @@
                   <select class="form-control searchableSelect" aria-required="true" name="cash_purchase_supplier" id="credit_order_client_name" required onchange="getBalance(this.value,'customer_account_exp')" aria-label="Username" aria-describedby="basic-addon1">
                     <option value="">Select Supplier</option>
                     <?php
-                    $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status =1 AND customer_type='supplier'");
+                    $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status = 1 AND customer_type = 'supplier'");
                     while ($r = mysqli_fetch_assoc($q)) {
-                      $customer_name = ucwords(strtolower($r['customer_name']));
+                      $customer_name = ucwords(strtolower(trim($r['customer_name'])));
+                      $selected = (isset($fetchPurchase['client_name']) && trim(strtolower($fetchPurchase['client_name'])) == strtolower($customer_name)) ? "selected" : "";
                     ?>
-                      <option <?= @($fetchPurchase['customer_account'] == $r['customer_id']) ? "selected" : "" ?>
+                      <option
+                        <?= $selected ?>
                         data-id="<?= $r['customer_id'] ?>"
                         data-contact="<?= $r['customer_phone'] ?>"
                         value="<?= $customer_name ?>">
@@ -87,7 +90,7 @@
               </div>
               <div class="col-md-1">
                 <label for="lat_no">Lot No</label>
-                <input type="text" class="form-control" id="lat_no" required  value="<?= @$fetchPurchase['lot_no'] ?>"name="lat_no" placeholder="Lot No">
+                <input type="text" class="form-control" id="lat_no" required value="<?= @$fetchPurchase['lot_no'] ?>" name="lat_no" placeholder="Lot No">
               </div>
               <div class="col-md-2">
                 <label class="text-dark" for="purchase_for">Purchase For</label>
@@ -172,7 +175,7 @@
                       $getCat = fetchRecord($dbc, "categories", "categories_id", $row['category_id']);
                     ?>
 
-                      <option data-price="<?= $row["current_rate"] ?>" <?= @($fetchPurchase['product_id'] == $row['product_id']) ? "selected" : "" ?>  value="<?= $row["product_id"] ?>">
+                      <option data-price="<?= $row["current_rate"] ?>" <?= @($fetchPurchase['product_id'] == $row['product_id']) ? "selected" : "" ?> value="<?= $row["product_id"] ?>">
                         <?= $row["product_name"] ?> | (<?= @$row["category_id"] ?>) </option>
 
                     <?php   } ?>
@@ -197,7 +200,7 @@
               </div>
               <div class="col-sm-2">
                 <label>Quantity</label>
-                <input type="number" class="form-control" required id="get_product_quantity" value="<?= isset($fetchPurchase['quantity']) ? $fetchPurchase['quantity'] : 1 ?>"  min="1" name="quantity">
+                <input type="number" class="form-control" required id="get_product_quantity" value="<?= isset($fetchPurchase['quantity']) ? $fetchPurchase['quantity'] : 1 ?>" min="1" name="quantity">
               </div>
 
               <div class="col-sm-2  d-flex align-items-center">
@@ -334,11 +337,20 @@
 
   $(document).ready(function() {
     $("#volume_no").on('input', function() {
-      let value = $(this).val(); 
-      $("#addProduct").attr('value', value); 
+      let value = $(this).val();
+      $("#addProduct").attr('value', value);
     });
 
     let payment_account = $("#payment_account").val();
     getBalance(payment_account, 'payment_account_bl');
   });
+</script>
+<script>
+    setTimeout(function() {
+        // $('#credit_order_client_name').val("<?= @$fetchPurchase['client_name'] ?>").change();  
+        $('#pur_location').val("<?= @$fetchPurchase['pur_location'] ?>").change();  
+        $('#product_grand_total_amount').val("<?= @$fetchPurchase['grand_total'] ?>").change();  
+        $('#remaining_ammount').val("<?= @$fetchPurchase['due'] ?>").change();  
+        $('#paid_ammount').val("<?= @$fetchPurchase['paid'] ?>").change();  
+    }, 500); 
 </script>

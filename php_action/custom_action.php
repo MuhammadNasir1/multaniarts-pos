@@ -762,7 +762,7 @@ if (isset($_REQUEST['credit_order_client_name'])) {
 				$due_amount = (float)$total_grand - @(float)$_REQUEST['paid_ammount'];
 
 				if ($_REQUEST['sale_type'] == 'credit') {
-					
+
 					$paidAmount = @(float)$_REQUEST['remaining_ammount'];
 					if ($paidAmount > 0) {
 						$credit1 = [
@@ -1094,67 +1094,74 @@ if (isset($_REQUEST['cash_purchase_supplier'])) {
 		}
 	} else {
 		if (update_data($dbc, 'purchase', $data, 'purchase_id', $_REQUEST['product_purchase_id'])) {
+			$total_ammount = $total_grand = 0;
 			$last_id = $_REQUEST['product_purchase_id'];
 
-
-			if ($get_company['stock_manage'] == 1) {
-				$proQ = get($dbc, "purchase_item WHERE purchase_id='" . $last_id . "' ");
-
-				while ($proR = mysqli_fetch_assoc($proQ)) {
-					$newqty = 0;
-					$quantity_instock = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT quantity_instock FROM  product WHERE product_id='" . $proR['product_id'] . "' "));
-					$newqty = (float)$quantity_instock['quantity_instock'] - (float)$proR['quantity'];
-					$quantity_update = mysqli_query($dbc, query: "UPDATE product SET  quantity_instock='$newqty' WHERE product_id='" . $proR['product_id'] . "' ");
-				}
-			}
-			deleteFromTable($dbc, "purchase_item", 'purchase_id', $_REQUEST['product_purchase_id']);
-			$x = 0;
-			foreach (@$_REQUEST['product_ids'] as $key => $value) {
-
-
-				$total = $qty = 0;
-				$product_quantites = (float)$_REQUEST['product_quantites'][$x];
-				$product_rates = (float)$_REQUEST['product_rates'][$x];
-				$total = $product_quantites * $product_rates;
-				$total_ammount += (float)$total;
-				$purchase_item = [
-					'product_id' => $_REQUEST['product_ids'][$x],
-					'rate' => $product_rates,
-					'total' => $total,
-					'purchase_id' => $_REQUEST['product_purchase_id'],
-					'quantity' => $product_quantites,
-					'purchase_item_status' => 1,
-					'pur_thaan' => $_REQUEST['pur_thaan'][$x],
-					'pur_gzanah' => $_REQUEST['pur_gzanah'][$x],
-					'pur_unit' => $_REQUEST['pur_unit'][$x],
-				];
-
-				//update_data($dbc,'order_item', $order_items , 'purchase_id',$_REQUEST['product_purchase_id']);
-				insert_data($dbc, 'purchase_item', $purchase_item);
-
+			$p_id = $_POST['next_increment'];
+			$all_data = [
+				'purchase_id' => $p_id,
+				'done_by' => $_REQUEST['pur_location'],
+				'status' => 'sent',
+				'entry_from' => 'purchase',
+				'product_id' => $_REQUEST['product_id'],
+				'rate' => $_REQUEST['product_price'],
+				'thaan' => $_REQUEST['pur_thaan'],
+				'gzanah' => $_REQUEST['pur_gzanah'],
+				'quantity' => $_REQUEST['quantity'],
+				'quantity_instock' => $_REQUEST['quantity'],
+				'unit' => $_REQUEST['pur_unit'],
+				'total_amount' => $_REQUEST['product_grand_amount_input'],
+				'issuance_date' => $_REQUEST['purchase_date'],
+				'to_location' => $_REQUEST['pur_location'],
+			];
+			// Add Data in 
+			if ($_POST['location_type'] == 'dyeing') {
+				$deleteDyeing = mysqli_query($dbc, "DELETE FROM dyeing WHERE purchase_id='" . $_REQUEST['product_purchase_id'] . "' ");
+				$insert_data = insert_data($dbc, 'dyeing', $all_data);
+			} elseif ($_POST['location_type'] == 'printer') {
+				deleteFromTable($dbc, "printing", 'purchase_id', $_REQUEST['product_purchase_id']);
+				$insert_data = insert_data($dbc, 'printing', $all_data);
+			} elseif ($_POST['location_type'] == 'packing') {
+				deleteFromTable($dbc, "packing", 'purchase_id', $_REQUEST['product_purchase_id']);
+				$insert_data = insert_data($dbc, 'packing', $all_data);
+			} elseif ($_POST['location_type'] == 'embroidery') {
+				deleteFromTable($dbc, "embroidery", 'purchase_id', $_REQUEST['product_purchase_id']);
+				$insert_data = insert_data($dbc, 'embroidery', $all_data);
+			} elseif ($_POST['location_type'] == 'shop') {
 				if ($get_company['stock_manage'] == 1) {
-					$product_id = $_REQUEST['product_ids'][$x];
+					$proQ = get($dbc, "purchase WHERE purchase_id='" . $last_id . "' ");
+
+					while ($proR = mysqli_fetch_assoc($proQ)) {
+						$newqty = 0;
+						$quantity_instock = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT quantity_instock FROM  product WHERE product_id='" . $proR['product_id'] . "' "));
+						$newqty = (float)$quantity_instock['quantity_instock'] - (float)$proR['quantity'];
+						$quantity_update = mysqli_query($dbc, query: "UPDATE product SET  quantity_instock='$newqty' WHERE product_id='" . $proR['product_id'] . "' ");
+					}
+				}
+				if ($get_company['stock_manage'] == 1) {
+					$product_id = $_REQUEST['product_id'];
 					$quantity_instock = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT quantity_instock FROM  product WHERE product_id='" . $product_id . "' "));
-					$qty = (float)$quantity_instock['quantity_instock'] + $product_quantites;
+					$qty = (float)$quantity_instock['quantity_instock'] + $_REQUEST['quantity'];
 					$quantity_update = mysqli_query($dbc, "UPDATE product SET  quantity_instock='$qty' WHERE product_id='" . $product_id . "' ");
 				}
+			}
 
-				$x++;
-			} //end of foreach
-			$total_grand = $total_ammount - $total_ammount * ((float)$_REQUEST['ordered_discount'] / 100);
-			$due_amount = (float)$total_grand - @(float)$_REQUEST['paid_ammount'];
+
+			$total_grand = $total_ammount - $total_ammount * ((float)@$_REQUEST['ordered_discount'] / 100) + @$_REQUEST['freight'];
+
+			$due_amount = $_REQUEST['remaining_ammount'];
 
 
 			$transactions = fetchRecord($dbc, "purchase", "purchase_id", $_REQUEST['product_purchase_id']);
-			@deleteFromTable($dbc, "transactions", 'transaction_id', $transactions['transaction_id']);
-			@deleteFromTable($dbc, "transactions", 'transaction_id', $transactions['transaction_paid_id']);
-
+			$n = deleteFromTable($dbc, "transactions", 'transaction_id', $transactions['transaction_id']);
+			
+			// @deleteFromTable($dbc, "transactions", 'transaction_id', $transactions['transaction_paid_id']);
 
 			if ($_REQUEST['payment_type'] == "credit_purchase") :
 				if ($due_amount > 0) {
 					$debit = [
-						'debit' => 0,
-						'credit' => $due_amount,
+						'debit' => $due_amount,
+						'credit' => 0,
 						'customer_id' => @$_REQUEST['customer_account'],
 						'transaction_from' => 'purchase',
 						'transaction_type' => $_REQUEST['payment_type'],
@@ -1168,8 +1175,8 @@ if (isset($_REQUEST['cash_purchase_supplier'])) {
 			$paidAmount = @(float)$_REQUEST['paid_ammount'];
 			if ($paidAmount > 0) {
 				$credit = [
-					'debit' => @$_REQUEST['paid_ammount'],
-					'credit' => 0,
+					'credit' => @$_REQUEST['paid_ammount'],
+					'debit' => 0,
 					'customer_id' => @$_REQUEST['payment_account'],
 					'transaction_from' => 'purchase',
 					'transaction_type' => $_REQUEST['payment_type'],
@@ -1187,7 +1194,7 @@ if (isset($_REQUEST['cash_purchase_supplier'])) {
 				'grand_total' => $total_grand,
 				'due' => $due_amount,
 				'transaction_paid_id' => @$transaction_paid_id,
-				'transaction_id' => @$transaction_id,
+				'transaction_id' => $transaction_id,
 			];
 
 			if (update_data($dbc, 'purchase', $newOrder, 'purchase_id', $_REQUEST['product_purchase_id'])) {
