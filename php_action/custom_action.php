@@ -766,8 +766,8 @@ if (isset($_REQUEST['credit_order_client_name'])) {
 					$paidAmount = @(float)$_REQUEST['remaining_ammount'];
 					if ($paidAmount > 0) {
 						$credit1 = [
-							'credit' => 0,
-							'debit' => $paidAmount,
+							'credit' => $paidAmount,
+							'debit' => 0,
 							'customer_id' => @$_REQUEST['customer_account'],
 							'transaction_from' => 'invoice',
 							'transaction_type' => "credit_sale",
@@ -776,9 +776,21 @@ if (isset($_REQUEST['credit_order_client_name'])) {
 						];
 						insert_data($dbc, 'transactions', $credit1);
 						$transaction_paid_id = mysqli_insert_id($dbc);
+
+						// $debit = [
+						// 	'debit' => $paidAmount,
+						// 	'credit' => 0,
+						// 	'customer_id' => @$_REQUEST['payment_account'],
+						// 	'transaction_from' => 'invoice',
+						// 	'transaction_type' => "cash_in_hand",
+						// 	'transaction_remarks' => "cash_sale by order id#" . $last_id,
+						// 	'transaction_date' => $_REQUEST['order_date'],
+						// ];
+						// insert_data($dbc, 'transactions', $debit);
+						// $transaction_paid_id = mysqli_insert_id($dbc);
 					}
 					$payment_status = 0; //completed
-				} elseif ($_REQUEST['sale_type'] == 'cash') {
+				} elseif ($_REQUEST['sale_type'] == 'cash' ) {
 					$paidAmount = @(float)$_REQUEST['paid_ammount'];
 					if ($paidAmount > 0) {
 						$debit = [
@@ -1039,7 +1051,9 @@ if (isset($_REQUEST['cash_purchase_supplier'])) {
 			$total_grand = $total_ammount - $total_ammount * ((float)@$_REQUEST['ordered_discount'] / 100) + @$_REQUEST['freight'];
 
 			$due_amount = $_REQUEST['remaining_ammount'];
+
 			if ($_REQUEST['payment_type'] == "credit_purchase") :
+				echo $due_amount;
 				if ($due_amount > 0) {
 					$debit = [
 						'debit' => $due_amount,
