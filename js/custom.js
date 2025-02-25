@@ -384,6 +384,48 @@ $(document).ready(function () {
       },
     }); //ajax call
   }); //main
+
+  $("#voucher_general_form").on("submit", function (e) {
+    e.preventDefault();
+    var form = $("#voucher_general_form");
+
+    $.ajax({
+      type: "POST",
+      url: form.attr("action"),
+      data: form.serialize(),
+      dataType: "json",
+      beforeSend: function () {
+        $("#voucher_general_btn").prop("disabled", true);
+      },
+      success: function (response) {
+        if (response.sts === "success") {
+          $("#voucher_general_form")[0].reset();
+          $("#tableData").load(location.href + " #tableData");
+
+          Swal.fire({
+            icon: "success",
+            title: response.msg,
+            confirmButtonText: "OK",
+          }).then(() => {
+            location.reload();
+          });
+        }
+
+        $("#voucher_general_btn").prop("disabled", false);
+      },
+      error: function (xhr, status, error) {
+        console.error("AJAX Error:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Something went wrong!",
+          text: "Please try again.",
+          confirmButtonText: "OK",
+        });
+        $("#voucher_general_btn").prop("disabled", false);
+      },
+    });
+  });
+
   $("#voucher_expense_fm").on("submit", function (e) {
     e.preventDefault();
     var form = $("#voucher_expense_fm");
@@ -857,7 +899,8 @@ function getBalance(val, id) {
       success: function (response) {
         //alert(response.blnc);
         //var res=msg.trim();
-
+        $("#previous_balance").text(response.blnc);
+        // alert(response.blnc);
         $("#" + id).html(response.blnc);
         $("#customer_Limit").html(response.custLimit);
         var RLIMIT = Math.abs(response.custLimit - response.blnc);
