@@ -401,12 +401,13 @@ $(document).ready(function () {
         if (response.sts === "success") {
           $("#voucher_general_form")[0].reset();
           $("#tableData").load(location.href + " #tableData");
-
+          
           Swal.fire({
             icon: "success",
             title: response.msg,
             confirmButtonText: "OK",
           }).then(() => {
+            $("#voucher_id_update").val("");
             location.reload();
           });
         }
@@ -421,7 +422,7 @@ $(document).ready(function () {
           text: "Please try again.",
           confirmButtonText: "OK",
         });
-        $("#voucher_general_btn").prop("disabled", false);
+        $("#voucher_general_btn").prop("disabled", true);
       },
     });
   });

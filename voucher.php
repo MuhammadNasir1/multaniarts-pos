@@ -31,6 +31,9 @@ if (isset($_REQUEST['id'])) {
 
                 <div class="col-sm-12">
                   <form action="php_action/custom_action.php" method="POST" id="voucher_general_form">
+                    <?php
+                    $id = base64_decode(@$_REQUEST['id']);
+                      $vouchers =mysqli_fetch_assoc( mysqli_query($dbc, "SELECT * FROM vouchers WHERE voucher_id = '$id'")); ?>
                     <div class="form-group row">
 
                       <div class="col-sm-1 text-right">
@@ -41,7 +44,7 @@ if (isset($_REQUEST['id'])) {
                         $last_id = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT voucher_id FROM vouchers ORDER BY voucher_id DESC LIMIT 1"));
                         $new_voucher_id = isset($last_id['voucher_id']) ? $last_id['voucher_id'] + 1 : 1;
                         ?>
-                        <input type="text" name="voucher_no" readonly value="<?= $new_voucher_id ?>" class="form-control" placeholder="Voucher No">
+                        <input type="text" name="voucher_no" readonly value="<?= isset($_REQUEST['id']) ?   base64_decode($_REQUEST['id']) : $new_voucher_id ?>" class="form-control" placeholder="Voucher No">
                       </div>
 
                       <div class="col-sm-1 text-right">
@@ -55,7 +58,7 @@ if (isset($_REQUEST['id'])) {
                           <input type="date" class="form-control" name="new_voucher_date" value="<?= date('Y-m-d') ?>">
 
                         <?php endif ?>
-                        <input type="hidden" class="form-control" name="voucher_id" value="<?= @$voucher['voucher_id'] ?>">
+                        <input type="hidden" class="form-control" name="voucher_id" id="voucher_id_update" value="<?= @$voucher['voucher_id'] ?>">
                         <input type="hidden" class="form-control" name="voucher_group" value="general_voucher">
                       </div>
                       <div class="col-sm-1 text-right">
@@ -85,52 +88,109 @@ if (isset($_REQUEST['id'])) {
                     </div>
 
                     <div id="voucherRows" class="mt-3">
-                      <div class="form-group row voucherRow">
-                        <div class="col-sm-4 border">
-                          <div class="input-group  py-2">
-                            <select class="form-control voucher_from_account " onchange="getBalance(this.value,'from_account_bl')" name="voucher_from_account[]" aria-label="Username">
-                              <option value="">Select Account</option>
-                              <?php
-                              $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status =1 AND customer_type != 'bank' ORDER BY customer_type ASC");
-                              $type2 = '';
-                              while ($r = mysqli_fetch_assoc($q)):
-                                $type = $r['customer_type'];
-                              ?>
-                                <?php if ($type != $type2): ?>
-                                  <optgroup label="<?= $r['customer_type'] ?>">
-                                  <?php endif ?>
-                                  <option value="<?= $r['customer_id'] ?>"><?= $r['customer_name'] ?></option>
-                                  <?php if ($type != $type2): ?>
-                                  </optgroup>
-                                <?php endif ?>
-                              <?php
-                                $type2 = $r['customer_type'];
-                              endwhile; ?>
-                            </select>
-                            <div class="input-group-prepend d-none">
-                              <span class="input-group-text">Balance :<span class="from_account_bl">0</span> </span>
+                      <?php if (isset($_REQUEST['id'])) {
+                        $query = mysqli_query($dbc, "SELECT * FROM transactions WHERE voucher_id = '$id' AND is_cash_in_hand = '0'");
+
+
+                        while ($d = mysqli_fetch_assoc($query)) {
+                      ?>
+                          <div class="form-group row voucherRow">
+                            <div class="col-sm-4 border">
+                              <div class="input-group  py-2">
+                                <select class="form-control voucher_from_account " onchange="getBalance(this.value,'from_account_bl')" name="voucher_from_account[]" aria-label="Username">
+                                  <option value="">Select Account</option>
+                                  <?php
+                                  $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status =1 AND customer_type != 'bank' ORDER BY customer_type ASC");
+                                  $type2 = '';
+                                  while ($r = mysqli_fetch_assoc($q)):
+                                    $type = $r['customer_type'];
+                                  ?>
+                                    <?php if ($type != $type2): ?>
+                                      <optgroup label="<?= $r['customer_type'] ?>">
+                                      <?php endif ?>
+                                      <option <?= ($d['customer_id'] == $r['customer_id']) ? 'selected' : '' ?> value="<?= $r['customer_id'] ?>"><?= $r['customer_name'] ?></option>
+                                      <?php if ($type != $type2): ?>
+                                      </optgroup>
+                                    <?php endif ?>
+                                  <?php
+                                    $type2 = $r['customer_type'];
+                                  endwhile; ?>
+                                </select>
+                                <div class="input-group-prepend d-none">
+                                  <span class="input-group-text">Balance :<span class="from_account_bl">0</span> </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-sm-4 border py-2">
+                              <input type="text" name="voucher_hint[]" value="<?= $d['transaction_remarks'] ?>" placeholder="Narration" class="form-control">
+                            </div>
+
+                            <div class="col-sm-3 border py-2">
+                              <input type="number" min="1" onkeyup="sameValue(this.value,'.voucher_debit')" name="voucher_credit[]" class="form-control voucher_credit" value="<?= ($d['credit'] != 0) ? $d['credit'] : $d['debit'] ?>"
+                              placeholder="Amount">
+                            </div>
+
+                            <div class="col-sm-1 text-right d-none">Debit</div>
+                            <div class="col-sm-2 d-none">
+                              <input type="number" onkeyup="sameValue(this.value,'.voucher_credit')" min="0" name="voucher_debit[]" class="form-control voucher_debit">
+                            </div>
+
+                            <div class="col-sm-1 border py-2">
+                              <button type="button" class="btn btn-success addRow">+</button>
+                              <button type="button" class="btn btn-danger removeRow">-</button>
                             </div>
                           </div>
-                        </div>
+                        <?php }
+                      } else { ?>
+                        <div class="form-group row voucherRow">
+                          <div class="col-sm-4 border">
+                            <div class="input-group  py-2">
+                              <select class="form-control voucher_from_account " onchange="getBalance(this.value,'from_account_bl')" name="voucher_from_account[]" aria-label="Username">
+                                <option value="">Select Account</option>
+                                <?php
+                                $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status =1 AND customer_type != 'bank' ORDER BY customer_type ASC");
+                                $type2 = '';
+                                while ($r = mysqli_fetch_assoc($q)):
+                                  $type = $r['customer_type'];
+                                ?>
+                                  <?php if ($type != $type2): ?>
+                                    <optgroup label="<?= $r['customer_type'] ?>">
+                                    <?php endif ?>
+                                    <option 
+                                    value="<?= $r['customer_id'] ?>"><?= $r['customer_name'] ?></option>
+                                    <?php if ($type != $type2): ?>
+                                    </optgroup>
+                                  <?php endif ?>
+                                <?php
+                                  $type2 = $r['customer_type'];
+                                endwhile; ?>
+                              </select>
+                              <div class="input-group-prepend d-none">
+                                <span class="input-group-text">Balance :<span class="from_account_bl">0</span> </span>
+                              </div>
+                            </div>
+                          </div>
 
-                        <div class="col-sm-4 border py-2">
-                          <input type="text" name="voucher_hint[]" placeholder="Narration" class="form-control">
-                        </div>
+                          <div class="col-sm-4 border py-2">
+                            <input type="text" name="voucher_hint[]" placeholder="Narration" class="form-control">
+                          </div>
 
-                        <div class="col-sm-3 border py-2">
-                          <input type="number" min="1" onkeyup="sameValue(this.value,'.voucher_debit')" name="voucher_credit[]" class="form-control voucher_credit" placeholder="Amount">
-                        </div>
+                          <div class="col-sm-3 border py-2">
+                            <input type="number" min="1" onkeyup="sameValue(this.value,'.voucher_debit')" name="voucher_credit[]" class="form-control voucher_credit" placeholder="Amount">
+                          </div>
 
-                        <div class="col-sm-1 text-right d-none">Debit</div>
-                        <div class="col-sm-2 d-none">
-                          <input type="number" onkeyup="sameValue(this.value,'.voucher_credit')" min="0" name="voucher_debit[]" class="form-control voucher_debit">
-                        </div>
+                          <div class="col-sm-1 text-right d-none">Debit</div>
+                          <div class="col-sm-2 d-none">
+                            <input type="number" onkeyup="sameValue(this.value,'.voucher_credit')" min="0" name="voucher_debit[]" class="form-control voucher_debit">
+                          </div>
 
-                        <div class="col-sm-1 border py-2">
-                          <button type="button" class="btn btn-success addRow">+</button>
-                          <button type="button" class="btn btn-danger removeRow">-</button>
+                          <div class="col-sm-1 border py-2">
+                            <button type="button" class="btn btn-success addRow">+</button>
+                            <button type="button" class="btn btn-danger removeRow">-</button>
+                          </div>
                         </div>
-                      </div>
+                      <?php } ?>
                     </div>
 
                     <div class="d-none">
@@ -149,7 +209,8 @@ if (isset($_REQUEST['id'])) {
                         <div for="" class="font-weight-bold" style="font-size: 20px;">Previous Balance: <span id="previous_balance">0</span></div>
                       </div>
                       <div class="col-sm-4 border py-2 ml-auto">
-                        <div for="" class="font-weight-bolder" style="font-size: 20px;">Grand Total: <span id="grand_total">0</span></div>
+                        <div for="" class="font-weight-bolder" style="font-size: 20px;">Grand Total: <span id="grand_total">
+                          <?=  isset($vouchers['voucher_amount']) ? $vouchers['voucher_amount']  : '0' ?></span></div>
                         <input type="hidden" name="grant_total" id="grant_total_feild">
                       </div>
                     </div>
@@ -243,8 +304,8 @@ if (isset($_REQUEST['id'])) {
                     </div> -->
                     <hr>
                     <div class="row  ml-auto">
-                      <button class="btn btn-admin ml-auto mr-3" type="submit" id="voucher_general_btn">Save </button>
                       <?php if (@$userPrivileges['nav_add'] == 1 || $fetchedUserRole == "admin" and !isset($_REQUEST['id'])): ?>
+                        <button class="btn btn-admin ml-auto mr-3" type="submit" id="voucher_general_btn">Save </button>
                       <?php endif ?>
                       <?php if (@$userPrivileges['nav_edit'] == 1 || $fetchedUserRole == "admin" and isset($_REQUEST['id'])): ?>
                         <button class="btn btn-admin ml-auto mr-3" type="submit" id="voucher_general_btn">Update </button>
