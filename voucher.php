@@ -38,7 +38,7 @@ if (isset($_REQUEST['id'])) {
                       </div>
                       <div class="col-sm-3">
                         <?php
-                        $last_id = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT voucher_id FROM transactions ORDER BY voucher_id DESC LIMIT 1"));
+                        $last_id = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT voucher_id FROM vouchers ORDER BY voucher_id DESC LIMIT 1"));
                         $new_voucher_id = isset($last_id['voucher_id']) ? $last_id['voucher_id'] + 1 : 1;
                         ?>
                         <input type="text" name="voucher_no" readonly value="<?= $new_voucher_id ?>" class="form-control" placeholder="Voucher No">
@@ -150,6 +150,7 @@ if (isset($_REQUEST['id'])) {
                       </div>
                       <div class="col-sm-4 border py-2 ml-auto">
                         <div for="" class="font-weight-bolder" style="font-size: 20px;">Grand Total: <span id="grand_total">0</span></div>
+                        <input type="hidden" name="grant_total" id="grant_total_feild">
                       </div>
                     </div>
                     <!-- end of formgr0up -->
@@ -481,7 +482,7 @@ if (isset($_REQUEST['id'])) {
                 </div>
 
 
-              <?php } else { ?> <!-- add --------------- -->
+              <?php } elseif ($_REQUEST['act'] == "list") { ?> <!-- add --------------- -->
                 <div class="col-sm-12">
                   <table class="table  dataTable" id="voucher_expense_tb">
                     <thead>
@@ -498,7 +499,7 @@ if (isset($_REQUEST['id'])) {
                       </tr>
                     </thead>
                     <tbody>
-                      <?php $q = mysqli_query($dbc, "SELECT * FROM vouchers ORDER BY voucher_id DESC LIMIT 200");
+                      <?php $q = mysqli_query($dbc, "SELECT * FROM vouchers WHERE payment_type != 'send' AND payment_type != 'receive' ORDER BY voucher_id  DESC LIMIT 200");
                       $c = 0;
                       while ($r = mysqli_fetch_assoc($q)) {
                         $c++;
@@ -540,7 +541,61 @@ if (isset($_REQUEST['id'])) {
                   </table>
                 </div>
 
-              <?php   } ?>
+              <?php   } else {
+              ?>
+                <div class="col-sm-12">
+                  <table class="table  dataTable" id="voucher_expense_tb">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Payment Type</th>
+                        <th>By</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <?php $q = mysqli_query($dbc, "SELECT * FROM vouchers WHERE payment_type = 'send' OR payment_type = 'receive' ORDER BY voucher_id  DESC LIMIT 200");
+                      $c = 0;
+                      while ($r = mysqli_fetch_assoc($q)) {
+                        $c++;
+                        @$customer_id1 = fetchRecord($dbc, "customers", "customer_id", $r['customer_id1'])['customer_name'];
+                        @$customer_id2 = fetchRecord($dbc, "customers", "customer_id", $r['customer_id2'])['customer_name'];
+                        $username = fetchRecord($dbc, "users", "user_id", $r['addby_user_id'])['username'];
+
+
+
+                      ?>
+                        <tr class="text-capitalize">
+                          <td><?= $r['voucher_id'] ?></td>
+                          <td><?= $r['voucher_date'] ?></td>
+                          <td><?= $r['voucher_amount'] ?></td>
+                          <td><?= $r['payment_type'] ?></td>
+                          <td><?= $username ?></td>
+                          <td>
+                            <?php if (@$userPrivileges['nav_edit'] == 1 || $fetchedUserRole == "admin"): ?>
+                              <form action="voucher.php?act=general_voucher&type=<?= $r['payment_type'] ?>" method="POST">
+                                <input type="hidden" name="id" value="<?= base64_encode($r['voucher_id']) ?>">
+                                <input type="hidden" name="act" value="<?= $r['voucher_group'] ?>">
+                                <button type="submit" class="btn m-1 btn-admin btn-sm">Edit</button>
+                              </form>
+
+
+                            <?php endif ?>
+                            <a onclick="getVoucherPrint(`<?= base64_encode($r['voucher_id']) ?>`)" href="#" class="btn btn-primary btn-sm m-1">Print</a>
+                            <?php if (@$userPrivileges['nav_delete'] == 1 || $fetchedUserRole == "admin"): ?>
+
+                              <a href="#" onclick="deleteAlert('<?= $r['voucher_id'] ?>','vouchers','voucher_id','voucher_expense_tb')" class="btn btn-admin2 btn-sm m-1">Delete</a>
+                            <?php endif ?>
+                          </td>
+                        </tr>
+                      <?php  } ?>
+                    </tbody>
+                  </table>
+                </div>
+              <?php
+              } ?>
 
             </div>
           </div>
@@ -564,6 +619,7 @@ if (isset($_REQUEST['id'])) {
         total += value;
       });
       $("#grand_total").text(total.toFixed(2)); // Update Grand Total
+      $("#grant_total_feild").val(total.toFixed(2)); // Update Grand Total
     }
 
     // Add new row

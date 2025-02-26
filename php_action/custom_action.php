@@ -250,67 +250,79 @@ if (isset($_REQUEST['new_voucher_date'])) {
 	$hints = $_REQUEST['voucher_hint']; // Array
 	$credits = $_REQUEST['voucher_credit']; // Array
 
+
+	$voucherData = [
+		'voucher_date' => @$_REQUEST['new_voucher_date'],
+		'voucher_type' => @$_REQUEST['voucher_type'],
+		'voucher_amount' => @$_REQUEST['grant_total'],
+		'voucher_group' => @$_REQUEST['voucher_group'],
+		'addby_user_id' => @$_SESSION['userId'],
+		'payment_type' => @$_REQUEST['voucher_payment_type'],
+	];
+
+
 	$data = []; // Initialize an array to store transactions
+	if (insert_data($dbc, "vouchers", $voucherData)) {
+		$last_id = mysqli_insert_id($dbc);
 
-	foreach ($from_accounts as $key => $from_account) {
-		$hint = $hints[$key] ?? '';
-		$amount = $credits[$key] ?? 0;
+		foreach ($from_accounts as $key => $from_account) {
+			$hint = $hints[$key] ?? '';
+			$amount = $credits[$key] ?? 0;
+			if ($voucher_payment_type === 'send') {
+				// Credit to Customer Account
+				$data[] = [
+					'voucher_id	' => $last_id,
+					'voucher_date' => $voucher_date,
+					'transaction_type' => $voucher_type,
+					'customer_id' => $from_account,
+					'transaction_remarks' => $hint,
+					'credit' => $amount,
+					'debit' => 0,
+				];
 
-		if ($voucher_payment_type === 'send') {
-			// Credit to Customer Account
-			$data[] = [
-				'voucher_id	' => $voucher_no,
-				'voucher_date' => $voucher_date,
-				'transaction_type' => $voucher_type,
-				'customer_id' => $from_account,
-				'transaction_remarks' => $hint,
-				'credit' => $amount,
-				'debit' => 0,
-			];
+				// Debit from Cash-in-Hand
+				$data[] = [
+					'voucher_id	' => $last_id,
+					'voucher_date' => $voucher_date,
+					'transaction_type' => $voucher_type,
+					'customer_id' => $cash_in_hand,
+					'transaction_remarks' => $hint,
+					'credit' => 0,
+					'debit' => $amount,
+				];
+			} elseif ($voucher_payment_type === 'receive') {
+				// Credit to Cash-in-Hand
+				$data[] = [
+					'voucher_id	' => $last_id,
+					'voucher_date' => $voucher_date,
+					'transaction_type' => $voucher_type,
+					'customer_id' => $cash_in_hand,
+					'transaction_remarks' => $hint,
+					'credit' => $amount,
+					'debit' => 0,
+				];
 
-			// Debit from Cash-in-Hand
-			$data[] = [
-				'voucher_id	' => $voucher_no,
-				'voucher_date' => $voucher_date,
-				'transaction_type' => $voucher_type,
-				'customer_id' => $cash_in_hand,
-				'transaction_remarks' => $hint,
-				'credit' => 0,
-				'debit' => $amount,
-			];
-		} elseif ($voucher_payment_type === 'receive') {
-			// Credit to Cash-in-Hand
-			$data[] = [
-				'voucher_id	' => $voucher_no,
-				'voucher_date' => $voucher_date,
-				'transaction_type' => $voucher_type,
-				'customer_id' => $cash_in_hand,
-				'transaction_remarks' => $hint,
-				'credit' => $amount,
-				'debit' => 0,
-			];
-
-			// Debit from Customer Account
-			$data[] = [
-				'voucher_id	' => $voucher_no,
-				'voucher_date' => $voucher_date,
-				'transaction_type' => $voucher_type,
-				'customer_id' => $from_account,
-				'transaction_remarks' => $hint,
-				'credit' => 0,
-				'debit' => $amount,
-			];
+				// Debit from Customer Account
+				$data[] = [
+					'voucher_id	' => $last_id,
+					'voucher_date' => $voucher_date,
+					'transaction_type' => $voucher_type,
+					'customer_id' => $from_account,
+					'transaction_remarks' => $hint,
+					'credit' => 0,
+					'debit' => $amount,
+				];
+			}
+			foreach ($data as $transaction) {
+				insert_data($dbc, 'transactions', $transaction);
+			}
 		}
+		$res = ['msg' => "Voucher Added Successfully", 'sts' => 'success'];
+		echo json_encode($res);
 	}
+
 
 	// Now insert all transactions
-	foreach ($data as $transaction) {
-		insert_data($dbc, 'transactions', $transaction);
-	}
-
-	$res = ['msg' => "Voucher Added Successfully", 'sts' => 'success'];
-	echo json_encode($res);
-	exit; 
 
 }
 
