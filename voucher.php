@@ -644,7 +644,7 @@ if (isset($_REQUEST['id'])) {
 
 
                             <?php endif ?>
-                            <a onclick="getVoucherPrint(`<?= base64_encode($r['voucher_id']) ?>`)" href="#" class="btn btn-primary btn-sm m-1">Print</a>
+                            <a onclick="getVoucherPrint(`<?= base64_encode($r['voucher_id']) ?>`)" href="print_payment_voucher.php?voucher_id=<?=$r['voucher_id'] ?>&voucher_type=<?= $r['payment_type'] ?>" class="btn btn-primary btn-sm m-1">Print</a>
                             <?php if (@$userPrivileges['nav_delete'] == 1 || $fetchedUserRole == "admin"): ?>
 
                               <a href="#" onclick="deleteAlert('<?= $r['voucher_id'] ?>','vouchers','voucher_id','voucher_expense_tb')" class="btn btn-admin2 btn-sm m-1">Delete</a>
