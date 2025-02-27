@@ -154,7 +154,7 @@
 
             ?>
               <hr>
-              <header class="">
+              <header class="mb-4">
                 <div class="row">
                   <div class="col-sm-5  mt-4">
 
@@ -206,13 +206,14 @@
                 ?>
                 <center style="width: 100%;margin-top: -5px;"><?= $date_comment ?></center>
                 <div class="row">
+
                   <div class="col-12">
                     <table class="table table-bordered table-striped" style="width: 100%">
 
 
 
                       <thead>
-                        <tr>
+                       
 
 
 
@@ -239,11 +240,10 @@
 
 
                           <th>Balance</th>
-                          <?php if (isset($_POST['fullledger'])): ?>
+                          <!-- <?php if (isset($_POST['fullledger'])): ?>
                             <th>Remaining</th>
 
-                            <th>Extra</th>
-                          <?php endif ?>
+                          <?php endif ?> -->
 
 
 
@@ -262,7 +262,18 @@
 
 
 
-
+                      <tr>
+                        <td colspan="5"></td>
+                          <td >
+                            <div class="text-right font-weight-bolder ">
+                              Opening Balance: 
+                            </div>
+                          </td>
+                          <td>
+                          <span id="setOpeningBalance"></span>
+                          </td>
+                        </tr>
+                        <tr>
 
                         <?php $temp = $check_remaing_balance = $show_rem_bal = 0;
 
@@ -283,7 +294,7 @@
                               $invoice_id = filter_var($row['transaction_remarks'], FILTER_SANITIZE_NUMBER_INT);
 
                               $fetchinvoive = fetchRecord($dbc, "orders", "order_id", $invoice_id);
-                              $invoice_type = $fetchinvoive['credit_sale_type'];
+                              $invoice_type = @$fetchinvoive['credit_sale_type'];
                               if ($check_remaing_balance < 0) {
 
                                 $Date = date('Y-m-d');
@@ -333,7 +344,7 @@
                                 $invoice_type =  $invoice_type2['voucher_id'];
                               }
                             }
-                            @$total_credit += $row['credit'];
+                            @$total_credit += (float) $row['credit'];
                             if ($row['debit'] !== 0 and $row['credit'] !== 0):
                         ?>
                               <tr>
@@ -361,7 +372,7 @@
                                   ?>
                                   - <?= @$fetchinvoive['order_narration'] ?> <?= @$fetchinvoive['purchase_narration'] ?> </td>
                                 <td class="text-primary h6"><?= @number_format((int)$row['debit']) ?></td>
-                                <td class="text-success h6 font-weight-bolder"><?= @number_format($row['credit']) ?></td>
+                                <td class="text-success h6 font-weight-bolder"><?= $row['credit'] ?></td>
 
 
                                 <?php if ($check_remaing_balance < 0 and $row['transaction_from'] == "invoice"): ?>
@@ -373,9 +384,9 @@
                                 <?php endif ?>
                                 <?php if (isset($_POST['fullledger'])): ?>
 
-                                  <td class=" font-weight-bolder"><?= @number_format($show_rem_bal) ?></td>
-
-                                  <td><?= $comment ?></td>
+                                  <!-- <td class=" font-weight-bolder"><?= @number_format($show_rem_bal) ?></td> -->
+<!-- 
+                                  <td><?= $comment ?></td> -->
                                 <?php endif; ?>
                               </tr>
                             <?php
@@ -405,35 +416,46 @@
 
 
                           ?>
-                          <tr>
-                            <?php if (isset($_POST['fullledger'])): ?>
-                              <td colspan="3"></td>
-                            <?php else: ?>
-                              <td colspan="2"></td>
-                            <?php endif; ?>
-                            <td colspan="3" align="right"> Opening Balance </td>
-                            <td colspan="4" class='h3 text-success'><?= $opening_balance ?></td>
-                          </tr>
-                          <tr>
-                            <?php if (isset($_POST['fullledger'])): ?>
-                              <td colspan="3"></td>
-                            <?php else: ?>
-                              <td colspan="2"></td>
-                            <?php endif; ?>
-                            <td colspan="3" align="right">Total Debits</td>
-                            <td colspan="4" class='h3 text-info'><?= number_format($total_debit) ?></td>
-                          </tr>
-                          <tr>
-                            <?php if (isset($_POST['fullledger'])): ?>
-                              <td colspan="3"></td>
-                            <?php else: ?>
-                              <td colspan="2"></td>
-                            <?php endif; ?>
-                            <td colspan="3" align="right">Total Credits</td>
-                            <td colspan="4" class='h3 text-warning'><?= number_format($total_credit) ?></td>
+                          <?php if (isset($_POST['fullledger'])): ?>
+                            <td colspan="3"></td>
+                          <?php else: ?>
+                            <td colspan="2"></td>
+                          <?php endif; ?>
+                          <td colspan="1" align="right">Total </td>
+                          <td colspan="1" class='h3 text-info'><?= number_format($total_debit) ?></td>
+                          <td colspan="1" class='h3 text-warning'><?= number_format($total_credit) ?></td>
+                          <td colspan="1"></td>
+                          <!-- <td colspan="1"></td>   -->
                           </tr>
 
+
                           <tr>
+                            <?php if (isset($_POST['fullledger'])): ?>
+                              <td colspan="2"></td>
+                            <?php else: ?>
+                              <td colspan="1"></td>
+                            <?php endif; ?>
+                            <td colspan="2" align="right">Closing Balance</td>
+                            <?php if ($temp <= 0): ?>
+                              <td colspan="2" class='h3 text-danger'> <span class="" style="font-size: 15px ;color: black">Dr</span> <?= number_format(-$temp) ?> </td>
+                            <?php else: ?>
+                              <td colspan="2" class='h3 text-success'> <span class="" style="font-size: 15px ;color: black">Cr</span> <?= number_format($temp) ?> </td>
+                            <?php endif ?>
+                            <!-- <td colspan="1"></td> -->
+                            <td colspan="1" align="right" class="d-none"> Opening Balance </td>
+                            <td colspan="1" class='h3 text-success' id="opening_balance" class="d-none" style="display: none;"> <?= $opening_balance ?></td>
+                            <td colspan="1"></td>
+                          </tr>
+                          <tr>
+                            <!-- <tr>
+                            <?php if (isset($_POST['fullledger'])): ?>
+                              <td colspan="3"></td>
+                            <?php else: ?>
+                              <td colspan="2"></td>
+                            <?php endif; ?>
+                          </tr>
+
+                          <tr> -->
 
 
 
@@ -445,7 +467,7 @@
 
 
 
-                            <td colspan="3" align="right">Closing Balance</td>
+                            <!-- <td colspan="3" align="right">Closing Balance</td>
 
 
 
@@ -453,7 +475,7 @@
                               <td colspan="4" class='h3 text-danger'> <span class="" style="font-size: 15px ;color: black">Dr</span> <?= number_format(-$temp) ?> </td>
                             <?php else: ?>
                               <td colspan="4" class='h3 text-success'> <span class="" style="font-size: 15px ;color: black">Cr</span> <?= number_format($temp) ?> </td>
-                            <?php endif ?>
+                            <?php endif ?> -->
 
                           </tr>
 
@@ -509,3 +531,10 @@
 
   }
 </style>
+
+<script>
+  $(document).ready(function() {
+    var opening_balance = $('#opening_balance').text();
+    $('#setOpeningBalance').text(opening_balance);
+  })
+</script>

@@ -330,12 +330,12 @@
                             <?php
                             }
                             ?>
-                            <tr>
+                            <!-- <tr>
                                 <td colspan="<?= isset($_REQUEST['type']) && $_REQUEST['type'] == 'purchase' ? '6' : '3' ?>"></td>
                                 <td class="border">FREIGHT</td>
 
                                 <td class="border"><b><?= empty($order['pur_freight']) ? "0" : $order['pur_freight'] ?></b></td>
-                            </tr>
+                            </tr> -->
                             <tr>
                                 <td colspan="<?= isset($_REQUEST['type']) && $_REQUEST['type'] == 'purchase' ? '6' : '3' ?>"></td>
                                 <td class="border">GRAND TOTAL</td>
@@ -344,7 +344,7 @@
                             </tr>
                             <?php if ($order['payment_type'] == "credit_purchase" || $order['payment_type'] == "credit_sale") : ?>
 
-                                <tr>
+                                <!-- <tr>
                                     <td colspan="<?= isset($_REQUEST['type']) && $_REQUEST['type'] == 'purchase' ? '6' : '3' ?>"></td>
                                     <td class="border">Previous Balance</td>
 
@@ -355,7 +355,7 @@
                                     <td class="border">Current Balance</td>
 
                                     <td class="border"><b><?= number_format(getcustomerBlance($dbc, $order['customer_account']), 2) ?></b></td>
-                                </tr>
+                                </tr> -->
 
                             <?php endif; ?>
 

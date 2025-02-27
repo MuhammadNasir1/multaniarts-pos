@@ -6,6 +6,9 @@
   if (!empty($_REQUEST['edit_purchase_id'])) {
     # code...
     $fetchPurchase = fetchRecord($dbc, "purchase", "purchase_id", base64_decode($_REQUEST['edit_purchase_id']));
+    // echo "<pre>";
+    // print_r($fetchPurchase);
+    // echo "</pre>";
   }
   ?>
 
@@ -32,6 +35,7 @@
           <form action="php_action/custom_action.php" method="POST" id="sale_order_fm">
             <input type="hidden" name="product_purchase_id" value="<?= @empty($_REQUEST['edit_purchase_id']) ? "" : base64_decode($_REQUEST['edit_purchase_id']) ?>">
             <input type="hidden" name="payment_type" id="payment_type" value="credit_purchase">
+            <input type="hidden" name="transaction_id" id="transaction_id" value="<?= @$fetchPurchase['transaction_id'] ?>">
 
 
             <div class="row form-group">
@@ -54,11 +58,13 @@
                   <select class="form-control searchableSelect" aria-required="true" name="cash_purchase_supplier" id="credit_order_client_name" required onchange="getBalance(this.value,'customer_account_exp')" aria-label="Username" aria-describedby="basic-addon1">
                     <option value="">Select Supplier</option>
                     <?php
-                    $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status =1 AND customer_type='supplier'");
+                    $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status = 1 AND customer_type = 'supplier'");
                     while ($r = mysqli_fetch_assoc($q)) {
-                      $customer_name = ucwords(strtolower($r['customer_name']));
+                      $customer_name = ucwords(strtolower(trim($r['customer_name'])));
+                      $selected = (isset($fetchPurchase['client_name']) && trim(strtolower($fetchPurchase['client_name'])) == strtolower($customer_name)) ? "selected" : "";
                     ?>
-                      <option <?= @($fetchPurchase['customer_account'] == $r['customer_id']) ? "selected" : "" ?>
+                      <option
+                        <?= $selected ?>
                         data-id="<?= $r['customer_id'] ?>"
                         data-contact="<?= $r['customer_phone'] ?>"
                         value="<?= $customer_name ?>">
@@ -78,9 +84,13 @@
                 <br>
                 <a href="customers.php?type=supplier" class="btn btn-admin2 btn-sm mt-2">Add</a>
               </div>
-              <div class="col-md-2">
+              <div class="col-md-1">
+                <label for="volume_no">Volume No</label>
+                <input type="number" min="0" class="form-control" id="volume_no" required value="<?= @$fetchPurchase['volume_no'] ?>" name="volume_no" placeholder="Volume No">
+              </div>
+              <div class="col-md-1">
                 <label for="lat_no">Lot No</label>
-                <input type="text" class="form-control" id="lat_no" required value="" name="lat_no" placeholder="Lot No">
+                <input type="text" class="form-control" id="lat_no" required value="<?= @$fetchPurchase['lot_no'] ?>" name="lat_no" placeholder="Lot No">
               </div>
               <div class="col-md-2">
                 <label class="text-dark" for="purchase_for">Purchase For</label>
@@ -119,7 +129,7 @@
                       <optgroup label="<?= $r['customer_type'] ?>">
                       <?php endif ?>
 
-                      <option <?= @($voucher['customer_id2'] == $r['customer_id']) ? "selected" : "" ?> value="<?= $r['customer_id'] ?>"><?= $r['customer_name'] ?></option>
+                      <option <?= @($fetchPurchase['pur_location'] == $r['customer_id']) ? "selected" : "" ?> value="<?= $r['customer_id'] ?>"><?= $r['customer_name'] ?></option>
 
                       <?php if ($type != $type2): ?>
                       </optgroup>
@@ -165,32 +175,32 @@
                       $getCat = fetchRecord($dbc, "categories", "categories_id", $row['category_id']);
                     ?>
 
-                      <option data-price="<?= $row["current_rate"] ?>" <?= empty($r['product_id']) ? "" : "selected" ?> value="<?= $row["product_id"] ?>">
-                        <?= $row["product_name"] ?> | <?= @$getBrand["brand_name"] ?>(<?= @$getCat["categories_name"] ?>) </option>
+                      <option data-price="<?= $row["current_rate"] ?>" <?= @($fetchPurchase['product_id'] == $row['product_id']) ? "selected" : "" ?> value="<?= $row["product_id"] ?>">
+                        <?= $row["product_name"] ?> | (<?= @$row["category_id"] ?>) </option>
 
                     <?php   } ?>
                   </select>
                 </div>
                 <div class="ml-3">
                   <label class="invisible d-block">.</label>
-                  <button type="button" class="btn btn-danger btn-sm pt-1 pb-1" data-toggle="modal" data-target="#add_product_modal"> <i class="fa fa-plus"></i> </button>
+                  <button type="button" class="btn btn-danger btn-sm pt-1 pb-1" onclick="openProductModal(this.value)" value="" id="addProduct"> <i class="fa fa-plus"></i> </button>
                 </div>
               </div>
               <div class="col-sm-2">
                 <label>Rate</label>
-                <input type="number" required min="0" <?= ($_SESSION['user_role'] == "admin") ? "" : "readonly" ?> class="form-control" id="get_product_price" name="product_price">
+                <input type="number" required min="0" <?= ($_SESSION['user_role'] == "admin") ? "" : "readonly" ?> value="<?= @$fetchPurchase['pur_rate'] ?>" class="form-control" id="get_product_price" name="product_price">
               </div>
               <div class="col-sm-2">
                 <label>Thaan</label>
-                <input type="number" min="0" placeholder="Thaan Here" value="" autocomplete="off" class="form-control" name="pur_thaan" id="get_pur_thaan">
+                <input type="number" min="0" placeholder="Thaan Here" value="<?= @$fetchPurchase['pur_thaan'] ?>" autocomplete="off" class="form-control" name="pur_thaan" id="get_pur_thaan">
               </div>
               <div class="col-sm-2">
                 <label>Gzanah</label>
-                <input type="number" min="0" placeholder="Gzanah Here" value="" autocomplete="off" class="form-control" name="pur_gzanah" id="get_pur_gzanah">
+                <input type="number" min="0" placeholder="Gzanah Here" value="<?= @$fetchPurchase['pur_gzanah'] ?>" autocomplete="off" class="form-control" name="pur_gzanah" id="get_pur_gzanah">
               </div>
               <div class="col-sm-2">
                 <label>Quantity</label>
-                <input type="number" class="form-control" required id="get_product_quantity" value="1" min="1" name="quantity">
+                <input type="number" class="form-control" required id="get_product_quantity" value="<?= isset($fetchPurchase['quantity']) ? $fetchPurchase['quantity'] : 1 ?>" min="1" name="quantity">
               </div>
 
               <div class="col-sm-2  d-flex align-items-center">
@@ -236,7 +246,7 @@
                       <td class="table-bordered">
                         <div class="form-group row">
                           <div class="col-sm-6">
-                            <input type="number" min="0" class="form-control form-control-sm" id="paid_ammount" required onkeyup="getRemaingAmount()" name="paid_ammount">
+                            <input type="number" min="0" class="form-control form-control-sm" value="<?= isset($fetchPurchase['paid']) ? @$fetchPurchase['paid'] : 0 ?>" id="paid_ammount" required onkeyup="getRemaingAmount()" name="paid_ammount">
                           </div>
                           <div class=" col-sm-6">
                             <div class="custom-control custom-switch">
@@ -256,7 +266,7 @@
                       <td class="table-bordered">
 
                         <div class="input-group">
-                          <select class="form-control" onchange="getBalance(this.value,'payment_account_bl')" name="payment_account" id="payment_account" aria-label="Username" aria-describedby="basic-addon1">
+                          <select class="form-control" onload="getBalance(this.value,'payment_account_bl')" name="payment_account" id="payment_account" aria-label="Username" aria-describedby="basic-addon1">
 
                             <?php if ($_SESSION['user_role'] == 'admin') {
                               $q = mysqli_query($dbc, "SELECT * FROM customers WHERE customer_status =1 AND customer_type='bank'");
@@ -324,4 +334,23 @@
       }
     });
   }
+
+  $(document).ready(function() {
+    $("#volume_no").on('input', function() {
+      let value = $(this).val();
+      $("#addProduct").attr('value', value);
+    });
+
+    let payment_account = $("#payment_account").val();
+    getBalance(payment_account, 'payment_account_bl');
+  });
+</script>
+<script>
+    setTimeout(function() {
+        // $('#credit_order_client_name').val("<?= @$fetchPurchase['client_name'] ?>").change();  
+        $('#pur_location').val("<?= @$fetchPurchase['pur_location'] ?>").change();  
+        $('#product_grand_total_amount').val("<?= @$fetchPurchase['grand_total'] ?>").change();  
+        $('#remaining_ammount').val("<?= @$fetchPurchase['due'] ?>").change();  
+        $('#paid_ammount').val("<?= @$fetchPurchase['paid'] ?>").change();  
+    }, 500); 
 </script>

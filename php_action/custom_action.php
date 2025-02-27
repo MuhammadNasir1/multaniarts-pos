@@ -36,184 +36,374 @@ if (isset($_REQUEST['add_manually_user'])) {
 	echo json_encode($res);
 }
 
+// if (isset($_REQUEST['new_voucher_date'])) {
+//    return print_r($_REQUEST);
+//    exit;
+// 	if ($_REQUEST['voucher_id'] == "") {
+// 		if ($_REQUEST['voucher_group'] == "general_voucher") {
+// 			$data = [
+// 				'customer_id1' => @$_REQUEST['voucher_from_account'],
+// 				'customer_id2' => @$_REQUEST['voucher_to_account'],
+// 				'voucher_date' => @$_REQUEST['new_voucher_date'],
+// 				'voucher_hint' => @$_REQUEST['voucher_hint'],
+// 				'voucher_type' => @$_REQUEST['voucher_type'],
+// 				'voucher_amount' => @$_REQUEST['voucher_debit'],
+// 				'voucher_group' => @$_REQUEST['voucher_group'],
+// 				'td_check_no' => @$_REQUEST['td_check_no'],
+// 				'voucher_bank_name' => @$_REQUEST['voucher_bank_name'],
+// 				'td_check_date' => @$_REQUEST['td_check_date'],
+// 				'check_type' => @$_REQUEST['check_type'],
+// 				'addby_user_id' => @$_SESSION['userId'],
+// 			];
+// 		} else {
+// 			$data = [
+// 				'customer_id1' => @$_REQUEST['voucher_from_account'],
+// 				'customer_id2' => @$_REQUEST['voucher_to_account'],
+// 				'voucher_date' => @$_REQUEST['new_voucher_date'],
+// 				'voucher_hint' => @$_REQUEST['voucher_hint'],
+// 				'voucher_type' => @$_REQUEST['voucher_type'],
+// 				'voucher_amount' => @$_REQUEST['voucher_debit'],
+// 				'voucher_group' => @$_REQUEST['voucher_group'],
+// 				'addby_user_id' => @$_SESSION['userId'],
+// 			];
+// 		}
+// 		if (insert_data($dbc, "vouchers", $data)) {
+// 			$last_id = mysqli_insert_id($dbc);
+// 			if ($_REQUEST['voucher_group'] == "expense_voucher") {
+// 				$voucher_to_account = fetchRecord($dbc, "customers", "customer_id", $_REQUEST['voucher_to_account']);
+// 				$budget = [
+// 					'budget_amount' => @$_REQUEST['voucher_debit'],
+// 					'budget_type' => "expense",
+// 					'budget_date' => $_REQUEST['new_voucher_date'],
+// 					'voucher_id' => $last_id,
+// 					'voucher_type' => @$_REQUEST['voucher_type'],
+// 					'budget_name' => @"expense added to " . @$voucher_to_account['customer_name'],
+// 				];
+// 				insert_data($dbc, "budget", $budget);
+// 			} elseif ($_REQUEST['voucher_group'] == "general_voucher" and !empty($_REQUEST['td_check_no'])) {
+// 				$data_checks = [
+// 					'check_no' => $_REQUEST['td_check_no'],
+// 					'check_bank_name' => $_REQUEST['voucher_bank_name'],
+// 					'check_expiry_date' => $_REQUEST['td_check_date'],
+// 					'check_type' => $_REQUEST['check_type'],
+// 					'voucher_id' => $last_id,
+// 					'check_status' => 0,
+// 				];
+// 				insert_data($dbc, "checks", $data_checks);
+// 			}
+
+// 			if ($_REQUEST['voucher_payment_type'] == 'send') {
+// 				$debit = [
+// 					'debit' => 0,
+// 					'credit' => @$_REQUEST['voucher_debit'],
+// 					'customer_id' => @$_REQUEST['voucher_from_account'],
+// 					'transaction_from' => 'voucher',
+// 					'transaction_type' => @$_REQUEST['voucher_type'],
+// 					'transaction_remarks' => @$_REQUEST['voucher_hint'],
+// 					'transaction_date' => @$_REQUEST['new_voucher_date'],
+// 				];
+// 				insert_data($dbc, "transactions", $debit);
+// 				$transaction_id1 = mysqli_insert_id($dbc);
+// 				$credit = [
+// 					'credit' => 0,
+// 					'debit' => @$_REQUEST['voucher_debit'],
+// 					'customer_id' => @$_REQUEST['voucher_to_account'],
+// 					'transaction_from' => 'voucher',
+// 					'transaction_type' => @$_REQUEST['voucher_type'],
+// 					'transaction_remarks' => @$_REQUEST['voucher_hint'],
+// 					'transaction_date' => @$_REQUEST['new_voucher_date'],
+// 				];
+// 			} elseif ($_REQUEST['voucher_payment_type'] == 'receive') {
+// 				$debit = [
+// 					'debit' => @$_REQUEST['voucher_debit'],
+// 					'credit' => 0,
+// 					'customer_id' => @$_REQUEST['voucher_from_account'],
+// 					'transaction_from' => 'voucher',
+// 					'transaction_type' => @$_REQUEST['voucher_type'],
+// 					'transaction_remarks' => @$_REQUEST['voucher_hint'],
+// 					'transaction_date' => @$_REQUEST['new_voucher_date'],
+// 				];
+// 				insert_data($dbc, "transactions", $debit);
+// 				$transaction_id1 = mysqli_insert_id($dbc);
+// 				$credit = [
+// 					'credit' => @$_REQUEST['voucher_debit'],
+// 					'debit' => 0,
+// 					'customer_id' => @$_REQUEST['voucher_to_account'],
+// 					'transaction_from' => 'voucher',
+// 					'transaction_type' => @$_REQUEST['voucher_type'],
+// 					'transaction_remarks' => @$_REQUEST['voucher_hint'],
+// 					'transaction_date' => @$_REQUEST['new_voucher_date'],
+// 				];
+// 			}
+
+// 			insert_data($dbc, "transactions", $credit);
+// 			$transaction_id2 = mysqli_insert_id($dbc);
+// 			$newData = ['transaction_id1' => $transaction_id1, 'transaction_id2' => $transaction_id2];
+// 			if (update_data($dbc, "vouchers", $newData, "voucher_id", $last_id)) {
+// 				$res = ['msg' => "Voucher Added Successfully", 'sts' => 'success', 'voucher_id' => base64_encode($last_id)];
+// 			} else {
+// 				$res = ['msg' => mysqli_error($dbc), 'sts' => 'error'];
+// 			}
+// 		} else {
+
+// 			$res = ['msg' => mysqli_error($dbc), 'sts' => 'error'];
+// 		}
+// 	} else {
+// 		if ($_REQUEST['voucher_group'] == "general_voucher") {
+// 			$data = [
+// 				'customer_id1' => @$_REQUEST['voucher_from_account'],
+// 				'customer_id2' => @$_REQUEST['voucher_to_account'],
+// 				'voucher_date' => @$_REQUEST['new_voucher_date'],
+// 				'voucher_hint' => @$_REQUEST['voucher_hint'],
+// 				'voucher_type' => @$_REQUEST['voucher_type'],
+// 				'voucher_amount' => @$_REQUEST['voucher_debit'],
+// 				'voucher_group' => @$_REQUEST['voucher_group'],
+// 				'editby_user_id' => @$_SESSION['userId'],
+// 				'td_check_no' => @$_REQUEST['td_check_no'],
+// 				'voucher_bank_name' => @$_REQUEST['voucher_bank_name'],
+// 				'check_type' => @$_REQUEST['check_type'],
+// 				'td_check_date' => @$_REQUEST['td_check_date'],
+// 			];
+// 		} else {
+// 			$data = [
+// 				'customer_id1' => @$_REQUEST['voucher_from_account'],
+// 				'customer_id2' => @$_REQUEST['voucher_to_account'],
+// 				'voucher_date' => @$_REQUEST['new_voucher_date'],
+// 				'voucher_hint' => @$_REQUEST['voucher_hint'],
+// 				'voucher_type' => @$_REQUEST['voucher_type'],
+// 				'voucher_amount' => @$_REQUEST['voucher_debit'],
+// 				'voucher_group' => @$_REQUEST['voucher_group'],
+// 				'editby_user_id' => @$_SESSION['userId'],
+// 			];
+// 		}
+// 		if (update_data($dbc, "vouchers", $data, "voucher_id", $_REQUEST['voucher_id'])) {
+// 			$last_id = $_REQUEST['voucher_id'];
+
+// 			$transactions = fetchRecord($dbc, "vouchers", "voucher_id", $_REQUEST['voucher_id']);
+
+
+// 			if ($_REQUEST['voucher_group'] == "expense_voucher") {
+// 				$voucher_to_account = fetchRecord($dbc, "customers", "customer_id", $_REQUEST['voucher_to_account']);
+// 				$budget = [
+// 					'budget_amount' => @$_REQUEST['voucher_debit'],
+// 					'budget_type' => "expense",
+// 					'budget_date' => $_REQUEST['new_voucher_date'],
+// 					'voucher_id' => $last_id,
+// 					'voucher_type' => @$_REQUEST['voucher_type'],
+// 					'budget_name' => @"expense added to " . @$voucher_to_account['customer_name'],
+// 				];
+
+// 				update_data($dbc, "budget", $budget, "voucher_id", $_REQUEST['voucher_id']);
+// 			} elseif ($_REQUEST['voucher_group'] == "general_voucher") {
+// 				$data_checks = [
+// 					'check_no' => $_REQUEST['td_check_no'],
+// 					'check_bank_name' => $_REQUEST['voucher_bank_name'],
+// 					'check_expiry_date' => $_REQUEST['td_check_date'],
+// 					'check_type' => $_REQUEST['check_type'],
+// 					'voucher_id' => $last_id,
+// 				];
+// 				update_data($dbc, "checks", $data_checks, "voucher_id", $_REQUEST['voucher_id']);
+// 			}
+
+// 			$debit = [
+// 				'debit' => @$_REQUEST['voucher_debit'],
+// 				'credit' => 0,
+// 				'customer_id' => @$_REQUEST['voucher_from_account'],
+// 				'transaction_from' => 'voucher',
+// 				'transaction_type' => @$_REQUEST['voucher_type'],
+// 				'transaction_remarks' => @$_REQUEST['voucher_hint'],
+// 				'transaction_date' => @$_REQUEST['new_voucher_date'],
+// 			];
+
+// 			update_data($dbc, "transactions", $debit, "transaction_id", $transactions['transaction_id1']);
+
+// 			$credit = [
+// 				'credit' => @$_REQUEST['voucher_debit'],
+// 				'debit' => 0,
+// 				'customer_id' => @$_REQUEST['voucher_to_account'],
+// 				'transaction_from' => 'voucher',
+// 				'transaction_type' => @$_REQUEST['voucher_type'],
+// 				'transaction_remarks' => @$_REQUEST['voucher_hint'],
+// 				'transaction_date' => @$_REQUEST['new_voucher_date'],
+// 			];
+
+// 			update_data($dbc, "transactions", $credit, "transaction_id", $transactions['transaction_id2']);
+
+// 			$res = ['msg' => "Voucher Updated Successfully", 'sts' => 'success', 'voucher_id' => base64_encode($last_id)];
+// 		} else {
+
+// 			$res = ['msg' => mysqli_error($dbc), 'sts' => 'error'];
+// 		}
+// 	}
+// 	echo json_encode($res);
+// }
+
 if (isset($_REQUEST['new_voucher_date'])) {
 
-	if ($_REQUEST['voucher_id'] == "") {
-		if ($_REQUEST['voucher_group'] == "general_voucher") {
-			$data = [
-				'customer_id1' => @$_REQUEST['voucher_from_account'],
-				'customer_id2' => @$_REQUEST['voucher_to_account'],
-				'voucher_date' => @$_REQUEST['new_voucher_date'],
-				'voucher_hint' => @$_REQUEST['voucher_hint'],
-				'voucher_type' => @$_REQUEST['voucher_type'],
-				'voucher_amount' => @$_REQUEST['voucher_debit'],
-				'voucher_group' => @$_REQUEST['voucher_group'],
-				'td_check_no' => @$_REQUEST['td_check_no'],
-				'voucher_bank_name' => @$_REQUEST['voucher_bank_name'],
-				'td_check_date' => @$_REQUEST['td_check_date'],
-				'check_type' => @$_REQUEST['check_type'],
-				'addby_user_id' => @$_SESSION['userId'],
-			];
-		} else {
-			$data = [
-				'customer_id1' => @$_REQUEST['voucher_from_account'],
-				'customer_id2' => @$_REQUEST['voucher_to_account'],
-				'voucher_date' => @$_REQUEST['new_voucher_date'],
-				'voucher_hint' => @$_REQUEST['voucher_hint'],
-				'voucher_type' => @$_REQUEST['voucher_type'],
-				'voucher_amount' => @$_REQUEST['voucher_debit'],
-				'voucher_group' => @$_REQUEST['voucher_group'],
-				'addby_user_id' => @$_SESSION['userId'],
-			];
-		}
-		if (insert_data($dbc, "vouchers", $data)) {
+	$voucher_no = $_REQUEST['voucher_no'];
+	$voucher_date = $_REQUEST['new_voucher_date'];
+	$voucher_group = $_REQUEST['voucher_group'];
+	$voucher_payment_type = $_REQUEST['voucher_payment_type']; // 'send' or 'receive'
+	$voucher_type = $_REQUEST['voucher_type'];
+	$cash_in_hand = $_REQUEST['cash_in_hand'];
+
+	$from_accounts = $_REQUEST['voucher_from_account']; // Array
+	$hints = $_REQUEST['voucher_hint']; // Array
+	$credits = $_REQUEST['voucher_credit']; // Array
+
+	$voucherData = [
+		'voucher_date' => @$_REQUEST['new_voucher_date'],
+		'voucher_type' => @$_REQUEST['voucher_type'],
+		'voucher_amount' => @$_REQUEST['grant_total'],
+		'voucher_group' => @$_REQUEST['voucher_group'],
+		'addby_user_id' => @$_SESSION['userId'],
+		'payment_type' => @$_REQUEST['voucher_payment_type'],
+	];
+
+	$data = []; // Initialize an array to store transactions
+
+	if ($_REQUEST['voucher_id'] == '') {
+		if (insert_data($dbc, "vouchers", $voucherData)) {
 			$last_id = mysqli_insert_id($dbc);
-			if ($_REQUEST['voucher_group'] == "expense_voucher") {
-				$voucher_to_account = fetchRecord($dbc, "customers", "customer_id", $_REQUEST['voucher_to_account']);
-				$budget = [
-					'budget_amount' => @$_REQUEST['voucher_debit'],
-					'budget_type' => "expense",
-					'budget_date' => $_REQUEST['new_voucher_date'],
-					'voucher_id' => $last_id,
-					'voucher_type' => @$_REQUEST['voucher_type'],
-					'budget_name' => @"expense added to " . @$voucher_to_account['customer_name'],
-				];
-				insert_data($dbc, "budget", $budget);
-			} elseif ($_REQUEST['voucher_group'] == "general_voucher" and !empty($_REQUEST['td_check_no'])) {
-				$data_checks = [
-					'check_no' => $_REQUEST['td_check_no'],
-					'check_bank_name' => $_REQUEST['voucher_bank_name'],
-					'check_expiry_date' => $_REQUEST['td_check_date'],
-					'check_type' => $_REQUEST['check_type'],
-					'voucher_id' => $last_id,
-					'check_status' => 0,
-				];
-				insert_data($dbc, "checks", $data_checks);
+
+			foreach ($from_accounts as $key => $from_account) {
+				$hint = $hints[$key] ?? '';
+				$amount = $credits[$key] ?? 0;
+
+				if ($voucher_payment_type === 'send') {
+					// Credit to Customer Account
+					$data[] = [
+						'voucher_id' => $last_id,
+						'voucher_date' => $voucher_date,
+						'transaction_type' => $voucher_type,
+						'customer_id' => $from_account,
+						'transaction_remarks' => $hint,
+						'is_cash_in_hand' => 0,
+						'credit' => $amount,
+						'debit' => 0,
+					];
+
+					// Debit from Cash-in-Hand
+					$data[] = [
+						'voucher_id' => $last_id,
+						'voucher_date' => $voucher_date,
+						'transaction_type' => $voucher_type,
+						'customer_id' => $cash_in_hand,
+						'is_cash_in_hand' => 1,
+						'transaction_remarks' => $hint,
+						'credit' => 0,
+						'debit' => $amount,
+					];
+				} elseif ($voucher_payment_type === 'receive') {
+					// Credit to Cash-in-Hand
+					$data[] = [
+						'voucher_id' => $last_id,
+						'voucher_date' => $voucher_date,
+						'transaction_type' => $voucher_type,
+						'customer_id' => $cash_in_hand,
+						'is_cash_in_hand' => 1,
+						'transaction_remarks' => $hint,
+						'credit' => $amount,
+						'debit' => 0,
+					];
+
+					// Debit from Customer Account
+					$data[] = [
+						'voucher_id' => $last_id,
+						'voucher_date' => $voucher_date,
+						'transaction_type' => $voucher_type,
+						'customer_id' => $from_account,
+						'transaction_remarks' => $hint,
+						'is_cash_in_hand' => 0,
+						'credit' => 0,
+						'debit' => $amount,
+					];
+				}
 			}
 
-
-			$debit = [
-				'debit' => @$_REQUEST['voucher_debit'],
-				'credit' => 0,
-				'customer_id' => @$_REQUEST['voucher_from_account'],
-				'transaction_from' => 'voucher',
-				'transaction_type' => @$_REQUEST['voucher_type'],
-				'transaction_remarks' => @$_REQUEST['voucher_hint'],
-				'transaction_date' => @$_REQUEST['new_voucher_date'],
-			];
-			insert_data($dbc, "transactions", $debit);
-			$transaction_id1 = mysqli_insert_id($dbc);
-			$credit = [
-				'credit' => @$_REQUEST['voucher_debit'],
-				'debit' => 0,
-				'customer_id' => @$_REQUEST['voucher_to_account'],
-				'transaction_from' => 'voucher',
-				'transaction_type' => @$_REQUEST['voucher_type'],
-				'transaction_remarks' => @$_REQUEST['voucher_hint'],
-				'transaction_date' => @$_REQUEST['new_voucher_date'],
-			];
-
-			insert_data($dbc, "transactions", $credit);
-			$transaction_id2 = mysqli_insert_id($dbc);
-			$newData = ['transaction_id1' => $transaction_id1, 'transaction_id2' => $transaction_id2];
-			if (update_data($dbc, "vouchers", $newData, "voucher_id", $last_id)) {
-				$res = ['msg' => "Voucher Added Successfully", 'sts' => 'success', 'voucher_id' => base64_encode($last_id)];
-			} else {
-				$res = ['msg' => mysqli_error($dbc), 'sts' => 'error'];
+			// Now insert all transactions once
+			foreach ($data as $transaction) {
+				insert_data($dbc, 'transactions', $transaction);
 			}
-		} else {
 
-			$res = ['msg' => mysqli_error($dbc), 'sts' => 'error'];
+			$res = ['msg' => "Voucher Added Successfully", 'sts' => 'success'];
+			echo json_encode($res);
 		}
 	} else {
-		if ($_REQUEST['voucher_group'] == "general_voucher") {
-			$data = [
-				'customer_id1' => @$_REQUEST['voucher_from_account'],
-				'customer_id2' => @$_REQUEST['voucher_to_account'],
-				'voucher_date' => @$_REQUEST['new_voucher_date'],
-				'voucher_hint' => @$_REQUEST['voucher_hint'],
-				'voucher_type' => @$_REQUEST['voucher_type'],
-				'voucher_amount' => @$_REQUEST['voucher_debit'],
-				'voucher_group' => @$_REQUEST['voucher_group'],
-				'editby_user_id' => @$_SESSION['userId'],
-				'td_check_no' => @$_REQUEST['td_check_no'],
-				'voucher_bank_name' => @$_REQUEST['voucher_bank_name'],
-				'check_type' => @$_REQUEST['check_type'],
-				'td_check_date' => @$_REQUEST['td_check_date'],
-			];
-		} else {
-			$data = [
-				'customer_id1' => @$_REQUEST['voucher_from_account'],
-				'customer_id2' => @$_REQUEST['voucher_to_account'],
-				'voucher_date' => @$_REQUEST['new_voucher_date'],
-				'voucher_hint' => @$_REQUEST['voucher_hint'],
-				'voucher_type' => @$_REQUEST['voucher_type'],
-				'voucher_amount' => @$_REQUEST['voucher_debit'],
-				'voucher_group' => @$_REQUEST['voucher_group'],
-				'editby_user_id' => @$_SESSION['userId'],
-			];
-		}
-		if (update_data($dbc, "vouchers", $data, "voucher_id", $_REQUEST['voucher_id'])) {
+		$id = $_REQUEST['voucher_id'];
+		if (update_data($dbc, "vouchers", $voucherData, "voucher_id", $id)) {
+			deleteFromTable($dbc, "transactions", 'voucher_id', $id);
 			$last_id = $_REQUEST['voucher_id'];
+			foreach ($from_accounts as $key => $from_account) {
+				$hint = $hints[$key] ?? '';
+				$amount = $credits[$key] ?? 0;
 
-			$transactions = fetchRecord($dbc, "vouchers", "voucher_id", $_REQUEST['voucher_id']);
+				if ($voucher_payment_type === 'send') {
+					// Credit to Customer Account
+					$data[] = [
+						'voucher_id' => $last_id,
+						'voucher_date' => $voucher_date,
+						'transaction_type' => $voucher_type,
+						'customer_id' => $from_account,
+						'transaction_remarks' => $hint,
+						'is_cash_in_hand' => 0,
+						'credit' => $amount,
+						'debit' => 0,
+					];
 
+					// Debit from Cash-in-Hand
+					$data[] = [
+						'voucher_id' => $last_id,
+						'voucher_date' => $voucher_date,
+						'transaction_type' => $voucher_type,
+						'customer_id' => $cash_in_hand,
+						'is_cash_in_hand' => 1,
+						'transaction_remarks' => $hint,
+						'credit' => 0,
+						'debit' => $amount,
+					];
+				} elseif ($voucher_payment_type === 'receive') {
+					// Credit to Cash-in-Hand
+					$data[] = [
+						'voucher_id' => $last_id,
+						'voucher_date' => $voucher_date,
+						'transaction_type' => $voucher_type,
+						'customer_id' => $cash_in_hand,
+						'is_cash_in_hand' => 1,
+						'transaction_remarks' => $hint,
+						'credit' => $amount,
+						'debit' => 0,
+					];
 
-			if ($_REQUEST['voucher_group'] == "expense_voucher") {
-				$voucher_to_account = fetchRecord($dbc, "customers", "customer_id", $_REQUEST['voucher_to_account']);
-				$budget = [
-					'budget_amount' => @$_REQUEST['voucher_debit'],
-					'budget_type' => "expense",
-					'budget_date' => $_REQUEST['new_voucher_date'],
-					'voucher_id' => $last_id,
-					'voucher_type' => @$_REQUEST['voucher_type'],
-					'budget_name' => @"expense added to " . @$voucher_to_account['customer_name'],
-				];
-
-				update_data($dbc, "budget", $budget, "voucher_id", $_REQUEST['voucher_id']);
-			} elseif ($_REQUEST['voucher_group'] == "general_voucher") {
-				$data_checks = [
-					'check_no' => $_REQUEST['td_check_no'],
-					'check_bank_name' => $_REQUEST['voucher_bank_name'],
-					'check_expiry_date' => $_REQUEST['td_check_date'],
-					'check_type' => $_REQUEST['check_type'],
-					'voucher_id' => $last_id,
-				];
-				update_data($dbc, "checks", $data_checks, "voucher_id", $_REQUEST['voucher_id']);
+					// Debit from Customer Account
+					$data[] = [
+						'voucher_id' => $last_id,
+						'voucher_date' => $voucher_date,
+						'transaction_type' => $voucher_type,
+						'customer_id' => $from_account,
+						'transaction_remarks' => $hint,
+						'is_cash_in_hand' => 0,
+						'credit' => 0,
+						'debit' => $amount,
+					];
+				}
 			}
 
-			$debit = [
-				'debit' => @$_REQUEST['voucher_debit'],
-				'credit' => 0,
-				'customer_id' => @$_REQUEST['voucher_from_account'],
-				'transaction_from' => 'voucher',
-				'transaction_type' => @$_REQUEST['voucher_type'],
-				'transaction_remarks' => @$_REQUEST['voucher_hint'],
-				'transaction_date' => @$_REQUEST['new_voucher_date'],
-			];
+			// Now insert all transactions once
+			foreach ($data as $transaction) {
+				insert_data($dbc, 'transactions', $transaction);
+			}
 
-			update_data($dbc, "transactions", $debit, "transaction_id", $transactions['transaction_id1']);
-
-			$credit = [
-				'credit' => @$_REQUEST['voucher_debit'],
-				'debit' => 0,
-				'customer_id' => @$_REQUEST['voucher_to_account'],
-				'transaction_from' => 'voucher',
-				'transaction_type' => @$_REQUEST['voucher_type'],
-				'transaction_remarks' => @$_REQUEST['voucher_hint'],
-				'transaction_date' => @$_REQUEST['new_voucher_date'],
-			];
-
-			update_data($dbc, "transactions", $credit, "transaction_id", $transactions['transaction_id2']);
-
-			$res = ['msg' => "Voucher Updated Successfully", 'sts' => 'success', 'voucher_id' => base64_encode($last_id)];
-		} else {
-
-			$res = ['msg' => mysqli_error($dbc), 'sts' => 'error'];
+			$res = ['msg' => "Voucher Updated Successfully", 'sts' => 'success'];
+			echo json_encode($res);
 		}
 	}
-	echo json_encode($res);
 }
+
+
+
+
+
 if (isset($_REQUEST['new_sin_voucher_date'])) {
 	if (!empty($_REQUEST['voucher_debit'])) {
 		$amount = $_REQUEST['voucher_debit'];
@@ -320,25 +510,64 @@ if (isset($_REQUEST['new_sin_voucher_date'])) {
 }
 if (!empty($_REQUEST['action']) and $_REQUEST['action'] == "product_module") {
 	$purchase_rate = $total = 0;
-	$category_price = fetchRecord($dbc, "categories", "categories_id", $_REQUEST['category_id']);
+	$category_price = fetchRecord($dbc, "categories", "categories_id", @$_REQUEST['category_id']);
 	$purchase_rate = round($purchase_rate);
-
 	$data_array = [
-		'product_name' => $_REQUEST['product_name'],
-		'product_code' => @$_REQUEST['product_code'],
-		'brand_id' => @$_REQUEST['brand_id'],
-		'category_id' => @$_REQUEST['category_id'],
-		'current_rate' => 0,
-		'product_description' => @$_REQUEST['product_description'],
-		'alert_at' => @$_REQUEST['alert_at'],
-		'availability' => @$_REQUEST['availability'],
-		'purchase_rate' => $purchase_rate,
-		'status' => 1,
+		'categories_name' => $_REQUEST['add_category_name'],
+		'categories_status' => 1,
 	];
-	if ($_REQUEST['product_id'] == "") {
+	if (insert_data($dbc, "categories", $data_array)) {
+		$cat_id = $_REQUEST['add_category_name'];
+		$data_array = [
+			'product_name' => $_REQUEST['product_name'],
+			'product_code' => @$_REQUEST['product_code'],
+			'brand_id' => @$_REQUEST['brand_id'],
+			'category_id' => $cat_id,
+			'current_rate' => 0,
+			'product_description' => @$_REQUEST['product_description'],
+			'alert_at' => @$_REQUEST['alert_at'],
+			'availability' => @$_REQUEST['availability'],
+			'purchase_rate' => $purchase_rate,
+			'status' => 1,
+		];
+		if ($_REQUEST['product_id'] == "") {
 
-		if (insert_data($dbc, "product", $data_array)) {
-			$last_id = mysqli_insert_id($dbc);
+			if (insert_data($dbc, "product", $data_array)) {
+				$last_id = mysqli_insert_id($dbc);
+
+
+				// if ($_FILES['product_image']['tmp_name']) {
+				// 	upload_pic($_FILES['product_image'], '../img/uploads/');
+				// 	$product_image = $_SESSION['pic_name'];
+				// 	$data_image = [
+				// 		'product_image' => $product_image,
+				// 	];
+				// 	update_data($dbc, "product", $data_image, "product_id", $last_id);
+				// }
+
+
+				$response = [
+					"msg" => "Product Has Been Added",
+					"sts" => "success",
+					"id" => base64_encode($last_id),
+					"link" => base64_encode('add_stock'),
+				];
+			} else {
+				$response = [
+					"msg" => mysqli_error($dbc),
+					"sts" => "error"
+				];
+			}
+		} else {
+			$response = [
+				"msg" => mysqli_error($dbc),
+				"sts" => "danger"
+			];
+			exit;
+		}
+	} else {
+		if (update_data($dbc, "product", $data_array, "product_id", base64_decode($_REQUEST['product_id']))) {
+			$last_id = $_REQUEST['product_id'];
 
 			// if ($_FILES['product_image']['tmp_name']) {
 			// 	upload_pic($_FILES['product_image'], '../img/uploads/');
@@ -348,32 +577,6 @@ if (!empty($_REQUEST['action']) and $_REQUEST['action'] == "product_module") {
 			// 	];
 			// 	update_data($dbc, "product", $data_image, "product_id", $last_id);
 			// }
-
-
-			$response = [
-				"msg" => "Product Has Been Added",
-				"sts" => "success",
-				"id" => base64_encode($last_id),
-				"link" => base64_encode('add_stock'),
-			];
-		} else {
-			$response = [
-				"msg" => mysqli_error($dbc),
-				"sts" => "error"
-			];
-		}
-	} else {
-		if (update_data($dbc, "product", $data_array, "product_id", base64_decode($_REQUEST['product_id']))) {
-			$last_id = $_REQUEST['product_id'];
-
-			if ($_FILES['product_image']['tmp_name']) {
-				upload_pic($_FILES['product_image'], '../img/uploads/');
-				$product_image = $_SESSION['pic_name'];
-				$data_image = [
-					'product_image' => $product_image,
-				];
-				update_data($dbc, "product", $data_image, "product_id", $last_id);
-			}
 
 			$response = [
 				"msg" => "Product Updated",
@@ -683,7 +886,7 @@ if (isset($_REQUEST['credit_order_client_name'])) {
 			'payment_account' => @$_REQUEST['payment_account'],
 			'customer_account' => @$_REQUEST['customer_account'],
 			'payment_type' => 'credit_sale',
-			'credit_sale_type' => @$_REQUEST['credit_sale_type'],
+			'credit_sale_type' => @$_REQUEST['sale_type'],
 			'vehicle_no' => @$_REQUEST['vehicle_no'],
 			'pur_freight' => @$_REQUEST['freight'],
 			'voucher_no' => @$_REQUEST['voucher_no'],
@@ -726,36 +929,51 @@ if (isset($_REQUEST['credit_order_client_name'])) {
 				$total_grand = @(float)$_REQUEST['freight'] + $total_ammount - $total_ammount * ((float)$_REQUEST['ordered_discount'] / 100);
 				$due_amount = (float)$total_grand - @(float)$_REQUEST['paid_ammount'];
 
-				$credit = [
-					'debit' => $due_amount,
-					'credit' => 0,
-					'customer_id' => @$_REQUEST['customer_account'],
-					'transaction_from' => 'invoice',
-					'transaction_type' => "credit_sale",
-					'transaction_remarks' => "credit_sale by order id#" . $last_id,
-					'transaction_date' => $_REQUEST['order_date'],
-				];
-				if ($due_amount > 0) {
-					$payment_status = 0; //pending
-					insert_data($dbc, 'transactions', $credit);
-					$transaction_id = mysqli_insert_id($dbc);
-				} else {
+				if ($_REQUEST['sale_type'] == 'credit') {
+
+					$paidAmount = @(float)$_REQUEST['remaining_ammount'];
+					if ($paidAmount > 0) {
+						$credit1 = [
+							'credit' => $paidAmount,
+							'debit' => 0,
+							'customer_id' => @$_REQUEST['customer_account'],
+							'transaction_from' => 'invoice',
+							'transaction_type' => "credit_sale",
+							'transaction_remarks' => "credit_sale by order id#" . $last_id,
+							'transaction_date' => $_REQUEST['order_date'],
+						];
+						insert_data($dbc, 'transactions', $credit1);
+						$transaction_paid_id = mysqli_insert_id($dbc);
+
+						// $debit = [
+						// 	'debit' => $paidAmount,
+						// 	'credit' => 0,
+						// 	'customer_id' => @$_REQUEST['payment_account'],
+						// 	'transaction_from' => 'invoice',
+						// 	'transaction_type' => "cash_in_hand",
+						// 	'transaction_remarks' => "cash_sale by order id#" . $last_id,
+						// 	'transaction_date' => $_REQUEST['order_date'],
+						// ];
+						// insert_data($dbc, 'transactions', $debit);
+						// $transaction_paid_id = mysqli_insert_id($dbc);
+					}
+					$payment_status = 0; //completed
+				} elseif ($_REQUEST['sale_type'] == 'cash') {
+					$paidAmount = @(float)$_REQUEST['paid_ammount'];
+					if ($paidAmount > 0) {
+						$debit = [
+							'debit' => 0,
+							'credit' => @$_REQUEST['paid_ammount'],
+							'customer_id' => @$_REQUEST['payment_account'],
+							'transaction_from' => 'invoice',
+							'transaction_type' => "cash_in_hand",
+							'transaction_remarks' => "cash_sale by order id#" . $last_id,
+							'transaction_date' => $_REQUEST['order_date'],
+						];
+						insert_data($dbc, 'transactions', $debit);
+						$transaction_paid_id = mysqli_insert_id($dbc);
+					}
 					$payment_status = 1; //completed
-					$transaction_id = 0;
-				}
-				$paidAmount = @(float)$_REQUEST['paid_ammount'];
-				if ($paidAmount > 0) {
-					$credit1 = [
-						'credit' => @$_REQUEST['paid_ammount'],
-						'debit' => 0,
-						'customer_id' => @$_REQUEST['payment_account'],
-						'transaction_from' => 'invoice',
-						'transaction_type' => "credit_sale",
-						'transaction_remarks' => "credit_sale by order id#" . $last_id,
-						'transaction_date' => $_REQUEST['order_date'],
-					];
-					insert_data($dbc, 'transactions', $credit1);
-					$transaction_paid_id = mysqli_insert_id($dbc);
 				}
 
 
@@ -932,6 +1150,7 @@ if (isset($_REQUEST['cash_purchase_supplier'])) {
 		'lot_no' => $_REQUEST['lat_no'],
 		'client_name' => @$_REQUEST['cash_purchase_supplier'],
 		'client_contact' => @$_REQUEST['client_contact'],
+		'volume_no' => @$_REQUEST['volume_no'],
 		'purchase_narration' => @$_REQUEST['purchase_narration'],
 		'payment_account' => @$_REQUEST['payment_account'],
 		'customer_account' => @$_REQUEST['customer_account'],
@@ -997,125 +1216,16 @@ if (isset($_REQUEST['cash_purchase_supplier'])) {
 			}
 
 
-			// $total_grand = $total_ammount - $total_ammount * ((float)@$_REQUEST['ordered_discount'] / 100) + @$_REQUEST['freight'];
+			$total_grand = $total_ammount - $total_ammount * ((float)@$_REQUEST['ordered_discount'] / 100) + @$_REQUEST['freight'];
 
-			// $due_amount = (float)$total_grand - @(float)$_REQUEST['paid_ammount'];
-			// if ($_REQUEST['payment_type'] == "credit_purchase") :
-			// 	if ($due_amount > 0) {
-			// 		$debit = [
-			// 			'debit' => 0,
-			// 			'credit' => $due_amount,
-			// 			'customer_id' => @$_REQUEST['customer_account'],
-			// 			'transaction_from' => 'purchase',
-			// 			'transaction_type' => $_REQUEST['payment_type'],
-			// 			'transaction_remarks' => "purchased on  purchased id#" . $last_id,
-			// 			'transaction_date' => $_REQUEST['purchase_date'],
-			// 		];
-			// 		insert_data($dbc, 'transactions', $debit);
-			// 		$transaction_id = mysqli_insert_id($dbc);
-			// 	}
-			// endif;
-			// $paidAmount = @(float)$_REQUEST['paid_ammount'];
-			// if ($paidAmount > 0) {
-			// 	$credit = [
-			// 		'credit' => 0,
-			// 		'debit' => @$_REQUEST['paid_ammount'],
-			// 		'customer_id' => @$_REQUEST['payment_account'],
-			// 		'transaction_from' => 'purchase',
-			// 		'transaction_type' => $_REQUEST['payment_type'],
-			// 		'transaction_remarks' => "purchased by purchased id#" . $last_id,
-			// 		'transaction_date' => $_REQUEST['purchase_date'],
-			// 	];
-			// 	insert_data($dbc, 'transactions', $credit);
-			// 	$transaction_paid_id = mysqli_insert_id($dbc);
-			// }
-
-			// $newOrder = [
-			// 	'total_amount' => $total_ammount,
-			// 	'discount' => @$_REQUEST['ordered_discount'],
-			// 	'grand_total' => @$total_grand,
-			// 	'due' => $due_amount,
-			// 	'transaction_paid_id' => @$transaction_paid_id,
-			// 	'transaction_id' => @$transaction_id,
-			// ];
-			// if (update_data($dbc, 'purchase', $newOrder, 'purchase_id', $last_id)) {
-			// 	# code...
-			// 	//echo "<script>alert('company Updated....!')</script>";
-			// 	$msg = "Purchase Has been Added";
-			// 	$sts = 'success';
-			// } else {
-			// 	$msg = mysqli_error($dbc);
-			// 	$sts = "danger";
-			// }
-			$msg = "Purchase Has been Added";
-			$sts = 'success';
-		} else {
-			$msg = mysqli_error($dbc);
-			$sts = "danger";
-		}
-	} else {
-		if (update_data($dbc, 'purchase', $data, 'purchase_id', $_REQUEST['product_purchase_id'])) {
-			$last_id = $_REQUEST['product_purchase_id'];
-
-
-			if ($get_company['stock_manage'] == 1) {
-				$proQ = get($dbc, "purchase_item WHERE purchase_id='" . $last_id . "' ");
-
-				while ($proR = mysqli_fetch_assoc($proQ)) {
-					$newqty = 0;
-					$quantity_instock = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT quantity_instock FROM  product WHERE product_id='" . $proR['product_id'] . "' "));
-					$newqty = (float)$quantity_instock['quantity_instock'] - (float)$proR['quantity'];
-					$quantity_update = mysqli_query($dbc, query: "UPDATE product SET  quantity_instock='$newqty' WHERE product_id='" . $proR['product_id'] . "' ");
-				}
-			}
-			deleteFromTable($dbc, "purchase_item", 'purchase_id', $_REQUEST['product_purchase_id']);
-			$x = 0;
-			foreach ($_REQUEST['product_ids'] as $key => $value) {
-
-
-				$total = $qty = 0;
-				$product_quantites = (float)$_REQUEST['product_quantites'][$x];
-				$product_rates = (float)$_REQUEST['product_rates'][$x];
-				$total = $product_quantites * $product_rates;
-				$total_ammount += (float)$total;
-				$purchase_item = [
-					'product_id' => $_REQUEST['product_ids'][$x],
-					'rate' => $product_rates,
-					'total' => $total,
-					'purchase_id' => $_REQUEST['product_purchase_id'],
-					'quantity' => $product_quantites,
-					'purchase_item_status' => 1,
-					'pur_thaan' => $_REQUEST['pur_thaan'][$x],
-					'pur_gzanah' => $_REQUEST['pur_gzanah'][$x],
-					'pur_unit' => $_REQUEST['pur_unit'][$x],
-				];
-
-				//update_data($dbc,'order_item', $order_items , 'purchase_id',$_REQUEST['product_purchase_id']);
-				insert_data($dbc, 'purchase_item', $purchase_item);
-
-				if ($get_company['stock_manage'] == 1) {
-					$product_id = $_REQUEST['product_ids'][$x];
-					$quantity_instock = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT quantity_instock FROM  product WHERE product_id='" . $product_id . "' "));
-					$qty = (float)$quantity_instock['quantity_instock'] + $product_quantites;
-					$quantity_update = mysqli_query($dbc, "UPDATE product SET  quantity_instock='$qty' WHERE product_id='" . $product_id . "' ");
-				}
-
-				$x++;
-			} //end of foreach
-			$total_grand = $total_ammount - $total_ammount * ((float)$_REQUEST['ordered_discount'] / 100);
-			$due_amount = (float)$total_grand - @(float)$_REQUEST['paid_ammount'];
-
-
-			$transactions = fetchRecord($dbc, "purchase", "purchase_id", $_REQUEST['product_purchase_id']);
-			@deleteFromTable($dbc, "transactions", 'transaction_id', $transactions['transaction_id']);
-			@deleteFromTable($dbc, "transactions", 'transaction_id', $transactions['transaction_paid_id']);
-
+			$due_amount = $_REQUEST['remaining_ammount'];
 
 			if ($_REQUEST['payment_type'] == "credit_purchase") :
+				echo $due_amount;
 				if ($due_amount > 0) {
 					$debit = [
-						'debit' => 0,
-						'credit' => $due_amount,
+						'debit' => $due_amount,
+						'credit' => 0,
 						'customer_id' => @$_REQUEST['customer_account'],
 						'transaction_from' => 'purchase',
 						'transaction_type' => $_REQUEST['payment_type'],
@@ -1129,8 +1239,126 @@ if (isset($_REQUEST['cash_purchase_supplier'])) {
 			$paidAmount = @(float)$_REQUEST['paid_ammount'];
 			if ($paidAmount > 0) {
 				$credit = [
-					'debit' => @$_REQUEST['paid_ammount'],
-					'credit' => 0,
+					'credit' => @$_REQUEST['paid_ammount'],
+					'debit' => 0,
+					'customer_id' => @$_REQUEST['payment_account'],
+					'transaction_from' => 'purchase',
+					'transaction_type' => $_REQUEST['payment_type'],
+					'transaction_remarks' => "purchased by purchased id#" . $last_id,
+					'transaction_date' => $_REQUEST['purchase_date'],
+				];
+				insert_data($dbc, 'transactions', $credit);
+				$transaction_paid_id = mysqli_insert_id($dbc);
+			}
+
+			$newOrder = [
+				'total_amount' => $total_ammount,
+				'discount' => @$_REQUEST['ordered_discount'],
+				'grand_total' => @$total_grand,
+				'due' => $due_amount,
+				'transaction_paid_id' => @$transaction_paid_id,
+				'transaction_id' => @$transaction_id,
+			];
+			if (update_data($dbc, 'purchase', $newOrder, 'purchase_id', $last_id)) {
+				# code...
+				//echo "<script>alert('company Updated....!')</script>";
+				$msg = "Purchase Has been Added";
+				$sts = 'success';
+			} else {
+				$msg = mysqli_error($dbc);
+				$sts = "danger";
+			}
+			$msg = "Purchase Has been Added";
+			$sts = 'success';
+		} else {
+			$msg = mysqli_error($dbc);
+			$sts = "danger";
+		}
+	} else {
+		if (update_data($dbc, 'purchase', $data, 'purchase_id', $_REQUEST['product_purchase_id'])) {
+			$total_ammount = $total_grand = 0;
+			$last_id = $_REQUEST['product_purchase_id'];
+
+			$p_id = $_POST['next_increment'];
+			$all_data = [
+				'purchase_id' => $p_id,
+				'done_by' => $_REQUEST['pur_location'],
+				'status' => 'sent',
+				'entry_from' => 'purchase',
+				'product_id' => $_REQUEST['product_id'],
+				'rate' => $_REQUEST['product_price'],
+				'thaan' => $_REQUEST['pur_thaan'],
+				'gzanah' => $_REQUEST['pur_gzanah'],
+				'quantity' => $_REQUEST['quantity'],
+				'quantity_instock' => $_REQUEST['quantity'],
+				'unit' => $_REQUEST['pur_unit'],
+				'total_amount' => $_REQUEST['product_grand_amount_input'],
+				'issuance_date' => $_REQUEST['purchase_date'],
+				'to_location' => $_REQUEST['pur_location'],
+			];
+			// Add Data in 
+			if ($_POST['location_type'] == 'dyeing') {
+				$deleteDyeing = mysqli_query($dbc, "DELETE FROM dyeing WHERE purchase_id='" . $_REQUEST['product_purchase_id'] . "' ");
+				$insert_data = insert_data($dbc, 'dyeing', $all_data);
+			} elseif ($_POST['location_type'] == 'printer') {
+				deleteFromTable($dbc, "printing", 'purchase_id', $_REQUEST['product_purchase_id']);
+				$insert_data = insert_data($dbc, 'printing', $all_data);
+			} elseif ($_POST['location_type'] == 'packing') {
+				deleteFromTable($dbc, "packing", 'purchase_id', $_REQUEST['product_purchase_id']);
+				$insert_data = insert_data($dbc, 'packing', $all_data);
+			} elseif ($_POST['location_type'] == 'embroidery') {
+				deleteFromTable($dbc, "embroidery", 'purchase_id', $_REQUEST['product_purchase_id']);
+				$insert_data = insert_data($dbc, 'embroidery', $all_data);
+			} elseif ($_POST['location_type'] == 'shop') {
+				if ($get_company['stock_manage'] == 1) {
+					$proQ = get($dbc, "purchase WHERE purchase_id='" . $last_id . "' ");
+
+					while ($proR = mysqli_fetch_assoc($proQ)) {
+						$newqty = 0;
+						$quantity_instock = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT quantity_instock FROM  product WHERE product_id='" . $proR['product_id'] . "' "));
+						$newqty = (float)$quantity_instock['quantity_instock'] - (float)$proR['quantity'];
+						$quantity_update = mysqli_query($dbc, query: "UPDATE product SET  quantity_instock='$newqty' WHERE product_id='" . $proR['product_id'] . "' ");
+					}
+				}
+				if ($get_company['stock_manage'] == 1) {
+					$product_id = $_REQUEST['product_id'];
+					$quantity_instock = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT quantity_instock FROM  product WHERE product_id='" . $product_id . "' "));
+					$qty = (float)$quantity_instock['quantity_instock'] + $_REQUEST['quantity'];
+					$quantity_update = mysqli_query($dbc, "UPDATE product SET  quantity_instock='$qty' WHERE product_id='" . $product_id . "' ");
+				}
+			}
+
+
+			$total_grand = $total_ammount - $total_ammount * ((float)@$_REQUEST['ordered_discount'] / 100) + @$_REQUEST['freight'];
+
+			$due_amount = $_REQUEST['remaining_ammount'];
+
+
+			$transactions = fetchRecord($dbc, "purchase", "purchase_id", $_REQUEST['product_purchase_id']);
+			$n = deleteFromTable($dbc, "transactions", 'transaction_id', $transactions['transaction_id']);
+
+			// @deleteFromTable($dbc, "transactions", 'transaction_id', $transactions['transaction_paid_id']);
+
+			if ($_REQUEST['payment_type'] == "credit_purchase") :
+				if ($due_amount > 0) {
+					$debit = [
+						'debit' => $due_amount,
+						'credit' => 0,
+						'customer_id' => @$_REQUEST['customer_account'],
+						'transaction_from' => 'purchase',
+						'transaction_type' => $_REQUEST['payment_type'],
+						'transaction_remarks' => "purchased on  purchased id#" . $last_id,
+						'transaction_date' => $_REQUEST['purchase_date'],
+					];
+					insert_data($dbc, 'transactions', $debit);
+					$transaction_id = mysqli_insert_id($dbc);
+				}
+			endif;
+			$paidAmount = @(float)$_REQUEST['paid_ammount'];
+			if ($paidAmount > 0) {
+				$credit = [
+					'credit' => @$_REQUEST['paid_ammount'],
+					'debit' => 0,
 					'customer_id' => @$_REQUEST['payment_account'],
 					'transaction_from' => 'purchase',
 					'transaction_type' => $_REQUEST['payment_type'],
@@ -1148,7 +1376,7 @@ if (isset($_REQUEST['cash_purchase_supplier'])) {
 				'grand_total' => $total_grand,
 				'due' => $due_amount,
 				'transaction_paid_id' => @$transaction_paid_id,
-				'transaction_id' => @$transaction_id,
+				'transaction_id' => $transaction_id,
 			];
 
 			if (update_data($dbc, 'purchase', $newOrder, 'purchase_id', $_REQUEST['product_purchase_id'])) {
@@ -2794,44 +3022,44 @@ if (isset($_POST['get_selected_emb_items'])) {
 	}
 }
 
-if (isset($_POST['get_selected_stitching_items'])) {// Ensure the database connection file is included
+if (isset($_POST['get_selected_stitching_items'])) { // Ensure the database connection file is included
 
-    $id = $dbc->real_escape_string($_POST['get_selected_stitching_items']);
-    $cutting = []; // Initialize empty array
+	$id = $dbc->real_escape_string($_POST['get_selected_stitching_items']);
+	$cutting = []; // Initialize empty array
 
-    $productData = mysqli_query($dbc, "SELECT * FROM stitching WHERE lot_no = '$id' AND status = 'received'");
-    
-    while ($product = mysqli_fetch_assoc($productData)) {
-        $doneById = $product['done_by'];
-        $customerQuery = mysqli_query($dbc, "SELECT customer_name FROM customers WHERE customer_id = '$doneById'");
-        $customerResult = mysqli_fetch_assoc($customerQuery);
-        $product['customer_name'] = $customerResult['customer_name'] ?? 'Unknown';
-        $cutting[] = $product;
-    }
+	$productData = mysqli_query($dbc, "SELECT * FROM stitching WHERE lot_no = '$id' AND status = 'received'");
 
-    if (!empty($cutting)) {
-        $cuttingItems = []; // Initialize empty array
+	while ($product = mysqli_fetch_assoc($productData)) {
+		$doneById = $product['done_by'];
+		$customerQuery = mysqli_query($dbc, "SELECT customer_name FROM customers WHERE customer_id = '$doneById'");
+		$customerResult = mysqli_fetch_assoc($customerQuery);
+		$product['customer_name'] = $customerResult['customer_name'] ?? 'Unknown';
+		$cutting[] = $product;
+	}
 
-        foreach ($cutting as $cut) {
-            $cuttingId = $cut['stitching_id'];
+	if (!empty($cutting)) {
+		$cuttingItems = []; // Initialize empty array
 
-            $itemsData = mysqli_query($dbc, "SELECT * FROM stitching_items WHERE stitching_id = '$cuttingId'");
-            while ($item = mysqli_fetch_assoc($itemsData)) {
-                $productId = $item['product_id'];
-                $productNameQuery = mysqli_query($dbc, "SELECT product_name FROM product WHERE product_id = '$productId'");
-                $productNameResult = mysqli_fetch_assoc($productNameQuery);
-                $item['product_name'] = $productNameResult['product_name'] ?? 'Unknown';
-                $item['customer_name'] = $cut['customer_name'];
-                $cuttingItems[] = $item;
-            }
-        }
+		foreach ($cutting as $cut) {
+			$cuttingId = $cut['stitching_id'];
 
-        // Send JSON response
-        echo json_encode(['success' => true, 'stitching_items' => $cuttingItems], JSON_UNESCAPED_UNICODE);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'No data found']);
-    }
-    exit;
+			$itemsData = mysqli_query($dbc, "SELECT * FROM stitching_items WHERE stitching_id = '$cuttingId'");
+			while ($item = mysqli_fetch_assoc($itemsData)) {
+				$productId = $item['product_id'];
+				$productNameQuery = mysqli_query($dbc, "SELECT product_name FROM product WHERE product_id = '$productId'");
+				$productNameResult = mysqli_fetch_assoc($productNameQuery);
+				$item['product_name'] = $productNameResult['product_name'] ?? 'Unknown';
+				$item['customer_name'] = $cut['customer_name'];
+				$cuttingItems[] = $item;
+			}
+		}
+
+		// Send JSON response
+		echo json_encode(['success' => true, 'stitching_items' => $cuttingItems], JSON_UNESCAPED_UNICODE);
+	} else {
+		echo json_encode(['success' => false, 'message' => 'No data found']);
+	}
+	exit;
 }
 
 
@@ -3198,7 +3426,7 @@ if (isset($_POST['packingform'])) {
 				'sts' => 'success',
 				'msg' => 'Packing and items added successfully.',
 			];
-		} else {	
+		} else {
 			$response = [
 				'sts' => 'warning',
 				'msg' => 'Some items could not be added: ' . implode(", ", $errors),

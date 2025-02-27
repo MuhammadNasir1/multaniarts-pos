@@ -286,7 +286,7 @@ $(document).ready(function () {
     e.preventDefault();
     var form = $(this);
     var fd = new FormData(this);
-    var files = $("#product_image")[0].files[0];
+    // var files = $("#product_image")[0].files[0];
 
     $.ajax({
       url: form.attr("action"),
@@ -336,6 +336,7 @@ $(document).ready(function () {
           });
           $("#tableData").load(location.href + " #tableData");
         }
+        4;
         $("#voucher_general_btn").prop("disabled", false);
 
         Swal.fire({
@@ -383,6 +384,49 @@ $(document).ready(function () {
       },
     }); //ajax call
   }); //main
+
+  $("#voucher_general_form").on("submit", function (e) {
+    e.preventDefault();
+    var form = $("#voucher_general_form");
+
+    $.ajax({
+      type: "POST",
+      url: form.attr("action"),
+      data: form.serialize(),
+      dataType: "json",
+      beforeSend: function () {
+        $("#voucher_general_btn").prop("disabled", true);
+      },
+      success: function (response) {
+        if (response.sts === "success") {
+          $("#voucher_general_form")[0].reset();
+          $("#tableData").load(location.href + " #tableData");
+          
+          Swal.fire({
+            icon: "success",
+            title: response.msg,
+            confirmButtonText: "OK",
+          }).then(() => {
+            $("#voucher_id_update").val("");
+            location.reload();
+          });
+        }
+
+        $("#voucher_general_btn").prop("disabled", false);
+      },
+      error: function (xhr, status, error) {
+        console.error("AJAX Error:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Something went wrong!",
+          text: "Please try again.",
+          confirmButtonText: "OK",
+        });
+        $("#voucher_general_btn").prop("disabled", true);
+      },
+    });
+  });
+
   $("#voucher_expense_fm").on("submit", function (e) {
     e.preventDefault();
     var form = $("#voucher_expense_fm");
@@ -856,7 +900,8 @@ function getBalance(val, id) {
       success: function (response) {
         //alert(response.blnc);
         //var res=msg.trim();
-
+        $("#previous_balance").text(response.blnc);
+        // alert(response.blnc);
         $("#" + id).html(response.blnc);
         $("#customer_Limit").html(response.custLimit);
         var RLIMIT = Math.abs(response.custLimit - response.blnc);
@@ -2027,7 +2072,8 @@ function removeByid(id) {
 
 function getSaleTotal() {
   var payment_type = $("#payment_type").val();
-  var total_bill = 0, grand_total = 0;
+  var total_bill = 0,
+    grand_total = 0;
 
   // Calculate total bill based on product quantity and rates
   $(".product_ids").each(function () {
@@ -2036,28 +2082,37 @@ function getSaleTotal() {
     total_bill += rates * quantity;
   });
 
-  // Fetch discount values
-  var discount_percentage = parseFloat($("#ordered_discount").val()) || 0;
+  // Fetch discount value and ensure it's properly retained
+  var discount_percentage =
+    parseFloat($("#ordered_discount").val().trim()) || 0;
   var discount = (discount_percentage / 100) * total_bill; // Apply discount as percentage
 
   // Log values for debugging
-  console.log("Total Bill: ", total_bill);
-  console.log("Discount Percentage: ", discount_percentage);
-  console.log("Discount Amount: ", discount);
+  console.log("Total Bill:", total_bill);
+  console.log("Discount Percentage:", discount_percentage);
+  console.log("Discount Amount:", discount);
 
-  // Calculate grand total without freight
+  // Calculate grand total after discount
   grand_total = total_bill - discount;
 
-  // Log the grand total for debugging
-  console.log("Grand Total (After Discount): ", grand_total);
+  // Log grand total for debugging
+  console.log("Grand Total (After Discount):", grand_total);
+
+  getRemaingAmount(); // Ensure remaining amount calculation runs
 
   // Update the displayed total amounts
+  let sale_type = $("#sale_type").val();
+  console.log("Sale Type:", sale_type);
+  saleType(sale_type);
   $("#product_total_amount").html(total_bill.toFixed(2));
   $("#product_grand_total_amount").html(grand_total.toFixed(2));
 
   // Handle the paid amount input based on payment type
   if (payment_type === "cash_in_hand" || payment_type === "cash_purchase") {
-    $("#paid_ammount").val(grand_total).attr("max", grand_total).prop("required", true);
+    $("#paid_ammount")
+      .val(grand_total)
+      .attr("max", grand_total)
+      .prop("required", true);
     if (payment_type === "cash_in_hand") {
       $("#full_payment_check").prop("checked", true);
     }
@@ -2067,11 +2122,17 @@ function getSaleTotal() {
 
   // Ensure payment account field is required if there's a grand total
   $("input[name='payment_account']").prop("required", grand_total > 0);
-  
-  getRemaingAmount(); // Ensure remaining amount calculation runs
 }
 
+// Ensure getSaleTotal() updates when discount input changes
+$("#ordered_discount").on("input change", function () {
+  getSaleTotal();
+});
 
+// Debugging event listener to check if discount input resets on focusout
+$("#ordered_discount").on("focusout", function () {
+  console.log("Discount on blur:", $(this).val());
+});
 
 function editByid(id, code, price, qty) {
   $(".searchableSelect").val(id);
@@ -2086,7 +2147,6 @@ function editByid(id, code, price, qty) {
   }, 500);
 }
 
-
 function countFrieght(value) {
   var total = parseFloat($("#product_grand_total_amount").text()) || 0;
   var freight = parseFloat(value) || 0;
@@ -2096,5 +2156,17 @@ function countFrieght(value) {
   getRemaingAmount();
 }
 
+// Open Product Modal With Volume No
+let openProductModal = (value) => {
+  $("#add_product_modal").modal("show");
+  $("#volumeNo").val(value);
+};
 
-
+let saleType = (value) => {
+  if (value === "cash") {
+    let total_amount = $("#product_grand_total_amount").text();
+    $("#paid_ammount").val(total_amount);
+    $("#paid_ammount").attr("readonly", true);
+    $("#remaining_ammount").val(0);
+  }
+};
