@@ -242,7 +242,7 @@
 
                            <div class="col-sm-12 pr-0">
 
-                             <input onkeyup="getSaleTotal()" type="number" id="ordered_discount" class="form-control form-control-sm "min="0" max="100" name="ordered_discount">
+                             <input onkeyup="getSaleTotal()" type="number" id="order_discount" required  class="form-control form-control-sm "min="0" max="100" name="order_discount">
 
                            </div>
                            <!-- <div class="col-sm-6 pl-3">
