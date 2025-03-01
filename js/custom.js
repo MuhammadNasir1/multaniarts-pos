@@ -2054,8 +2054,8 @@ $("#addProductSale").on("click", function () {
         </tr>
       `);
     }
-    getSaleTotal();
     getRemaingAmount();
+    getSaleTotal();
   } else {
     if (max_qty < product_quantity) {
       Swal.fire("Cannot Add Quantity more than stock", "", "error");
@@ -2084,7 +2084,7 @@ function getSaleTotal() {
 
   // Fetch discount value and ensure it's properly retained
   var discount_percentage =
-    parseFloat($("#ordered_discount").val().trim()) || 0;
+    parseFloat($("#order_discount").val().trim()) || 0;
   var discount = (discount_percentage / 100) * total_bill; // Apply discount as percentage
 
   // Log values for debugging
@@ -2125,14 +2125,11 @@ function getSaleTotal() {
 }
 
 // Ensure getSaleTotal() updates when discount input changes
-$("#ordered_discount").on("input change", function () {
-  getSaleTotal();
-});
+// $("#ordered_discount").on("input change", function () {
+//   getSaleTotal();
+// });
 
-// Debugging event listener to check if discount input resets on focusout
-$("#ordered_discount").on("focusout", function () {
-  console.log("Discount on blur:", $(this).val());
-});
+
 
 function editByid(id, code, price, qty) {
   $(".searchableSelect").val(id);
