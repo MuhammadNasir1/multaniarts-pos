@@ -109,24 +109,31 @@ if (isset($_REQUEST['date'])) {
                         <td colspan="3">M</td>
                     </tr>
                     <?php
-                    $total_debit = 0; // Initialize total debit
+                    $total_debit = 0;
+                    $query = mysqli_query($dbc, "SELECT * FROM vouchers WHERE Date(voucher_date) = '$date' AND payment_type = 'send'");
+                    while ($r = mysqli_fetch_assoc($query)) {
+                        $voucher_id = $r['voucher_id'];
+                        echo $voucher_id;
 
-                    $credit_transaction = mysqli_query($dbc, "SELECT * FROM transactions WHERE credit = '0' AND Date(transaction_add_date) = '$date'");
-                    while ($credit = mysqli_fetch_assoc($credit_transaction)) {
-                        $customer = fetchRecord($dbc, 'customers', 'customer_id', $credit['customer_id']);
-                        $total_debit += $credit['debit']; // Sum up the debit values
+                        $transaction  = mysqli_query($dbc, "SELECT * FROM transactions WHERE voucher_id = '$voucher_id' AND is_cash_in_hand = 0");
+                        while ($r = mysqli_fetch_assoc($transaction)) {
+                            $transaction_id = $r['transaction_id'];
+                            $customer = fetchRecord($dbc, 'customers', 'customer_id', $r['customer_id']);
+                            // echo $transaction_id;
+                            $total_debit += $r['credit'];
                     ?>
-                        <tr class="last">
-                            <td rowspan="2" class="debit"><?= $credit['debit'] ?></td>
-                            <td colspan="2" class="name text-capitalize">
-                                <strong><?= $customer['customer_name'] ?></strong>
-                            </td>
-                        </tr>
-                        <tr class="under">
-                            <td></td>
-                            <td class="name"><?= $credit['voucher_id'] ?> CPV</td>
-                        </tr>
-                    <?php } ?>
+                            <tr class="last">
+                                <td rowspan="2"><?= $r['credit'] ?></td>
+
+                                <td colspan="2" class="name text-capitalize"> <strong><?= $customer['customer_name'] ?></strong></td>
+                            </tr>
+                            <tr class="under">
+                                <td></td>
+                                <td class="name"><?= $r['voucher_id'] ?> CPV</td>
+                            </tr>
+                    <?php
+                        }
+                    } ?>
                 </tbody>
             </table>
 
@@ -166,21 +173,30 @@ AND Date(transaction_add_date) < '$date'
                     </tr>
                     <?php
                     $total_credit = 0;
-                    $credit_transaction = mysqli_query($dbc, "SELECT * FROM transactions WHERE debit = '0' AND Date(transaction_add_date) = '$date'");
-                    while ($credit = mysqli_fetch_assoc($credit_transaction)) {
-                        $customer = fetchRecord($dbc, 'customers', 'customer_id', $credit['customer_id']);
-                        $total_credit += $credit['credit'];
-                    ?>
-                        <tr class="last">
-                            <td rowspan="2"><?= $credit['credit'] ?></td>
+                    $query = mysqli_query($dbc, "SELECT * FROM vouchers WHERE Date(voucher_date) = '$date' AND payment_type = 'receive'");
+                    while ($r = mysqli_fetch_assoc($query)) {
+                        $voucher_id = $r['voucher_id'];
+                        echo $voucher_id;
 
-                            <td colspan="2" class="name text-capitalize"> <strong><?= $customer['customer_name'] ?></strong></td>
-                        </tr>
-                        <tr class="under">
-                            <td></td>
-                            <td class="name"><?= $credit['voucher_id'] ?> CRV</td>
-                        </tr>
-                    <?php } ?>
+                        $transaction  = mysqli_query($dbc, "SELECT * FROM transactions WHERE voucher_id = '$voucher_id' AND is_cash_in_hand = 0");
+                        while ($r = mysqli_fetch_assoc($transaction)) {
+                            $transaction_id = $r['transaction_id'];
+                            $customer = fetchRecord($dbc, 'customers', 'customer_id', $r['customer_id']);
+                            // echo $transaction_id;
+                            $total_credit += $r['debit'];
+                    ?>
+                            <tr class="last">
+                                <td rowspan="2"><?= $r['debit'] ?></td>
+
+                                <td colspan="2" class="name text-capitalize"> <strong><?= $customer['customer_name'] ?></strong></td>
+                            </tr>
+                            <tr class="under">
+                                <td></td>
+                                <td class="name"><?= $r['voucher_id'] ?> CRV</td>
+                            </tr>
+                    <?php
+                        }
+                    } ?>
                 </tbody>
             </table>
             <div class="mt-3">
@@ -191,7 +207,10 @@ AND Date(transaction_add_date) < '$date'
          </h4> -->
             </div>
             <div class="mt-3">
-                <h4 class="mt-3"><span class="remain"><?= $total_debit - $total_credit ?></span> بقایا</h4>
+                <?php
+                $current_balance = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT SUM(credit-debit) AS from_balance FROM transactions WHERE is_cash_in_hand = '1'"));
+                ?>
+                <h4 class="mt-3"><span class="remain"><?= $current_balance['from_balance'] ?? 0; ?></span> بقایا</h4>
             </div>
         </div>
     </div>
