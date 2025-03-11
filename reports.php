@@ -213,34 +213,35 @@
 
 
                       <thead>
-                       
 
 
 
-                          <th>Transaction #</th>
+
+                        <th>Transaction #</th>
 
 
 
-                          <th>Date</th>
-                          <?php if (isset($_POST['fullledger'])): ?>
+                        <th>Date</th>
+                        <?php if (isset($_POST['fullledger'])): ?>
 
 
-                            <th>Transfer From - Voucher</th>
-                          <?php endif ?>
-                          <th>Remarks</th>
+                          <th>Transfer From - Voucher</th>
+                        <?php endif ?>
+                        <th>Remarks</th>
 
 
-
-                          <th>Debit</th>
-
-
-
+                        <?php if (isset($_REQUEST['type']) && $_REQUEST['type'] != 'bank') { ?>
                           <th>Credit</th>
+                          <th>Debit</th>
+                        <?php } else { ?>
+                          <th>Debit</th>
+                          <th>Credit</th>
+                        <?php } ?>
 
 
 
-                          <th>Balance</th>
-                          <!-- <?php if (isset($_POST['fullledger'])): ?>
+                        <th>Balance</th>
+                        <!-- <?php if (isset($_POST['fullledger'])): ?>
                             <th>Remaining</th>
 
                           <?php endif ?> -->
@@ -262,192 +263,192 @@
 
 
 
-                      <tr>
-                        <td colspan="5"></td>
-                          <td >
+                        <tr>
+                          <td colspan="5"></td>
+                          <td>
                             <div class="text-right font-weight-bolder ">
-                              Opening Balance: 
+                              Opening Balance:
                             </div>
                           </td>
                           <td>
-                          <span id="setOpeningBalance"></span>
+                            <span id="setOpeningBalance"></span>
                           </td>
                         </tr>
                         <tr>
 
-                        <?php $temp = $check_remaing_balance = $show_rem_bal = 0;
+                          <?php $temp = $check_remaing_balance = $show_rem_bal = 0;
 
 
-                        $debitTotal = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT sum(debit) AS debitTotal FROM transactions WHERE customer_id = '$customer'"));
-                        $check_remaing_balance = $debitTotal['debitTotal'];
-                        if (mysqli_num_rows($result) > 0) :
-                          while ($row = mysqli_fetch_array($result)):
-                            @$total_debit += (int)$row['debit'];
-                            $invoice_type = $comment = '';
-                            $remaing_amount = 0;
-                            $remaing_balance1 = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT sum(debit-credit) AS Nettotal FROM transactions WHERE customer_id = '$customer'"));
-                            $remaing_balance = $remaing_balance1['Nettotal'];
+                          $debitTotal = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT sum(debit) AS debitTotal FROM transactions WHERE customer_id = '$customer'"));
+                          $check_remaing_balance = $debitTotal['debitTotal'];
+                          if (mysqli_num_rows($result) > 0) :
+                            while ($row = mysqli_fetch_array($result)):
+                              @$total_debit += (int)$row['debit'];
+                              $invoice_type = $comment = '';
+                              $remaing_amount = 0;
+                              $remaing_balance1 = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT sum(debit-credit) AS Nettotal FROM transactions WHERE customer_id = '$customer'"));
+                              $remaing_balance = $remaing_balance1['Nettotal'];
 
-                            if ($row['transaction_type'] == "credit_sale") {
-                              $check_remaing_balance = $check_remaing_balance - $row['credit'];
+                              if ($row['transaction_type'] == "credit_sale") {
+                                $check_remaing_balance = $check_remaing_balance - $row['credit'];
 
-                              $invoice_id = filter_var($row['transaction_remarks'], FILTER_SANITIZE_NUMBER_INT);
+                                $invoice_id = filter_var($row['transaction_remarks'], FILTER_SANITIZE_NUMBER_INT);
 
-                              $fetchinvoive = fetchRecord($dbc, "orders", "order_id", $invoice_id);
-                              $invoice_type = @$fetchinvoive['credit_sale_type'];
-                              if ($check_remaing_balance < 0) {
+                                $fetchinvoive = fetchRecord($dbc, "orders", "order_id", $invoice_id);
+                                $invoice_type = @$fetchinvoive['credit_sale_type'];
+                                if ($check_remaing_balance < 0) {
 
-                                $Date = date('Y-m-d');
-                                $now = strtotime($Date); // or your date as well                        
-                                if ($invoice_type == "15days" and $fetchinvoive['payment_status'] == 0) {
-                                  $sale_Type = '15';
-                                  $next_date = date('Y-m-d', strtotime($fetchinvoive['order_date'] . ' + 15 days'));
-                                } elseif ($invoice_type == "30days" and $fetchinvoive['payment_status'] == 0) {
-                                  $sale_Type = '30';
-                                  $next_date = date('Y-m-d', strtotime($fetchinvoive['order_date'] . ' + 30 days'));
-                                } elseif ($invoice_type == "5days" and $fetchinvoive['payment_status'] == 0) {
-                                  $sale_Type = '30';
-                                  $next_date = date('Y-m-d', strtotime($fetchinvoive['order_date'] . ' + 5 days'));
-                                } else {
-                                  $sale_Type = 'special';
-                                  $next_date = 'special';
-                                }
-                                $remaing_amount = $fetchinvoive['due'];
-                                if ($next_date != 'special') {
-                                  $your_date = strtotime($next_date);
-                                  $datediff = $your_date - $now;
-                                  $total_days = round($datediff / (60 * 60 * 24));
-                                  if ($total_days > 0) {
-                                    $comment = '<span class="text-warning">' . (($sale_Type - $total_days)) . '/' . $sale_Type . '<br/>' . $total_days . ' days left </span>(' . $next_date . ')';
+                                  $Date = date('Y-m-d');
+                                  $now = strtotime($Date); // or your date as well                        
+                                  if ($invoice_type == "15days" and $fetchinvoive['payment_status'] == 0) {
+                                    $sale_Type = '15';
+                                    $next_date = date('Y-m-d', strtotime($fetchinvoive['order_date'] . ' + 15 days'));
+                                  } elseif ($invoice_type == "30days" and $fetchinvoive['payment_status'] == 0) {
+                                    $sale_Type = '30';
+                                    $next_date = date('Y-m-d', strtotime($fetchinvoive['order_date'] . ' + 30 days'));
+                                  } elseif ($invoice_type == "5days" and $fetchinvoive['payment_status'] == 0) {
+                                    $sale_Type = '30';
+                                    $next_date = date('Y-m-d', strtotime($fetchinvoive['order_date'] . ' + 5 days'));
                                   } else {
-
-                                    $comment = '<span class="text-danger">' . abs($total_days - $sale_Type) . '/' . $sale_Type . '  Expired </span>';
+                                    $sale_Type = 'special';
+                                    $next_date = 'special';
                                   }
+                                  $remaing_amount = $fetchinvoive['due'];
+                                  if ($next_date != 'special') {
+                                    $your_date = strtotime($next_date);
+                                    $datediff = $your_date - $now;
+                                    $total_days = round($datediff / (60 * 60 * 24));
+                                    if ($total_days > 0) {
+                                      $comment = '<span class="text-warning">' . (($sale_Type - $total_days)) . '/' . $sale_Type . '<br/>' . $total_days . ' days left </span>(' . $next_date . ')';
+                                    } else {
+
+                                      $comment = '<span class="text-danger">' . abs($total_days - $sale_Type) . '/' . $sale_Type . '  Expired </span>';
+                                    }
+                                  }
+                                  $show_rem_bal = abs($check_remaing_balance);
+                                } else {
+                                  $show_rem_bal = 0;
+                                  $comment = '<span class="text-success">Paid </span>';
                                 }
-                                $show_rem_bal = abs($check_remaing_balance);
-                              } else {
+                              } elseif ($row['transaction_from'] == "voucher") {
                                 $show_rem_bal = 0;
-                                $comment = '<span class="text-success">Paid </span>';
+
+
+                                $fetchinvoive = fetchRecord($dbc, "orders", "order_id", $row['transaction_id']);
+
+                                $invoice_type = $row['transaction_type'];
+
+                                $invoice_type2 = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM vouchers WHERE transaction_id1 = '$row[transaction_id]' "));
+                                //echo "SELECT * FROM vouchers WHERE transaction_id1 = '$row[transaction_id]'";
+
+                                if ($invoice_type2 > 0) {
+                                  $invoice_type =  $invoice_type2['voucher_id'];
+                                }
                               }
-                            } elseif ($row['transaction_from'] == "voucher") {
-                              $show_rem_bal = 0;
-
-
-                              $fetchinvoive = fetchRecord($dbc, "orders", "order_id", $row['transaction_id']);
-
-                              $invoice_type = $row['transaction_type'];
-
-                              $invoice_type2 = mysqli_fetch_assoc(mysqli_query($dbc, "SELECT * FROM vouchers WHERE transaction_id1 = '$row[transaction_id]' "));
-                              //echo "SELECT * FROM vouchers WHERE transaction_id1 = '$row[transaction_id]'";
-
-                              if ($invoice_type2 > 0) {
-                                $invoice_type =  $invoice_type2['voucher_id'];
-                              }
-                            }
-                            @$total_credit += (float) $row['credit'];
-                            if ($row['debit'] !== 0 and $row['credit'] !== 0):
-                        ?>
-                              <tr>
-                                <td><?= $row['transaction_id'] ?></td>
-
-                                <td><?= date('D, d-M-Y', strtotime($row['transaction_date'])) ?></td>
-                                <?php if (isset($_POST['fullledger'])): ?>
-                                  <td><?= $row['transaction_from'] ?> (<?= @$invoice_type ?>)- <?= @$fetchinvoive['voucher_no'] ?></td>
-                                <?php endif ?>
-
-
-
-
-
-
-                                <td><?= str_replace("=", "<br/>", $row['transaction_remarks']); ?>
-
-                                  <?php
-
-                                  if ($row['transaction_type'] == 'credit_purchase') {
-                                    //echo $row['transaction_type'];
-                                    $fetchinvoive = fetchRecord($dbc, "purchase", "purchase_id", $row['transaction_id']);
-                                    // print_r($fetchinvoive);
-                                  }
-                                  ?>
-                                  - <?= @$fetchinvoive['order_narration'] ?> <?= @$fetchinvoive['purchase_narration'] ?> </td>
-                                <td class="text-primary h6"><?= @number_format((int)$row['debit']) ?></td>
-                                <td class="text-success h6 font-weight-bolder"><?= $row['credit'] ?></td>
-
-
-                                <?php if ($check_remaing_balance < 0 and $row['transaction_from'] == "invoice"): ?>
-                                  <td class="text-danger"><?= number_format(((int)$row['credit'] - (int)$row['debit']) + (int)$temp) ?></td>
-                                <?php elseif ($row['transaction_from'] == "voucher"): ?>
-                                  <td class="text-info"><?= number_format(((int)$row['credit'] - (int)$row['debit']) + (int)$temp) ?></td>
-                                <?php else: ?>
-                                  <td class="text-success"><?= number_format(((int)$row['credit'] - (int)$row['debit']) + (int)$temp) ?></td>
-                                <?php endif ?>
-                                <?php if (isset($_POST['fullledger'])): ?>
-
-                                  <!-- <td class=" font-weight-bolder"><?= @number_format($show_rem_bal) ?></td> -->
-<!-- 
-                                  <td><?= $comment ?></td> -->
-                                <?php endif; ?>
-                              </tr>
-                            <?php
-                            endif;
-
-
-
-
-
-                            $temp = ((int)$row['credit'] - (int)$row['debit']) + $temp; ?>
-
-
-
-                          <?php endwhile; ?>
-
-
-
-
-
-                          <?php
-                          $open_b = mysqli_fetch_assoc(mysqli_query($dbc, $opening_sql));
-                          if (@$open_b['debit'] == 0) {
-                            @$opening_balance = (int)$open_b['credit'];
-                          } else {
-                            @$opening_balance = (int)$open_b['debit'];
-                          }
-
-
+                              @$total_credit += (float) $row['credit'];
+                              if ($row['debit'] !== 0 and $row['credit'] !== 0):
                           ?>
+                        <tr>
+                          <td><?= $row['transaction_id'] ?></td>
+
+                          <td><?= date('D, d-M-Y', strtotime($row['transaction_date'])) ?></td>
                           <?php if (isset($_POST['fullledger'])): ?>
-                            <td colspan="3"></td>
+                            <td><?= $row['transaction_from'] ?> (<?= @$invoice_type ?>)- <?= @$fetchinvoive['voucher_no'] ?></td>
+                          <?php endif ?>
+
+
+
+
+
+
+                          <td><?= str_replace("=", "<br/>", $row['transaction_remarks']); ?>
+
+                            <?php
+
+                                if ($row['transaction_type'] == 'credit_purchase') {
+                                  //echo $row['transaction_type'];
+                                  $fetchinvoive = fetchRecord($dbc, "purchase", "purchase_id", $row['transaction_id']);
+                                  // print_r($fetchinvoive);
+                                }
+                            ?>
+                            - <?= @$fetchinvoive['order_narration'] ?> <?= @$fetchinvoive['purchase_narration'] ?> </td>
+                          <td class="text-primary h6"><?= @number_format((int)$row['debit']) ?></td>
+                          <td class="text-success h6 font-weight-bolder"><?= $row['credit'] ?></td>
+
+
+                          <?php if ($check_remaing_balance < 0 and $row['transaction_from'] == "invoice"): ?>
+                            <td class="text-danger"><?= number_format(((int)$row['credit'] - (int)$row['debit']) + (int)$temp) ?></td>
+                          <?php elseif ($row['transaction_from'] == "voucher"): ?>
+                            <td class="text-info"><?= number_format(((int)$row['credit'] - (int)$row['debit']) + (int)$temp) ?></td>
                           <?php else: ?>
-                            <td colspan="2"></td>
+                            <td class="text-success"><?= number_format(((int)$row['credit'] - (int)$row['debit']) + (int)$temp) ?></td>
+                          <?php endif ?>
+                          <?php if (isset($_POST['fullledger'])): ?>
+
+                            <!-- <td class=" font-weight-bolder"><?= @number_format($show_rem_bal) ?></td> -->
+                            <!-- 
+                                  <td><?= $comment ?></td> -->
                           <?php endif; ?>
-                          <td colspan="1" align="right">Total </td>
-                          <td colspan="1" class='h3 text-info'><?= number_format($total_debit) ?></td>
-                          <td colspan="1" class='h3 text-warning'><?= number_format($total_credit) ?></td>
-                          <td colspan="1"></td>
-                          <!-- <td colspan="1"></td>   -->
-                          </tr>
+                        </tr>
+                      <?php
+                              endif;
 
 
-                          <tr>
-                            <?php if (isset($_POST['fullledger'])): ?>
-                              <td colspan="2"></td>
-                            <?php else: ?>
-                              <td colspan="1"></td>
-                            <?php endif; ?>
-                            <td colspan="2" align="right">Closing Balance</td>
-                            <?php if ($temp <= 0): ?>
-                              <td colspan="2" class='h3 text-danger'> <span class="" style="font-size: 15px ;color: black">Dr</span> <?= number_format(-$temp) ?> </td>
-                            <?php else: ?>
-                              <td colspan="2" class='h3 text-success'> <span class="" style="font-size: 15px ;color: black">Cr</span> <?= number_format($temp) ?> </td>
-                            <?php endif ?>
-                            <!-- <td colspan="1"></td> -->
-                            <td colspan="1" align="right" class="d-none"> Opening Balance </td>
-                            <td colspan="1" class='h3 text-success' id="opening_balance" class="d-none" style="display: none;"> <?= $opening_balance ?></td>
-                            <td colspan="1"></td>
-                          </tr>
-                          <tr>
-                            <!-- <tr>
+
+
+
+                              $temp = ((int)$row['credit'] - (int)$row['debit']) + $temp; ?>
+
+
+
+                    <?php endwhile; ?>
+
+
+
+
+
+                    <?php
+                            $open_b = mysqli_fetch_assoc(mysqli_query($dbc, $opening_sql));
+                            if (@$open_b['debit'] == 0) {
+                              @$opening_balance = (int)$open_b['credit'];
+                            } else {
+                              @$opening_balance = (int)$open_b['debit'];
+                            }
+
+
+                    ?>
+                    <?php if (isset($_POST['fullledger'])): ?>
+                      <td colspan="3"></td>
+                    <?php else: ?>
+                      <td colspan="2"></td>
+                    <?php endif; ?>
+                    <td colspan="1" align="right">Total </td>
+                    <td colspan="1" class='h3 text-info'><?= number_format($total_debit) ?></td>
+                    <td colspan="1" class='h3 text-warning'><?= number_format($total_credit) ?></td>
+                    <td colspan="1"></td>
+                    <!-- <td colspan="1"></td>   -->
+                    </tr>
+
+
+                    <tr>
+                      <?php if (isset($_POST['fullledger'])): ?>
+                        <td colspan="2"></td>
+                      <?php else: ?>
+                        <td colspan="1"></td>
+                      <?php endif; ?>
+                      <td colspan="2" align="right">Closing Balance</td>
+                      <?php if ($temp <= 0): ?>
+                        <td colspan="2" class='h3 text-danger'> <span class="" style="font-size: 15px ;color: black">Dr</span> <?= number_format(-$temp) ?> </td>
+                      <?php else: ?>
+                        <td colspan="2" class='h3 text-success'> <span class="" style="font-size: 15px ;color: black">Cr</span> <?= number_format($temp) ?> </td>
+                      <?php endif ?>
+                      <!-- <td colspan="1"></td> -->
+                      <td colspan="1" align="right" class="d-none"> Opening Balance </td>
+                      <td colspan="1" class='h3 text-success' id="opening_balance" class="d-none" style="display: none;"> <?= $opening_balance ?></td>
+                      <td colspan="1"></td>
+                    </tr>
+                    <tr>
+                      <!-- <tr>
                             <?php if (isset($_POST['fullledger'])): ?>
                               <td colspan="3"></td>
                             <?php else: ?>
@@ -459,15 +460,15 @@
 
 
 
-                            <?php if (isset($_POST['fullledger'])): ?>
-                              <td colspan="3"></td>
-                            <?php else: ?>
-                              <td colspan="2"></td>
-                            <?php endif; ?>
+                      <?php if (isset($_POST['fullledger'])): ?>
+                        <td colspan="3"></td>
+                      <?php else: ?>
+                        <td colspan="2"></td>
+                      <?php endif; ?>
 
 
 
-                            <!-- <td colspan="3" align="right">Closing Balance</td>
+                      <!-- <td colspan="3" align="right">Closing Balance</td>
 
 
 
@@ -477,7 +478,7 @@
                               <td colspan="4" class='h3 text-success'> <span class="" style="font-size: 15px ;color: black">Cr</span> <?= number_format($temp) ?> </td>
                             <?php endif ?> -->
 
-                          </tr>
+                    </tr>
 
 
 
