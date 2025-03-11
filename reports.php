@@ -62,7 +62,9 @@
                     $sql = get($dbc, "customers WHERE customer_status = 1 AND customer_type='" . $_REQUEST['type'] . "' ");
                     while ($row = $sql->fetch_array()) {
 
-                      echo "<option value='" . $row['customer_id'] . "'>" . $row['customer_name'] . "</option>";
+                      echo "<option value='" . $row['customer_id'] . "' class='text-capitalize'>" . $row['customer_name'] . " | " . $row['customer_city'] . "</option>";
+
+
                     } // while
                     ?>
                   </select>

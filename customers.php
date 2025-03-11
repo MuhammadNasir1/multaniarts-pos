@@ -132,7 +132,7 @@ if (@$getCustomer) {
 										<div class="col-sm-6">
 
 											<label for="email">Phone:</label>
-											<input type="number" class="form-control" id="customer_phone" name="customer_phone" placeholder="Phone" value="<?= @$Getdata['customer_phone'] ?>" required>
+											<input type="number" class="form-control" id="customer_phone" name="customer_phone" placeholder="Phone" value="<?= @$Getdata['customer_phone'] ?>" >
 										</div>
 
 
